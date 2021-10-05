@@ -222,10 +222,14 @@ void ModelStoreVertex(const Vector3d& vertex, Uint16 vertno,
 void ModelParseNode(Base::File& file, Vector3d& origin,
    std::vector<Vector3d>& vertex_list,
    std::vector<Triangle3dTextured>& triangles,
+   Uint8 palIndex,
    bool dump)
 {
    // parse node until end node
    bool loop = true;
+
+   Uint16 textureNumber = 0;
+   bool flatShaded = false;
 
    while (loop)
    {
@@ -234,7 +238,6 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       Uint16 refvert, vertno, unk1;
 
       Uint16 colorOffset;
-      Uint8 palIndex = 0;
 
       double vx, vy, vz;
       double nx, ny, nz;
@@ -284,7 +287,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
          // parse submodel nodes
          file.Seek(offset, Base::seekBegin);
-         ModelParseNode(file, origin, vertex_list, triangles, dump);
+         ModelParseNode(file, origin, vertex_list, triangles, palIndex, dump);
 
          // return to "here"
          file.Seek(here, Base::seekBegin);
@@ -514,7 +517,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             if (i < nvert - 1) UaModelTrace(" ");
          }
 
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0001);
+         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(textureNumber, palIndex, flatShaded);
          triangles.insert(triangles.begin(), tri.begin(), tri.end());
       }
       break;
@@ -556,7 +559,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             if (i < nvert - 1) UaModelTrace(" ");
          }
 
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0002);
+         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(textureNumber, palIndex, flatShaded);
          triangles.insert(triangles.begin(), tri.begin(), tri.end());
       }
       break;
@@ -590,7 +593,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
             if (i < 3) UaModelTrace(" ");
          }
 
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(0x0003);
+         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(textureNumber, palIndex, flatShaded);
          triangles.insert(triangles.begin(), tri.begin(), tri.end());
       }
       break;
@@ -642,13 +645,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
          // parse left nodes
          file.Seek(left, Base::seekBegin);
-         ModelParseNode(file, origin, vertex_list, triangles, dump);
+         ModelParseNode(file, origin, vertex_list, triangles, palIndex, dump);
 
          UaModelTrace("      [sort] end left node/start right node\n");
 
          // parse right nodes
          file.Seek(right, Base::seekBegin);
-         ModelParseNode(file, origin, vertex_list, triangles, dump);
+         ModelParseNode(file, origin, vertex_list, triangles, palIndex, dump);
 
          // return to "here"
          file.Seek(here, Base::seekBegin);
@@ -817,9 +820,10 @@ bool DecodeBuiltInModels(const char* filename,
       // temporary variables
       Vector3d origin;
       std::vector<Vector3d> vertex_list;
+      Uint8 palIndex = 0;
 
       // parse root node
-      ModelParseNode(file, origin, vertex_list, model->m_triangles, dump);
+      ModelParseNode(file, origin, vertex_list, model->m_triangles, palIndex, dump);
 
       UaModelTrace("\n");
 
