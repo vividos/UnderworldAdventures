@@ -29,7 +29,7 @@
 /// pi constant
 const double c_pi = 3.141592653589793;
 
-/// converts angle from degree values (0°..360°) to radians (0..2pi)
+/// converts angle from degree values (0Â°..360Â°) to radians (0..2pi)
 #define Deg2rad(a) ((double(a) / 180.0) * c_pi)
 /// converts angle from randians values to degrees
 #define Rad2deg(a) ((double(a) / c_pi) * 180.0)

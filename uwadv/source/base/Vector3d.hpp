@@ -17,7 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 /// \file Vector3d.hpp
-/// \brief §D vector class
+/// \brief 3D vector class
 //
 // Note: all angle params should be passed to the functions in degrees, not
 // radians.
