@@ -149,7 +149,10 @@ void UnderworldRenderer::Render(const RenderOptions& renderOptions,
       // draw all tiles
       for (unsigned int tilePosX = 0; tilePosX < 64; tilePosX++)
          for (unsigned int tilePosY = 0; tilePosY < 64; tilePosY++)
+         {
             tileRenderer.RenderTile(tilePosX, tilePosY);
+            RenderObjects(viewerPos, level, tilePosX, tilePosY);
+         }
    }
 }
 
