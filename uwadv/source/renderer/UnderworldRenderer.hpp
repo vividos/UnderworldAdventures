@@ -68,10 +68,10 @@ public:
 
 private:
    /// renders all objects of a tile
-   void RenderObjects(const Underworld::Level& level, unsigned int x, unsigned int y);
+   void RenderObjects(const Vector3d& viewerPos, const Underworld::Level& level, unsigned int x, unsigned int y);
 
    /// renders a single object
-   void RenderObject(const Underworld::Level& level, const Underworld::Object& object,
+   void RenderObject(const Vector3d& viewerPos,  const Underworld::Level& level, const Underworld::Object& object,
       unsigned int x, unsigned int y);
 
    /// renders a billboarded sprite

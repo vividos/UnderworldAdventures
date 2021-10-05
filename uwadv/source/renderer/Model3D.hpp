@@ -45,7 +45,7 @@ public:
    const char* GetModelName() { return ""; }
 
    /// renders model
-   virtual void Render(const Underworld::Object& object, TextureManager& textureManager,
+   virtual void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
       Vector3d& base)
    {
       UNUSED(object);
@@ -80,7 +80,7 @@ public:
    bool IsModelAvailable(Uint16 itemId) const;
 
    /// renders a model
-   void Render(const Underworld::Object& object, TextureManager& textureManager,
+   void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
       Vector3d& base);
 
    /// returns bounding triangles for collision detection with given item_id

@@ -128,6 +128,8 @@ void UnderworldRenderer::Render(const RenderOptions& renderOptions,
 
    glColor3ub(192, 192, 192);
 
+   Vector3d viewerPos{ -pos.x, -pos.y, -pos.z * c_renderHeightScale };
+
    if (renderOptions.m_renderVisibleTilesUsingOctree)
    {
       // draw all visible tiles
@@ -139,7 +141,7 @@ void UnderworldRenderer::Render(const RenderOptions& renderOptions,
          [&](unsigned int tilePosX, unsigned int tilePosY)
          {
             tileRenderer.RenderTile(tilePosX, tilePosY);
-            RenderObjects(level, tilePosX, tilePosY);
+            RenderObjects(viewerPos, level, tilePosX, tilePosY);
          });
    }
    else
@@ -152,10 +154,12 @@ void UnderworldRenderer::Render(const RenderOptions& renderOptions,
 }
 
 /// Renders all objects in a tile.
+/// \param viewerPos viewer position
 /// \param level the level in which the objects are
 /// \param x tile x coordinate of tile which objects are to render
 /// \param y tile y coordinate of tile which objects are to render
-void UnderworldRenderer::RenderObjects(const Underworld::Level& level,
+void UnderworldRenderer::RenderObjects(const Vector3d& viewerPos,
+   const Underworld::Level& level,
    unsigned int x, unsigned int y)
 {
    glPushName((y << 8) + x);
@@ -180,7 +184,7 @@ void UnderworldRenderer::RenderObjects(const Underworld::Level& level,
       glPushName(link);
 
       // render object
-      RenderObject(level, obj, x, y);
+      RenderObject(viewerPos, level, obj, x, y);
 
       glPopName();
 
@@ -197,11 +201,13 @@ void UnderworldRenderer::RenderObjects(const Underworld::Level& level,
 
 /// Renders an object at a time. When a 3d model for that object exists, the
 /// model is drawn instead.
+/// \param viewerPos viewer position
 /// \param level level in which object is; const object
 /// \param obj object to render; const object
 /// \param x x tile coordinate of object
 /// \param y y tile coordinate of object
-void UnderworldRenderer::RenderObject(const Underworld::Level& level,
+void UnderworldRenderer::RenderObject(
+   const Vector3d& viewerPos, const Underworld::Level& level,
    const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
 #ifndef HAVE_DEBUG
@@ -226,7 +232,7 @@ void UnderworldRenderer::RenderObject(const Underworld::Level& level,
    {
       base.z = posInfo.m_zpos * c_renderHeightScale;
 
-      m_modelManager.Render(obj, m_textureManager, base);
+      m_modelManager.Render(viewerPos, obj, m_textureManager, base);
    }
    // critters
    else if (itemId >= 0x0040 && itemId < 0x0080)

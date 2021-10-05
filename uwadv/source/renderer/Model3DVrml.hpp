@@ -38,7 +38,7 @@ public:
    virtual ~Model3DVrml() {}
 
    /// renders model
-   virtual void Render(const Underworld::Object& object, TextureManager& textureManager,
+   virtual void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
       Vector3d& base) override;
 
    /// returns bounding triangles for collision detection

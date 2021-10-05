@@ -26,7 +26,7 @@
 extern bool DecodeBuiltInModels(const char* filename,
    std::vector<Model3DPtr>& allModels, bool dump = false);
 
-void Model3DBuiltIn::Render(const Underworld::Object& object,
+void Model3DBuiltIn::Render(const Vector3d& viewerPos, const Underworld::Object& object,
    TextureManager& textureManager, Vector3d& base)
 {
    glDisable(GL_CULL_FACE);
@@ -131,7 +131,7 @@ void Model3DBuiltIn::GetBoundingTriangles(const Underworld::Object& object,
    allTriangles.insert(allTriangles.end(), m_triangles.begin(), m_triangles.end());
 }
 
-void Model3DSpecial::Render(const Underworld::Object& object,
+void Model3DSpecial::Render(const Vector3d& viewerPos, const Underworld::Object& object,
    TextureManager& textureManager, Vector3d& base)
 {
    Uint16 itemId = object.GetObjectInfo().m_itemID;

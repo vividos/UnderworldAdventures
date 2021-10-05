@@ -33,7 +33,7 @@ public:
    virtual ~Model3DBuiltIn() {}
 
    /// renders model
-   virtual void Render(const Underworld::Object& object, TextureManager& textureManager,
+   virtual void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
       Vector3d& base) override;
 
    /// returns bounding triangles for collision detection
@@ -62,7 +62,7 @@ public:
    virtual ~Model3DSpecial() {}
 
    /// renders model
-   virtual void Render(const Underworld::Object& object, TextureManager& textureManager,
+   virtual void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
       Vector3d& base) override;
 
    /// returns bounding triangles for collision detection
