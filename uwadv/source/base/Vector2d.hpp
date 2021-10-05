@@ -57,7 +57,7 @@ public:
    }
 
    /// move ctor
-   Vector2d(const Vector2d&& vec)
+   Vector2d(const Vector2d&& vec) noexcept
       :x(vec.x),
       y(vec.y)
    {
@@ -89,7 +89,7 @@ public:
    }
 
    /// move assign operator
-   Vector2d& operator=(const Vector2d&& vec)
+   Vector2d& operator=(const Vector2d&& vec) noexcept
    {
       if (this == &vec)
          return *this;

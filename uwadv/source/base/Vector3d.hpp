@@ -61,7 +61,7 @@ public:
    }
 
    /// move ctor
-   Vector3d(const Vector3d&& vec)
+   Vector3d(const Vector3d&& vec) noexcept
       :x(vec.x),
       y(vec.y),
       z(vec.z)
@@ -96,7 +96,7 @@ public:
    }
 
    /// move assignment operator
-   Vector3d& operator=(const Vector3d&& vec)
+   Vector3d& operator=(const Vector3d&& vec) noexcept
    {
       if (this == &vec)
          return *this;
