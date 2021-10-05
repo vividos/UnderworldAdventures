@@ -403,7 +403,7 @@ int grdecode_main()
 
    _findclose(hnd);
 
-   printf("needed %u seconds to extract\n", time(NULL) - starttime);
+   printf("needed %llu seconds to extract\n", time(NULL) - starttime);
 
    return 0;
 }
