@@ -23,7 +23,8 @@
 #include "Model3DVrml.hpp"
 #include "Texture.hpp"
 
-void Model3DVrml::Render(const Vector3d& viewerPos, const Underworld::Object& object,
+void Model3DVrml::Render(const RenderOptions& renderOptions,
+   const Vector3d& viewerPos, const Underworld::Object& object,
    TextureManager& textureManager, Vector3d& base)
 {
    m_texture.Use();

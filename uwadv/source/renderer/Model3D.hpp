@@ -30,6 +30,7 @@
 #include <memory>
 
 class IGame;
+struct RenderOptions;
 
 /// \brief 3d model base class
 class Model3D
@@ -45,9 +46,12 @@ public:
    const char* GetModelName() { return ""; }
 
    /// renders model
-   virtual void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
-      Vector3d& base)
+   virtual void Render(const RenderOptions& renderOptions,
+      const Vector3d& viewerPos, const Underworld::Object& object,
+      TextureManager& textureManager, Vector3d& base)
    {
+      UNUSED(renderOptions);
+      UNUSED(viewerPos);
       UNUSED(object);
       UNUSED(textureManager);
       UNUSED(base);
@@ -80,8 +84,9 @@ public:
    bool IsModelAvailable(Uint16 itemId) const;
 
    /// renders a model
-   void Render(const Vector3d& viewerPos, const Underworld::Object& object, TextureManager& textureManager,
-      Vector3d& base);
+   void Render(const RenderOptions& renderOptions,
+      const Vector3d& viewerPos, const Underworld::Object& object,
+      TextureManager& textureManager, Vector3d& base);
 
    /// returns bounding triangles for collision detection with given item_id
    void GetBoundingTriangles(const Underworld::Object& obj, Vector3d& base,

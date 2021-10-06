@@ -115,7 +115,8 @@ bool Model3DManager::IsModelAvailable(Uint16 itemId) const
    return m_allModels.find(itemId) != m_allModels.end();
 }
 
-void Model3DManager::Render(const Vector3d& viewerPos, const Underworld::Object& object,
+void Model3DManager::Render(const RenderOptions& renderOptions,
+   const Vector3d& viewerPos, const Underworld::Object& object,
    TextureManager& textureManager, Vector3d& base)
 {
    Uint16 itemId = object.GetObjectInfo().m_itemID;
@@ -124,7 +125,7 @@ void Model3DManager::Render(const Vector3d& viewerPos, const Underworld::Object&
       m_allModels.find(itemId);
 
    if (iter != m_allModels.end())
-      iter->second->Render(viewerPos, object, textureManager, base);
+      iter->second->Render(renderOptions, viewerPos, object, textureManager, base);
 }
 
 void Model3DManager::GetBoundingTriangles(const Underworld::Object& object,
