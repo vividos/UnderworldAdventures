@@ -126,7 +126,14 @@ void Model3DBuiltIn::GetBoundingTriangles(const Underworld::Object& object,
    Vector3d& base, std::vector<Triangle3dTextured>& allTriangles)
 {
    // just hand over the tessellated triangles
-   allTriangles.insert(allTriangles.end(), m_triangles.begin(), m_triangles.end());
+   for (auto triangle : m_triangles)
+   {
+      Triangle3dTextured copyTriangle{ triangle };
+      for (auto& vertex : copyTriangle.m_vertices)
+         vertex.pos += base;
+
+      allTriangles.push_back(copyTriangle);
+   }
 }
 
 void Model3DSpecial::Render(const RenderOptions& renderOptions,
