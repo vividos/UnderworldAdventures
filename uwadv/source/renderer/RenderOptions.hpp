@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@ struct RenderOptions
    RenderOptions()
       :m_renderVisibleTilesUsingOctree(true),
       m_useFog(true),
-      m_renderBoundingBoxes(false)
+      m_renderBoundingBoxes(false),
+      m_renderHiddenObjects(false)
    {
    }
 
@@ -42,4 +43,7 @@ struct RenderOptions
 
    /// indicates if bounding boxes for 3D objects should be rendered
    bool m_renderBoundingBoxes;
+
+   /// indicates if hidden objects, such as traps, should be rendered
+   bool m_renderHiddenObjects;
 };

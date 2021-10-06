@@ -79,7 +79,8 @@ private:
       unsigned int x, unsigned int y);
 
    /// renders a billboarded sprite
-   void RenderSprite(Vector3d base, double width, double height,
+   void RenderSprite(const RenderOptions& renderOptions,
+      Vector3d base, double width, double height,
       bool ignoreUpVector, double u, double v,
       double moveU = 0.0, double moveV = 0.0);
 
@@ -87,7 +88,8 @@ private:
    void RenderDecal(const Underworld::Object& object, unsigned int x, unsigned int y);
 
    /// renders tmap object
-   void RenderTmapObject(const Underworld::Object& object, unsigned int x, unsigned int y);
+   void RenderTmapObject(const RenderOptions& renderOptions,
+      const Underworld::Object& object, unsigned int x, unsigned int y);
 
    /// draws a billboarded quad
    void DrawBillboardQuad(Vector3d base,

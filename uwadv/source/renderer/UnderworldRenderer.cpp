@@ -215,11 +215,9 @@ void UnderworldRenderer::RenderObject(const RenderOptions& renderOptions,
    const Vector3d& viewerPos, const Underworld::Level& level,
    const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
-#ifndef HAVE_DEBUG
    // don't render invisible objects
-   if (obj.GetObjectInfo().m_isHidden)
+   if (!renderOptions.m_renderHiddenObjects && obj.GetObjectInfo().m_isHidden)
       return;
-#endif
 
    Uint16 itemId = obj.GetObjectInfo().m_itemID;
 
@@ -268,7 +266,7 @@ void UnderworldRenderer::RenderObject(const RenderOptions& renderOptions,
       // fix for rotworm; hotspot always too high
       if (itemId == 0x0040) v += 0.25;
 
-      RenderSprite(base, 0.4, 0.88, true,
+      RenderSprite(renderOptions, base, 0.4, 0.88, true,
          tex.GetTexU(), tex.GetTexV(), u, v);
    }
    // switches/levers/buttons/pull chains
@@ -282,7 +280,7 @@ void UnderworldRenderer::RenderObject(const RenderOptions& renderOptions,
    // special tmap object
    else if (itemId == 0x016e || itemId == 0x016f)
    {
-      RenderTmapObject(obj, x, y);
+      RenderTmapObject(renderOptions, obj, x, y);
    }
    else
    {
@@ -302,9 +300,9 @@ void UnderworldRenderer::RenderObject(const RenderOptions& renderOptions,
 
       // normal object
       m_textureManager.Use(itemId + Base::c_stockTexturesObjects);
-      RenderSprite(base, 0.5 * quadWidth, quadWidth, false, 1.0, 1.0);
+      RenderSprite(renderOptions, base, 0.5 * quadWidth, quadWidth, false, 1.0, 1.0);
    }
-   }
+}
 
 /// \details renders the following objects:
 /// - 0x0161 a_lever
@@ -316,7 +314,7 @@ void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 
    Vector3d base(static_cast<double>(x), static_cast<double>(y),
-      posInfo.m_zpos* c_renderHeightScale);
+      posInfo.m_zpos * c_renderHeightScale);
 
    Vector2d to_right;
 
@@ -384,12 +382,13 @@ void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int
 }
 
 /// \details renders 0x016e / 0x016f special tmap object
-void UnderworldRenderer::RenderTmapObject(const Underworld::Object& obj, unsigned int x, unsigned int y)
+void UnderworldRenderer::RenderTmapObject(const RenderOptions& renderOptions,
+   const Underworld::Object& obj, unsigned int x, unsigned int y)
 {
    const Underworld::ObjectPositionInfo& posInfo = obj.GetPosInfo();
 
    Vector3d pos(static_cast<double>(x), static_cast<double>(y),
-      posInfo.m_zpos* c_renderHeightScale);
+      posInfo.m_zpos * c_renderHeightScale);
 
    unsigned int x_fr = posInfo.m_xpos;
    unsigned int y_fr = posInfo.m_ypos;
@@ -472,11 +471,12 @@ void UnderworldRenderer::RenderTmapObject(const Underworld::Object& obj, unsigne
 }
 
 /// Renders a billboarded drawn sprite; the texture has to be use()d before
-/// calling, and the max u and v coordinates have to be passed
+/// calling, and the max u and v coordinates have to be passed.
 /// Objects are drawn using the method described in the billboarding tutorial,
 /// "Cheating - Faster but not so easy". Billboarding tutorials:
 /// http://www.lighthouse3d.com/opengl/billboarding/
 /// http://nate.scuzzy.net/gltut/
+/// \param renderOptions render options to use
 /// \param base base coordinates of sprite
 /// \param width relative width of object in relation to a tile
 /// \param height relative height of object in relation to a tile
@@ -486,7 +486,8 @@ void UnderworldRenderer::RenderTmapObject(const Underworld::Object& obj, unsigne
 /// \param v maximum v texture coordinate
 /// \param moveU u-coordinate offset to move base, e.g. to hotspot
 /// \param moveV v-coordinate offset to move base, e.g. to hotspot
-void UnderworldRenderer::RenderSprite(Vector3d base,
+void UnderworldRenderer::RenderSprite(
+   const RenderOptions& renderOptions, Vector3d base,
    double width, double height, bool ignoreUpVector, double u, double v,
    double moveU, double moveV)
 {
@@ -536,8 +537,7 @@ void UnderworldRenderer::RenderSprite(Vector3d base,
    glTexCoord2d(0.0, 0.0); glVertex3d(high1.x, high1.y, high1.z);
    glEnd();
 
-#ifdef HAVE_DEBUG
-   if (ignoreUpVector)
+   if (renderOptions.m_renderBoundingBoxes && ignoreUpVector)
    {
       glDisable(GL_TEXTURE_2D);
 
@@ -556,7 +556,6 @@ void UnderworldRenderer::RenderSprite(Vector3d base,
 
       glEnable(GL_TEXTURE_2D);
    }
-#endif
 
    glDisable(GL_POLYGON_OFFSET_FILL);
 }
