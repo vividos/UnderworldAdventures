@@ -57,11 +57,7 @@ RenderWindow::RenderWindow(int width, int height, const char* title, bool fullsc
       throw Base::Exception(text.c_str());
    }
 
-#ifdef HAVE_DEBUG
    int rendererFlags = SDL_RENDERER_PRESENTVSYNC;
-#else
-   int rendererFlags = SDL_RENDERER_PRESENTVSYNC;
-#endif
    m_sdlRenderer = SDL_CreateRenderer(m_window, -1, rendererFlags);
 
    m_context = SDL_GL_CreateContext(m_window);
