@@ -15,6 +15,7 @@ add_executable(${PROJECT_NAME}
 	"DumpExecutable.cpp"
 	"DumpLevelArchive.cpp" "DumpLevelArchive.hpp"
 	"DumpObjectProperties.cpp"
+	"DumpPalettes.cpp"
 	"DumpUwExe.cpp"
 	"UnderworldDumper.cpp" "UnderworldDumper.cpp"
 	"uwdump.cpp")

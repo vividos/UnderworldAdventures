@@ -37,6 +37,7 @@ extern void DumpExecutable(const std::string& filename, const GameStrings& gameS
 extern void DumpUwExe(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpCombineData(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 
 typedef std::function<void(const std::string & filename, const GameStrings & gameStrings, bool isUw2)> T_fileHandler;
 
@@ -54,6 +55,7 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
    { "cnv.ark", DumpConversationArchive },
    { "byt.ark", DumpArkArchive },
    { "scd.ark", DumpArkArchive },
+   { "pals.dat", DumpPalettes },
 };
 
 bool UnderworldDumper::ParseArgs(unsigned int argc, const char** argv)
