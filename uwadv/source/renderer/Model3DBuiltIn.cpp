@@ -39,26 +39,9 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
 
    for (size_t triangleIndex = 0; triangleIndex < maxTriangles; triangleIndex++)
    {
-#if 0
-      //#ifdef HAVE_DEBUG
-            // select debug triangle color
-      switch (m_triangles[triangleIndex].m_textureNumber)
-      {
-      case 1:
-         glColor3ub(255, 0, 0); // red
-         break;
-      case 2:
-         glColor3ub(0, 255, 0); // green
-         break;
-      case 3:
-         glColor3ub(0, 0, 255); // blue
-         break;
-      case 4:
-         glColor3ub(255, 0, 255); // violet
-         break;
-      }
-#endif
       const Triangle3dTextured& tri = m_triangles[triangleIndex];
+
+      Uint8 color[3] = { 255, 255, 255 };
 
       glBegin(GL_TRIANGLES);
 
@@ -74,11 +57,23 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
       glNormal3d(normal.x, normal.y, normal.z);
 
       for (unsigned index = 0; index < 3; index++)
+      {
+         Vector3d lightDirection = -viewerPos - (base + tri.m_vertices[index].pos);
+         lightDirection.Normalize();
+
+         double diffuseFactor = std::abs(normal.Dot(lightDirection));
+
+         glColor3ub(
+            color[0] * diffuseFactor,
+            color[1] * diffuseFactor,
+            color[2] * diffuseFactor);
+
          glVertex3d(
             base.x - origin.x + tri.m_vertices[index].pos.x,
             base.y - origin.y + tri.m_vertices[index].pos.y,
             base.z - origin.z + tri.m_vertices[index].pos.z
          );
+      }
 
       glEnd();
    }
