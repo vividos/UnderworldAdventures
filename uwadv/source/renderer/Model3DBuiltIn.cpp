@@ -79,6 +79,7 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
    }
 
    glEnable(GL_CULL_FACE);
+   glColor3ub(192, 192, 192);
 
    if (renderOptions.m_renderBoundingBoxes)
       DrawExtentsBox(base);
