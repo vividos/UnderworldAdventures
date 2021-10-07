@@ -61,6 +61,9 @@ public:
    /// converts stock texture to external one
    void MapStockToExternalTexture(unsigned int index, Texture& texture);
 
+   /// sets new OpenGL color from palette 0
+   void GetPaletteColor(Uint8 paletteIndex, Uint8& red, Uint8& green, Uint8& blue);
+
 protected:
    /// frames per second for animated textures
    static const double s_animationFramesPerSecond;

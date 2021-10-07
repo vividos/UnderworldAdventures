@@ -260,3 +260,11 @@ void TextureManager::MapStockToExternalTexture(unsigned int index, Texture& tex)
 {
    tex.Convert(m_allStockTextureImages[index], 0);
 }
+
+void TextureManager::GetPaletteColor(Uint8 paletteIndex, Uint8& red, Uint8& green, Uint8& blue)
+{
+   Uint8* color = m_palette0->Get() + (paletteIndex * 3);
+   red = color[0];
+   green = color[1];
+   blue = color[2];
+}
