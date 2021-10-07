@@ -46,11 +46,11 @@ void ProjectInfoWindow::UpdateData()
    // set project name text at root item
    ProjectManager& projectManager = m_mainFrame->GetProjectManager();
 
-   CString cszProjectName(_T("No project open."));
+   CString projectName{ _T("No project open.") };
    if (projectManager.IsOpen())
-      cszProjectName.Format(_T("Project: %s"), projectManager.GetProjectName().GetString());
+      projectName.Format(_T("Project: %s"), projectManager.GetProjectName().GetString());
 
-   m_treeCtrl.SetItemText(m_treeCtrl.GetRootItem(), cszProjectName);
+   m_treeCtrl.SetItemText(m_treeCtrl.GetRootItem(), projectName);
 
    RefreshCodeDebuggerList();
    RefreshLevelList();

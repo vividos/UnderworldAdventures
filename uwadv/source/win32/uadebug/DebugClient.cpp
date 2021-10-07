@@ -396,9 +396,7 @@ CString DebugClient::GetGameConfigPath()
    CFilename gamePath(A2CT(szBuffer));
 
    gamePath.MakeAbsoluteToCurrentDir();
-   ATLASSERT(gamePath.IsValidObject());
-
-   return gamePath.Get();
+   return gamePath.IsValidObject() ? gamePath.Get() : CString();
 }
 
 void DebugClient::LoadGameConfig(LPCTSTR pszPrefix)
