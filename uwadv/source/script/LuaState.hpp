@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -47,6 +47,23 @@ public:
 
    /// parses Lua code and returns line numbers of active lines
    static void GetActiveLines(const std::string& luaSource, std::vector<size_t>& lineNumbers);
+
+   // diagnostic methods
+
+   /// dumps value stack to debug output
+   void DumpStack() const;
+
+   /// dumps all upvalues for the current function
+   void DumpUpValues() const;
+
+   /// enumerates all table indices in the table at given stack index
+   std::string EnumTableIndices(int stackIndex) const;
+
+   /// dumps single stack value
+   void DumpStackValue(int stackIndex, bool isUpValue) const;
+
+   /// dumps call stack to debug output
+   void DumpCallStack() const;
 
 protected:
    /// lua state information

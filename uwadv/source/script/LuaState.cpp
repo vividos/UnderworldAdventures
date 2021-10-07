@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -161,7 +161,7 @@ bool LuaState::CheckSyntax(const std::string& luaSource, std::vector<std::string
          break;
       }
    }
-   catch (const std::exception & ex)
+   catch (const std::exception& ex)
    {
       errorMessages.push_back(std::string("std exception during checking syntax: ") + ex.what());
    }
@@ -204,4 +204,142 @@ void LuaState::GetActiveLines(const std::string& luaSource, std::vector<size_t>&
    }
 
    lua_pop(L, 1);
+}
+
+void LuaState::DumpStack() const
+{
+   int stackDepth = lua_gettop(L);
+
+   UaTrace("dumping current value stack, stack depth %i ...\n", stackDepth);
+
+   for (int stackIndex = 1; stackIndex <= stackDepth; stackIndex++)
+   {
+      DumpStackValue(stackIndex, false);
+   }
+
+   UaTrace("done dumping value stack.\n");
+}
+
+void LuaState::DumpUpValues() const
+{
+   UaTrace("dumping upvalues:\n");
+
+   for (int upvalueIndex = 1; upvalueIndex < 256; upvalueIndex++)
+   {
+      int index = lua_upvalueindex(upvalueIndex);
+
+      if (lua_type(L, index) == LUA_TNONE)
+         continue;
+
+      DumpStackValue(index, true);
+   }
+
+   UaTrace("end dumping upvalues.\n");
+}
+
+std::string LuaState::EnumTableIndices(int stackIndex) const
+{
+   std::string text;
+
+   if (stackIndex < 0)
+      stackIndex = lua_absindex(L, stackIndex);
+
+   lua_pushnil(L);
+   while (lua_next(L, stackIndex) != 0)
+   {
+      if (lua_type(L, -2) == LUA_TSTRING)
+         text += std::string{ " \"" } + lua_tostring(L, -2) + "\"";
+      else if (lua_type(L, -2) == LUA_TNUMBER)
+         text += " \"" + std::to_string(lua_tonumber(L, -2)) + "\"";
+      else
+         text += std::string{ " (type " } + lua_typename(L, lua_type(L, -2)) + ")";
+
+      lua_pop(L, 1);
+   }
+
+   return text;
+}
+
+void LuaState::DumpStackValue(int stackIndex, bool isUpValue) const
+{
+   const char* typeName = lua_typename(L, lua_type(L, stackIndex));
+
+   std::string content;
+
+   switch (lua_type(L, stackIndex))
+   {
+   case LUA_TNONE: content = "[none]"; break;
+   case LUA_TNIL:  content = "nil"; break;
+   case LUA_TNUMBER: content = std::to_string(lua_tonumber(L, stackIndex)); break;
+   case LUA_TBOOLEAN: content = lua_toboolean(L, stackIndex) != 0 ? "true" : "false"; break;
+   case LUA_TSTRING: content = std::string("[") + lua_tostring(L, stackIndex) + "]"; break;
+   case LUA_TTABLE:
+      content = "[table" + EnumTableIndices(stackIndex) + "]";
+      break;
+
+   case LUA_TFUNCTION:
+      content = lua_iscfunction(L, stackIndex)
+         ? "(C) 0x" + std::to_string((size_t)lua_tocfunction(L, stackIndex))
+         : "(Lua)";
+      break;
+
+   case LUA_TLIGHTUSERDATA:
+      content = "0x" + std::to_string((size_t)lua_touserdata(L, stackIndex));
+      break;
+
+   case LUA_TUSERDATA:
+      content = "0x" + std::to_string((size_t)lua_touserdata(L, stackIndex)) +
+         ", size=" + std::to_string(lua_rawlen(L, stackIndex));
+      break;
+
+   case LUA_TTHREAD:
+      content = "[thread]";
+      break;
+
+   default:
+      UaAssert(false); // unhandled Lua type
+      break;
+   }
+
+   std::string metatableInfo;
+   int hasMetatable = lua_getmetatable(L, stackIndex);
+   if (hasMetatable != 0)
+   {
+      metatableInfo = " +[metatable";
+      metatableInfo += EnumTableIndices(-1);
+      metatableInfo += "]";
+      lua_pop(L, 1);
+   }
+
+   int displayIndex = isUpValue ? lua_upvalueindex(stackIndex) : stackIndex;
+
+   UaTrace("[%i] (%s) %s%s\n", displayIndex, typeName, content.c_str(), metatableInfo.c_str());
+}
+
+void LuaState::DumpCallStack() const
+{
+   UaTrace("dumping current call stack...\n");
+
+   for (int stack = 0;; stack++)
+   {
+      lua_Debug debug = { 0 };
+
+      int ret = lua_getstack(L, stack, &debug);
+      if (ret == 0)
+         break;
+
+      try
+      {
+         lua_getinfo(L, "Sl", &debug);
+      }
+      catch (...)
+      {
+         // may throw exception of type  struct lua_longjmp
+         UaTrace("exception during lua_getinfo()\n");
+      }
+
+      UaTrace("%s:%u\n", debug.short_src, debug.currentline);
+   }
+
+   UaTrace("done dumping call stack.\n");
 }
