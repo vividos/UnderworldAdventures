@@ -394,6 +394,9 @@ This table contains common game-related functions:
 - `uw.show_cutscene(Integer cutscene_number)`:
   Shows cutscene with given number
 
+- `uw.show_map()`:
+  Shows the map view
+
 - `uw.show_ingame_anim(Integer ingame_anim_number)`:
   Shows ingame animation with given number, e.g. anvil or abyss window
 
