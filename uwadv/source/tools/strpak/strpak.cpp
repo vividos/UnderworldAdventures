@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -100,7 +100,8 @@ void strpak_unpack_strings(const char *infile, const char *outputFilename)
       out.WriteLine("");
 
       std::stringstream bufferBlock;
-      bufferBlock << "block: " << std::hex << std::setfill('0') << std::setw(4) << blockId << "; " << stringList.size() << " strings.";
+      bufferBlock << "block: " << std::hex << std::setfill('0') << std::setw(4) << blockId << "; "
+         << std::dec << stringList.size() << " strings.";
       out.WriteLine(bufferBlock.str().c_str());
 
       // print all strings in list
