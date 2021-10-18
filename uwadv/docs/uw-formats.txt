@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.75, as of 2021-07-20
+Document version: 1.76, as of 2021-10-18
 
 
 Table of Contents
@@ -69,7 +69,7 @@ Table of Contents
    7.7    Imported variables
    7.8    Quest flags
 
-   8      3d models
+   8      3D models
    8.1    List of all nodes
 
    9      Miscellaneous stuff
@@ -121,7 +121,7 @@ Table of Contents
    - Alistair Brown (basic object format, via the Underworld II editor
      available at http://bearcity.pwp.blueyonder.co.uk/)
    - Ulf Wohlers (Objects and 3D models)
-   - Fabian Pache (about map details and 3d models, uw2 conversations uw2
+   - Fabian Pache (about map details and 3D models, uw2 conversations uw2
      player save http://uw2rev.sourceforge.net)
    - Hank Morgan, from his UnderworldExporter project
      https://github.com/hankmorgan/UnderworldExporter.
@@ -157,8 +157,8 @@ Table of Contents
    out.was released. So it was the first true first-person game on the PC.
 
    Ultima Underworld is a MS-DOS based game created in C with Turbo C++ 2.1
-   and Optasm as the assembler used (as far as we know). 3d models were done
-   with 3d studio max and converted and placed into the executable.
+   and Optasm as the assembler used (as far as we know). 3D models were done
+   with 3D Studio Max and converted and placed into the executable.
 
    Ultima Underworld is a trademark of Origin, Inc.
 
@@ -1950,58 +1950,58 @@ Table of Contents
          the textures for the doors come from the 6 bytes at the end of the
          texture mapping info from lev.ark.
          the "doordir" bit determines in which direction the door swings open.
-         Doors are rendered using two 3d models, one for the frame and one for
+         Doors are rendered using two 3D models, one for the frame and one for
          the door. It appears that the frame uses the wall texture of the tile
          in which the door is located. The frame also seems to change the color
          of the "border" between the two sides according to the object.
 
    0150  a_bench
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    0154  a_large boulder
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    0157  a_shrine
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    0158  a_table
-         3d object (see section about 3d models). Texture is 32 from tmobj.gr.
+         3D object (see section about 3D models). Texture is 32 from tmobj.gr.
 
    015a  a_moongate
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    015c  a_barrel
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    015c  a_chair
-         3d object (see section about 3d models). Texture is 38 from tmobj.gr.
+         3D object (see section about 3D models). Texture is 38 from tmobj.gr.
 
    015d  a_chest
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    015e  a_nightstand
-         3d object (see section about 3d models)
+         3D object (see section about 3D models)
 
    0160  a_pillar
-         3d object. texture is determined by the lower byte of the "flags"
+         3D object. texture is determined by the lower byte of the "flags"
          field from "tmobj.gr"
 
    0161  a_lever
-         3d object. A clock-like lever with 8 positions; texture is determined
+         3D object. A clock-like lever with 8 positions; texture is determined
          by the "flags" field (lower 3 bits) + 4, from "tmobj.gr".
 
    0162  a_switch
-         3d object. Almost the same as 0161, but starting with image 12 of
+         3D object. Almost the same as 0161, but starting with image 12 of
          "tmobj.gr". Not used in uw1
 
    0163  a_picture [uw2]
-         3d object. Texture is lower byte of flags + 42 from "tmobj.gr"
+         3D object. Texture is lower byte of flags + 42 from "tmobj.gr"
 
          ??? [uw1]
          uw1 has an item with this id but it's currently unknown what it is
 
    0164  a_bridge
-         bridge 3d object. texture to use comes from "flags" field. when the
+         bridge 3D object. texture to use comes from "flags" field. when the
          value is < 2, the bridge texture is taken from "tmobj.gr", index
          30 + flags. for this bridge, string block 0001, string 171 is printed
          as "look" description.
@@ -2033,12 +2033,12 @@ Table of Contents
          the "flags" field. text printed is from strings block 8, 368 + flags
 
    0167  a_bed [uw2]
-         3d object. The "owner" field determines the colour of the sheets and
+         3D object. The "owner" field determines the colour of the sheets and
          pillow. The sheets are colour (4*owner+5), the pillow colour
          (4*owner).
 
    0169  a_shelf [uw2]
-         3d object. Texture is lower byte of flags + 36 from "tmobj.gr"
+         3D object. Texture is lower byte of flags + 36 from "tmobj.gr"
 
    016e  special tmap obj (tmap_c)
          wall decal; texture used is determined from the "owner" field and is
@@ -2050,7 +2050,7 @@ Table of Contents
          be removed by deleting the object.
 
    017x  a_button, etc.
-         3d object. buttons, switches, pull chains and levers, textured with
+         3D object. buttons, switches, pull chains and levers, textured with
          images from "tmflat.gr". The texture index into tmflat.gr is the
          lowest byte of the item id (subclass id).
          Special link usually points to a trigger.
@@ -3316,10 +3316,14 @@ Table of Contents
  +--------------------------------------------------------------------------+
 
 
-8  3d models
+8  3D models
 
-   These are stored within the executable (bad! bad!). From Doug Church, on
-   the 3d models:
+   These are stored within the executable (bad! bad!), in a segment of the
+   overlaid executable. The renderer most probably is written in assembly
+   language for optimization. There are different versions of uw.exe, uw2.exe
+   and uwdemo.exe executables, which makes it a bit harder to find the models.
+
+   From Doug Church, on the 3D models:
 
      We'd take a 3ds model, convert it to an internal ASCII format, and then
      run a "model builder" which would generate an inlined BSP tree for it.
@@ -3347,6 +3351,7 @@ Table of Contents
       uw2  0x00054cf0    d4 64 aa 59   0x00054d8a
       uw2  0x000550e0    d4 64 aa 59   0x0005517a  another UW2 build
 
+   From Abysmal project:
    There's also a model information table stored in the .exe file.
 
    [uw1] It starts at 0x0005f7e5 (in my uw.exe, md5sum:
@@ -3365,39 +3370,39 @@ Table of Contents
    [uw2] The model information table for underworld 2 starts at 0x0006908A
    in a UW2.EXE with base 0x00054cf0. Each table entry has 5 bytes
 
-      0000   int8   high nybble unknown
-                    low nybble contains number of valid color entries
+      0000   int8   high nibble unknown
+                    low nibble contains number of valid color entries
       0001   int8*3 color table as before
       0004   int8
 
 
    Models are:
-   ((All?) models from 0x140 to 0x17F are drawn using 3d models)
+   (All models from 0x140 to 0x17F are drawn using 3D models)
 
    index   item_id   description
-    00               -
+    00               - (empty)
     01     014x      door frame
     02     0164      bridge
     03     0150      bench
     04     015f      Lotus Turbo Esprit (no, really!)
     05     0156      small boulder
-    06     0155?     medium boulder
-    07     0154?     large boulder
+    06     0155      medium boulder
+    07     0153/0154 large boulder
     08     0151      arrow
     09     0159      beam
     0A     0160      pillar
     0B     0157      shrine
-    0C
+    0C               ??? unknown
     0D     0163      painting [uw2]
-    0E               door
-    0F               secret door
-    10     0161,017X texture map (8-way lever and buttons)
+    0E     014x      door (with submodel)
+    0F     014x      secret door (with submodel)
+    10     0161,017x texture map (8-way lever and buttons)
     11     0162      texture map (8-way switch)
     12     0166      texture map (writing)
     13     0165      gravestone
-    14     016e?     texture map (which one?)
-    15               -
-    16     016e      texture map (possibly also for 016f)
+    14     016e      texture map
+    15               - (empty)
+    16     016f      texture map
     17     015a      moongate
     18     0158      table
     19     015d      chest
@@ -3410,7 +3415,7 @@ Table of Contents
 
    Node list
    ---------
-   Actual model data is stored as a list with various "nodes" that do
+   The actual model data is stored as a list with various "nodes" that do
    different things. There also is a vertex array that is filled at start of
    the model, and then faces are defined, using points from the vertex list.
    The list is parsed every frame and tests are done if some faces have to be
@@ -3464,7 +3469,7 @@ Table of Contents
      0012     ???
      0014     ??? colour definition
      0016     ???
-     002E     ??? seems to influence shading for the next face
+     002E     ??? seems to influence shading for the next face [uw2]
      0040     ??? seems to do nothing but introduce a face definition
      0044     ??? this one too
      004A     define translation XZY
@@ -3486,20 +3491,21 @@ Table of Contents
      0090     define vertex offset X,Z
      0092     define vertex offset X,Y
      0094     define vertex offset Y,Z
-     00A0     shorthand textured face definition
+     00A0     define texture mapped face (shorthand)
      00A8     define texture-mapped face
-     00B2     ???
+     00B2     ??? potential texid for following 00B4 calls
      00B4     define face vertices with u,v information
      00BA     render door submodel
-     00BC     define face shade (6 bytes)
+     00BC     define flat face shade
      00BE     ??? seems to define 2 shades
-     00CE     ??? yet another texture-mapped face, same as 007E (?)
-     00D2     shorthand textured face definition (similar to 00A0)
-     00D4     defines shades for gouraud shading
+     00CE     define texture-mapped face, same as 00B4
+     00D2     define texture mapped face (shorthand) (similar to 00A0)
+     00D4     define vertex gouraud shading values
      00D6     turn on on gouraud shading
 
    The same list as above, sorted by node ID and including the number of
-   arguments each node takes
+   arguments each node takes (=argc); var means a variable number of
+   arguments.
 
        ID  argc
      0000     0      end node
@@ -3510,7 +3516,7 @@ Table of Contents
      0012     1      ???
      0014     3      ??? colour definition
      0016     3      ???
-     002E     1      ??? seems to influence shading for the next face
+     002E     1      ??? seems to influence shading for the next face [uw2]
      0040     0      ??? seems to do nothing but introduce a face definition
      0044     0      ??? this one too
      004A     3      define translation XZY
@@ -3534,14 +3540,14 @@ Table of Contents
      0094     4      define vertex offset Y,Z
      00A0     5      shorthand textured face definition
      00A8     var    define texture-mapped face
-     00B2     1      ???
+     00B2     1      ??? potential texid for following 00B4 calls
      00B4     var    define face vertices with u,v information
      00BA     3      render door submodel
      00BC     2      define face shade (6 bytes)
      00BE     2      ??? seems to define 2 shades
      00CE     var    same as 007E (?)
      00D2     4      shorthand textured face definition (similar to 00A0)
-     00D4     var    defines shades for gouraud shading
+     00D4     var    define vertex gouraud shading values
      00D6     0      turn on on gouraud shading
 
    Here's a detailed description of all nodes, sorted after functionality:
@@ -3549,7 +3555,7 @@ Table of Contents
    Misc. nodes
    -----------
      0000   end node
-            just ends current list; also ends sort node sublists
+            just ends current list; also ends sort node sublists and submodels
 
      0078   define model center
               0000   Int16     node id
@@ -3557,7 +3563,7 @@ Table of Contents
               0004   Fixed     origin X coordinate
               0006   Fixed     origin Y coordinate
               0008   Fixed     origin Z coordinate
-              000a   Int16     ???
+              000a   Int16     unknown, always 0
 
             because of the limited resolution available for specifying object
             positions, the origin for model coordinates will typically need to
@@ -3577,7 +3583,7 @@ Table of Contents
 
      0082   define initial vertices
               0002   Int16     number of vertices (=nvert)
-              0004   Int16     first vertex no.?
+              0004   Int16     first vertex number
               0006   Fixed     vertex X coordinate for first vertex
               0008   Fixed     vertex Y coordinate
               000a   Fixed     vertex Z coordinate
@@ -3609,9 +3615,9 @@ Table of Contents
 
      008C   define vertex variable height
             this is used for pillars and doorframes where the model must reach
-            up to the ceiling, wherever it be.
+            up to the ceiling height.
               0002   VertNo    reference vertex to modify
-              0004   Int16     ???
+              0004   Int16     unknown, always 0x0800
               0006   VertNo    new list index to store vertex
 
    Face plane checks
@@ -3620,7 +3626,7 @@ Table of Contents
    not. Usually a face normal vector is defined to verify. A length value
    is given to know how many bytes to omit in the node list.
 
-     0058   define face plane, arbitrary heading (backface cull)
+     0058   define face plane, arbitrary heading (backface culling)
               0002   Int16     number of bytes to skip when not visible
               0004   Fixed     normal vector X coordinate
               0006   Fixed     distance "model origin -> face" X value
@@ -3665,19 +3671,19 @@ Table of Contents
               0002   Int16     number of vertices (=nvert)
               0004   VertNo    vertex list index for first point
               0006   VertNo    vertex list index for second point
-              0008             and so on
+              0008             ... and so on, nvert times
 
      00A8   define texture-mapped face
             vertex u and v coordinates are stored as 0.16 fractional values.
             just divide by 65535.0 to get coordinates in the range [0; 1]
-              0002   Int16     texture number (?)
+              0002   Int16     texture number, always 6
               0004   Int16     number of vertices (=nvert)
               0006   VertNo    vertex list index for first point
               0008   TexCo     first vertex u coordinate
               000a   TexCo     first vertex v coordinate
               000c   VertNo    vertex list index for second point
               000e   TexCo     second vertex u coordinate
-              0010             and so on
+              0010             ... and so on, nvert times
 
      00B4   define face vertices with u,v information
             same structure as 00A8, but without the "texture number" field.
@@ -3688,7 +3694,7 @@ Table of Contents
      00A0   define texture mapped face (shorthand)
             seems to be a quick way to define a face with 4 vertices and
             automatic texture coordinates; vertex list indices
-              0002   Int16     ???
+              0002   Int16     unknown, always 6
               0004   Int8      vertex list index 0
               0005   Int8      vertex list index 1
               0006   Int8      vertex list index 2
@@ -3737,7 +3743,7 @@ Table of Contents
 
    Shading/Coloring nodes
    ----------------------
-     00D4   define vertex shading values
+     00D4   define vertex gouraud shading values
             Build a table of shading information for each vertex.
             Note that the list generated by this command doesn't
             always have the same size as the vertex table.
@@ -3753,7 +3759,7 @@ Table of Contents
                                and so on; if nvert is odd, read another empty
                                byte to have 16 bit word align
 
-     00D6   introduce Gouraud shaded face
+     00D6   turn on on gouraud shading
             switches on gouraud shading. The following faces use
             the color definitions set with the "define vertex shading values"
             (00D4) command
@@ -3762,7 +3768,7 @@ Table of Contents
             Defines a flat shade for the next (or all following?) faces.
             The values given here are the same as in the shading table (00D4)
             so the same calculations and palette indexing rules apply here
-              0002   Color     colour
+              0002   Color     colour offset
               0004   Int16     shade (dark value)
 
    Unknown nodes
@@ -3781,9 +3787,9 @@ Table of Contents
               0004   Color     ??
               0006   Int16     ??
 
-     002E   ???
+     002E   ??? seems to influence shading for the next face [uw2]
             This node influences how the next face is drawn. I'm not sure what
-            it does exactly, but I'm sure that it switches guoraud shading off
+            it does exactly, but I'm sure that it switches gouraud shading off
             (and possibly some other mode on)
             It's used quite a lot in the Lotus Turbo Esprit model and only
             once in the table model (with data=0). Other than that it's not
@@ -3821,7 +3827,7 @@ Table of Contents
                                and visibility.
               0004   Int16     Pointer to first model node of submodel to
                                render. Offset is relative to the location of
-                               the current node (BA).
+                               the current node (00BA).
 
  +--------------------------------------------------------------------------+
 
