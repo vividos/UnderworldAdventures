@@ -25,7 +25,7 @@
 #include "RenderOptions.hpp"
 
 extern bool DecodeBuiltInModels(const char* filename,
-   std::vector<Model3DPtr>& allModels, bool dump = false);
+   std::vector<Model3DPtr>& allModels, bool dump = false, bool isUw2 = false);
 
 void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
    const Vector3d& viewerPos, const Underworld::Object& object,

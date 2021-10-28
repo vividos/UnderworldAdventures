@@ -29,7 +29,7 @@
 #include "Model3DVrml.hpp"
 
 bool DecodeBuiltInModels(const char* filename,
-   std::vector<Model3DPtr>& allModels, bool dump);
+   std::vector<Model3DPtr>& allModels, bool dump, bool isUw2);
 
 void Model3DManager::Init(IGame& game)
 {
@@ -45,7 +45,8 @@ void Model3DManager::Init(IGame& game)
    else
       underworldExeFilename.append("uwdemo.exe");
 
-   DecodeBuiltInModels(underworldExeFilename.c_str(), m_allBuiltInModels, false);
+   bool isUw2 = game.GetSettings().GetGameType() == Base::gameUw2;
+   DecodeBuiltInModels(underworldExeFilename.c_str(), m_allBuiltInModels, false, isUw2);
 
    LoadModelConfigFile(settings, game.GetResourceManager());
 }

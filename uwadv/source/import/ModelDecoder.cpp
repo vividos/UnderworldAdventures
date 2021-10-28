@@ -757,7 +757,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 }
 
 bool DecodeBuiltInModels(const char* filename,
-   std::vector<Model3DPtr>& allModels, bool dump)
+   std::vector<Model3DPtr>& allModels, bool dump, bool isUw2)
 {
    Base::File file(filename, Base::modeRead);
    if (!file.IsOpen())

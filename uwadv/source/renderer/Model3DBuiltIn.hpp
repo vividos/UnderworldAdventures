@@ -54,7 +54,7 @@ private:
 
    // friend decoding function
    friend bool DecodeBuiltInModels(const char* filename,
-      std::vector<Model3DPtr>& allModels, bool dump);
+      std::vector<Model3DPtr>& allModels, bool dump, bool isUw2);
 };
 
 /// special model class, like bridges and doors
