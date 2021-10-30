@@ -24,6 +24,25 @@
 #include <algorithm>
 #include <cctype>
 #include <codecvt>
+#include <cstdarg>
+
+std::string Base::String::Format(const char* format, ...)
+{
+   va_list args;
+   va_start(args, format);
+
+   int length = vsnprintf(nullptr, 0, format, args);
+
+   std::vector<char> buffer;
+   buffer.resize(length + 1, 0);
+
+   vsnprintf(buffer.data(), length + 1, format, args);
+   va_end(args);
+
+   buffer.push_back(0);
+
+   return std::string(buffer.data());
+}
 
 /// \see https://stackoverflow.com/questions/3418231/replace-part-of-a-string-with-another-string
 void Base::String::Replace(std::string& text, const std::string& textToFind, const std::string& replacementText)

@@ -29,6 +29,9 @@ namespace Base
    /// \brief String functions
    namespace String
    {
+      /// formats a string, just like printf, but returns it as text
+      std::string Format(const char* format, ...);
+
       /// replaces a string in a text with a replacement text
       void Replace(std::string& text, const std::string& textToFind, const std::string& replacementText);
 
