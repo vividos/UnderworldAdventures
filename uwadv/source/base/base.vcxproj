@@ -67,6 +67,7 @@
   <ItemGroup>
     <ClCompile Include="ArchiveFile.cpp" />
     <ClCompile Include="Base.cpp" />
+    <ClCompile Include="Color3ub.cpp" />
     <ClCompile Include="ConfigFile.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="FileSystem.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="..\version.hpp" />
     <ClInclude Include="ArchiveFile.hpp" />
     <ClInclude Include="Base.hpp" />
+    <ClInclude Include="Color3ub.hpp" />
     <ClInclude Include="ConfigFile.hpp" />
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="Exception.hpp" />

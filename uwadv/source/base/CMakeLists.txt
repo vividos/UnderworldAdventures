@@ -20,6 +20,7 @@ add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"ArchiveFile.cpp" "ArchiveFile.hpp"
 	"Base.cpp" "Base.hpp"
+	"Color3ub.cpp Color3ub.hpp"
 	"ConfigFile.cpp" "ConfigFile.hpp"
 	"Constants.hpp"
 	"Exception.hpp"
