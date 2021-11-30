@@ -21,24 +21,18 @@
 //
 #pragma once
 
-#include "Screen.hpp"
+#include "ImageScreen.hpp"
 
 /// level map view screen class
-class MapViewScreen : public Screen
+class MapViewScreen : public ImageScreen
 {
 public:
    /// ctor
-   MapViewScreen(IGame& gameInterface)
-      :Screen(gameInterface)
-   {
-   }
+   MapViewScreen(IGame& gameInterface);
    /// dtor
    virtual ~MapViewScreen() {}
 
    // virtual functions from Screen
-   virtual void Init();
-   //virtual void Destroy() override;
-   //virtual void ProcessEvent(SDL_Event& event) override;
-   //virtual void Draw() override;
-   virtual void Tick() override;
+   virtual void Init() override;
+   virtual bool ProcessEvent(SDL_Event& event) override;
 };

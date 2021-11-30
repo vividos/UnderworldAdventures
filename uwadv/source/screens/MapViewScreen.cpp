@@ -22,12 +22,45 @@
 #include "pch.hpp"
 #include "MapViewScreen.hpp"
 
-void MapViewScreen::Init()
+MapViewScreen::MapViewScreen(IGame& gameInterface)
+   :ImageScreen(gameInterface, 0, 0.5)
 {
-   Screen::Init();
 }
 
-void MapViewScreen::Tick()
+void MapViewScreen::Init()
 {
-   m_game.RemoveScreen();
+   ImageScreen::Init();
+}
+
+bool MapViewScreen::ProcessEvent(SDL_Event& event)
+{
+   switch (event.type)
+   {
+   case SDL_MOUSEBUTTONDOWN:
+      StartFadeout();
+      break;
+
+   case SDL_KEYDOWN:
+      // handle key presses
+      switch (event.key.keysym.sym)
+      {
+      case SDLK_SPACE:
+         StartFadeout();
+         break;
+
+      case SDLK_RETURN:
+      case SDLK_ESCAPE:
+         StartFadeout();
+         break;
+
+      default:
+         break;
+      }
+      break;
+
+   default:
+      break;
+   }
+
+   return true;
 }
