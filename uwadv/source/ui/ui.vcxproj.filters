@@ -47,6 +47,9 @@
     <ClCompile Include="ImageManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImageScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cutscene.hpp">
@@ -86,6 +89,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageScreen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
