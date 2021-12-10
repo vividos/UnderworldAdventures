@@ -369,9 +369,9 @@ void Inventory::FloatObject(Uint16 pos)
 {
    UaAssert(m_floatingObjectPos == c_inventorySlotNoItem); // must have no floating object yet
 
-   if (pos < slotPlayerObjectsStart)
+   if (pos < slotMax)
    {
-      // in topmost slot
+      // in topmost slot or on paperdoll
       m_floatingObjectPos = InsertItem(GetObjectInfo(pos));
       GetObjectInfo(pos).m_itemID = c_itemIDNone;
    }
