@@ -377,9 +377,20 @@ void Inventory::FloatObject(Uint16 pos)
    }
    else
    {
-      // in a container
+      // in a container, or a newly added object
       m_floatingObjectPos = pos;
-      RemoveFromContainer(pos, GetContainerPos());
+
+      // which container is currently open?
+      Uint16 containerPos = GetContainerPos();
+      if (containerPos == c_inventorySlotNoItem)
+      {
+         // topmost container; do nothing
+      }
+      else
+      {
+         // non-topmost container
+         RemoveFromContainer(pos, containerPos);
+      }
    }
 }
 
