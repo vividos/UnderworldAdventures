@@ -261,6 +261,9 @@ bool ConfigDlg::CheckConfig()
    {
       GetDlgItemText(IDC_EDIT_UW1_PATH, buffer);
 
+      if (buffer.Right(1) != _T("\\"))
+         buffer += _T("\\");
+
       std::string uw1path = CT2CA(buffer);
 
       Base::Settings settings;
@@ -334,6 +337,9 @@ void ConfigDlg::SaveConfig()
 {
    CString buffer;
    GetDlgItemText(IDC_EDIT_UW1_PATH, buffer);
+
+   if (buffer.Right(1) != _T("\\"))
+      buffer += _T("\\");
 
    std::string value = CT2CA(buffer);
    m_settings.SetValue(Base::settingUw1Path, value);
