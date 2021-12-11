@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.76, as of 2021-10-18
+Document version: 1.77, as of 2021-12-11
 
 
 Table of Contents
@@ -2338,14 +2338,15 @@ Table of Contents
    "objects.dat". The file contains several tables. Here is an overview:
 
    pos   size     desc                        entries   bytes per entry
-   0000  Int16    unknown, always 0x010f
+   0000  Int16    unknown, always bytes 0x01 0x0f (or 0x0f01 as word)
    0002  0x80     melee weapons table         16         8 bytes
    0082  0x30     ranged weapons table        16         3 bytes
    00b2  0x80     armour and wearables table  32         4 bytes
    0132  0x0c00   critters table              64        48 bytes
    0d32  0x30     containers table            16         3 bytes
    0d62  0x20     light source table          16         2 bytes
-   0d82  0x20     unknown, maybe jewelry info table
+   0d82  0x10     food nutrition table        16         1 byte
+   0d92  0x10     jewelry table               16         1 byte
    0da2  0x40     animation object table      16         4 bytes
    0de2           end
 
@@ -2354,9 +2355,11 @@ Table of Contents
    0000   Int8   damage modifier for Slash attack
    0001   Int8   damage modifier for Bash attack
    0002   Int8   damage modifier for Stab attack
-   0003   3*Int8 unknown TODO
+   0003   Int8   attack charge calculation: minimum charge?
+   0004   Int8   attack speed - how quickly an attack charge builds up
+   0005   Int8   attack charge calculation: maximum charge?
    0006   Int8   skill type (3: sword, 4: axe, 5: mace, 6: unarmed)
-   0007   Int8   durability
+   0007   Int8   durability (FF means undestroyable)
 
    * Ranged weapons table (0x0010-0x001f)
 
@@ -2368,32 +2371,61 @@ Table of Contents
 
    0000   Int8   protection
    0001   Int8   durability
-   0002   Int8   unknown TODO
-   0003   Int8   category:
-                 00: shield (or none? uwadv says: also: may not be worn on
-                 paperdoll)
+   0002   Int8   unknown, values 0, 4, 5, 6, 7
+   0003   Int8   category / paperdoll position:
+                 00: none/not on paperdoll (only used by shields)
                  01: body armour
                  03: leggings
                  04: gloves
                  05: boots
                  08: hat
                  09: ring
-                 15: unknown
 
    * Critters table  (0x0040-0x007f)
 
-   0000-3 4*Int8 armor: amount of damage subtracted from attacks; either one
+   0000   Int8   npc_level: level of the critter
+
+   0001-3 3*Int8 armor: amount of damage subtracted from attacks; either one
                  value and 3x FF is used, or 4 (often) different values are,
                  used, for body, ??, ?? and head
    0004   Int8   vitality
-   0005   Int8   npc_power
-   000f   Int8   poison score
-   0011   Int8   attack power
+   0005   Int8   npc_power; base damage calculation
+   0006   Int8   dexterity; attack score calculation
+   0007   Int8   intelligence; magic spell attacks?
+   0008   Int8   combination of remains after death and the type of blood
+                 splatters this critter produces:
+                 bits 0-3: blood splatter type;  0: dust, 8: red blood
+                 bits 4-7: remains type; 0: nothing, 2: rotworm corpse,
+                     4: rubble, 6: wood chips, 8: bones, 10: green blood pool,
+                     12: red blood pool, 14: red blood pool giant spider
+   0009   Int8   generic name; index into game strings block 8, value + 370
+   000a   Int8   passiveness; 0xff: will never attack
+   000b   Int8   magic related; extra/specific spells?
+   000c   Int8   movement speed; 0: immobile, 12: maximum, e.g. vampire bat
+   000f   Int8   poison damage; starting value for poison damage in the first
+                 minute, reduced by 1 for every following minute
+   0010   Int8   critter category:
+                 0x00: ethereal (like ghosts, wisps, and shadow beasts)
+                 0x01: humanoid (humanlike non-thinking forms like lizardmen,
+                       trolls, ghouls, and mages)
+                 0x02: flying (like bats and imps)
+                 0x03: swimming (like lurkers),
+                 0x04: creeping (like rats and spiders)
+                 0x05: crawling (like slugs, worms, reapers, and fire
+                       elementals)
+                 0x11: golem (only used for the earth golem)
+                 0x51: human (humanlike thinking forms like goblins,
+                       skeletons, mountainmen, fighters, outcasts, and stone
+                       and metal golems)
+   0011   Int8   attack power (equipment damage?)
    0012   Int8   defense power
    0013   Int8   weapon
    0014   Int8   damage
    001c   Int8   eyes: number of feet (really?)
-   0006-48 42*Int8 unknown TODO
+   0028   Int16  experience when killed
+   002f   In8t   unknown; always 0x65
+
+   Non-listed values in between the described ones are unknown.
 
    Parts of this table were found by comparing with this bestiary table:
    https://gamefaqs.gamespot.com/pc/564592-ultima-underworld-ii-labyrinth-of-worlds/faqs/74915
@@ -2402,17 +2434,23 @@ Table of Contents
    * Containers table (0x0080-0x008f)
 
    0000   Int8   capacity in 0.1 stones
-   0001   Int8   objects accepted; 0: runes, 1: arrows, 2: scrolls, 3: edibles,
-                 0xFF: any
-   0002   Int8   number of slots available?
-                 Only valid values are 2 and 0xFF (any?) (TODO)
+   0001   Int8   objects accepted; 0: runes, 1: arrows, 2: scrolls,
+                 3: edibles, 4: keys [uw2], 0xFF: any
+   0002   Int8   number of slots available
+                 2: only 2 items, 0xFF: any
 
    * Light source table (0x0090-0x009f)
 
-   0000   Int8   light brightness (max. is 4; 0 means unlit)
-   0001   Int8   duration (00: doesn't go out, e.g. taper of sacrifice)
+   0000   Int8   duration (0: doesn't go out, e.g. taper of sacrifice)
+   0001   Int8   light brightness (max. is 4; 0 means unlit)
 
-   * Jewelry info table (?) TODO
+   * Food nutrition table (0x00b0-0x00bf)
+
+   0000   Int8   nutrition value of food (alcoholic beverages +0xF0)
+
+   * Jewelry table (0x00a0-0x00af)
+
+   0000   Int8   jewelry value
 
    * Animation object table (0x01c0-0x01cf)
 
