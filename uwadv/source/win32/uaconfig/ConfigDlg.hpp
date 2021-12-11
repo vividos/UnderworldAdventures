@@ -109,7 +109,7 @@ private:
    void SaveConfig();
 
 private:
-   /// window m_caption
+   /// window caption
    std::string m_caption;
 
    /// settings filename

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@ CComModule _Module;
 
 /// main function
 int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
-   LPSTR /*lpCmdLine*/, int /*nCmdShow*/)
+   LPTSTR /*lpCmdLine*/, int /*nCmdShow*/)
 {
    HRESULT res = _Module.Init(NULL, hInstance);
-   ATLASSERT(SUCCEEDED(res)); res;
+   ATLVERIFY(SUCCEEDED(res));
 
    ConfigDlg cfg;
    cfg.RunDialog();

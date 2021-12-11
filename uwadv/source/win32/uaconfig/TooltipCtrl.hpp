@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,10 +21,18 @@
 //
 #pragma once
 
+#include <atlstr.h>
+
 /// tooltip control
 class TooltipCtrl
 {
 public:
+   /// ctor
+   TooltipCtrl()
+      :m_hwnd(nullptr)
+   {
+   }
+
    /// Adds tooltips for all controls
    void Init(HWND parent)
    {
@@ -33,7 +41,7 @@ public:
 
       HWND child = ::GetWindow(parent, GW_CHILD);
 
-      char tooltipText[256];
+      CString tooltipText;
 
       while (child != NULL)
       {
@@ -42,11 +50,10 @@ public:
          if (id != -1 && id != 0)
          {
             // try to load text from string table
-            tooltipText[0] = 0;
-            ::LoadString(NULL, id, tooltipText, 256);
+            tooltipText.LoadString(id);
 
             // when successful, add text as tooltip text
-            if (strlen(tooltipText) != 0)
+            if (!tooltipText.IsEmpty())
                AddTooltip(child, tooltipText);
          }
 
@@ -60,7 +67,7 @@ public:
    }
 
    /// adds tooltip for given control
-   void AddTooltip(HWND ctrl, char* text)
+   void AddTooltip(HWND ctrl, LPCTSTR text)
    {
       // set up toolinfo struct
       TOOLINFO toolinfo;
@@ -71,7 +78,7 @@ public:
       toolinfo.hwnd = ::GetParent(ctrl);
       toolinfo.uId = (UINT_PTR)ctrl;
       toolinfo.hinst = _Module.GetResourceInstance();
-      toolinfo.lpszText = text;
+      toolinfo.lpszText = const_cast<LPTSTR>(text);
 
       ::SendMessageA(m_hwnd, TTM_ADDTOOL, 0, (LPARAM)&toolinfo);
    }

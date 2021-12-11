@@ -25,6 +25,7 @@
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
 #include <string>
+#include <atlstr.h>
 #include <atlconv.h>
 #include <mmsystem.h> // for midiOutGet*
 #include <shlobj.h> // for SHBrowseForFolder
@@ -79,7 +80,7 @@ LRESULT ConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
    // add all available resolutions to screen resolution combo box
    {
       DWORD modeNum = 0;
-      DEVMODE devmode;
+      DEVMODE devmode = {};
       devmode.dmSize = sizeof(DEVMODE);
       devmode.dmDriverExtra = 0;
 
@@ -89,23 +90,29 @@ LRESULT ConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
          if (devmode.dmBitsPerPel < 16)
             continue;
 
-         _TCHAR buffer[32];
-         _sntprintf_s(buffer, sizeof(buffer), sizeof(buffer), _T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
+         CString buffer;
+         buffer.Format(buffer, sizeof(buffer), sizeof(buffer), _T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
 
          // check if we already have that one
-         if (CB_ERR == SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION,
-            CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)buffer))
+         if (CB_ERR == SendDlgItemMessage(
+            IDC_COMBO_SCREEN_RESOLUTION,
+            CB_FINDSTRINGEXACT,
+            (WPARAM)-1,
+            (LPARAM)buffer.GetString()))
          {
             // add it
-            SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION, CB_ADDSTRING,
-               0, (LPARAM)buffer);
+            SendDlgItemMessage(
+               IDC_COMBO_SCREEN_RESOLUTION,
+               CB_ADDSTRING,
+               0,
+               (LPARAM)buffer.GetString());
          }
       }
    }
 
    // add all midi devices to combo box
    {
-      MIDIOUTCAPS caps;
+      MIDIOUTCAPS caps = {};
       UINT max = midiOutGetNumDevs();
 
       for (signed int index = -1; index < (signed)max; index++)
@@ -134,42 +141,37 @@ static int CALLBACK WINAPI BrowseCallback(HWND hwnd, UINT uMsg, LPARAM /*lParam*
 
 LRESULT ConfigDlg::OnSetUw1Path(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-   _TCHAR buffer[MAX_PATH + 1];
-   {
-      buffer[0] = 0;
-      GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
+   CString buffer;
+   GetDlgItemText(IDC_EDIT_UW1_PATH, buffer);
 
-      // add slash when needed
-      size_t len = _tcslen(buffer);
-      if (len > 0 && buffer[len - 1] != _T('\\') && buffer[len - 1] != _T('/'))
-         _tcscat_s(buffer, _T("\\"));
-   }
+   if (buffer.Right(1) != _T("\\"))
+      buffer += _T("\\");
 
    // setup struct
-   BROWSEINFO browseInfo;
+   BROWSEINFO browseInfo = {};
    ZeroMemory(&browseInfo, sizeof(browseInfo));
    browseInfo.lpszTitle = _T("Please select the Ultima Underworld I folder:");
-   browseInfo.pszDisplayName = buffer;
+   browseInfo.pszDisplayName = const_cast<LPTSTR>(buffer.GetString());
    browseInfo.pidlRoot = NULL;
    browseInfo.lpfn = BrowseCallback;
-   browseInfo.lParam = (LPARAM)buffer;
+   browseInfo.lParam = (LPARAM)buffer.GetString();
    browseInfo.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 
    LPITEMIDLIST lpIL = ::SHBrowseForFolder(&browseInfo);
 
    if (lpIL != NULL)
-      ::SHGetPathFromIDList(lpIL, buffer);
+   {
+      ::SHGetPathFromIDList(lpIL, buffer.GetBuffer(MAX_PATH));
+      buffer.ReleaseBuffer();
+   }
 
-   std::string uw1path = CT2CA(buffer);
-   if (uw1path.empty())
+   if (buffer.IsEmpty())
       return 0;
 
-   char last = uw1path.at(uw1path.size() - 1);
+   if (buffer.Right(1) != _T("\\"))
+      buffer += _T("\\");
 
-   if (last != '\\' && last != '/')
-      uw1path.append("\\");
-
-   SetDlgItemText(IDC_EDIT_UW1_PATH, CA2CT(uw1path.c_str()));
+   SetDlgItemText(IDC_EDIT_UW1_PATH, buffer);
 
    CheckConfig();
 
@@ -224,7 +226,7 @@ void ConfigDlg::LoadConfig()
 
    text = m_settings.GetString(Base::settingScreenResolution);
 
-   int item = SendDlgItemMessageA(IDC_COMBO_SCREEN_RESOLUTION,
+   int item = SendDlgItemMessage(IDC_COMBO_SCREEN_RESOLUTION,
       CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)(LPCTSTR)(CA2CT(text.c_str())));
 
    if (item == CB_ERR)
@@ -253,11 +255,11 @@ void ConfigDlg::LoadConfig()
 
 bool ConfigDlg::CheckConfig()
 {
-   _TCHAR buffer[MAX_PATH];
+   CString buffer;
 
    // check uw1 path
    {
-      GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
+      GetDlgItemText(IDC_EDIT_UW1_PATH, buffer);
 
       std::string uw1path = CT2CA(buffer);
 
@@ -277,8 +279,8 @@ bool ConfigDlg::CheckConfig()
 
    // check screen resolution
    {
-      GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer, MAX_PATH);
-      std::string screen_res(T2CA(buffer));
+      GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer);
+      std::string screen_res = CT2CA(buffer);
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
@@ -299,7 +301,7 @@ bool ConfigDlg::CheckConfig()
          bool found = false;
          {
             DWORD modeNum = 0;
-            DEVMODE devmode;
+            DEVMODE devmode = {};
             devmode.dmSize = sizeof(DEVMODE);
             devmode.dmDriverExtra = 0;
 
@@ -330,28 +332,25 @@ bool ConfigDlg::CheckConfig()
 
 void ConfigDlg::SaveConfig()
 {
-   _TCHAR buffer[MAX_PATH];
+   CString buffer;
+   GetDlgItemText(IDC_EDIT_UW1_PATH, buffer);
 
-   std::string value;
-   int sel;
-
-   GetDlgItemText(IDC_EDIT_UW1_PATH, buffer, MAX_PATH);
-   value.assign(CT2CA(buffer));
+   std::string value = CT2CA(buffer);
    m_settings.SetValue(Base::settingUw1Path, value);
 
-   //GetDlgItemText(IDC_EDIT_UW2_PATH, buffer, MAX_PATH);
-   //value.assign(CT2CA(buffer));
+   //GetDlgItemText(IDC_EDIT_UW2_PATH, buffer);
+   //value = CT2CA(buffer);
    //m_settings.SetValue(Base::settingUw2Path, value);
 
-   sel = SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_GETCURSEL);
+   int sel = SendDlgItemMessage(IDC_COMBO_CUTS_NARRATION, CB_GETCURSEL);
    value = (sel == 0 ? "sound" : (sel == 1 ? "subtitles" : "both"));
    m_settings.SetValue(Base::settingCutsceneNarration, value);
 
    sel = SendDlgItemMessage(IDC_CHECK_ENABLE_FEATURES, BM_GETCHECK);
    m_settings.SetValue(Base::settingUwadvFeatures, bool(sel == BST_CHECKED));
 
-   GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer, MAX_PATH);
-   value.assign(CT2CA(buffer));
+   GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer);
+   value = CT2CA(buffer);
    m_settings.SetValue(Base::settingScreenResolution, value);
 
    sel = SendDlgItemMessage(IDC_CHECK_FULLSCREEN, BM_GETCHECK);
