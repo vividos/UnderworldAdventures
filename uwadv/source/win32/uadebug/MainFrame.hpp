@@ -91,6 +91,7 @@ private:
    // message map
    BEGIN_MSG_MAP(MainFrame)
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
+      MESSAGE_HANDLER(WM_TIMER, OnTimer)
       COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
       COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
       COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -147,6 +148,7 @@ private:
    END_UPDATE_UI_MAP()
 
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
    LRESULT OnFileExit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnFileOpen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

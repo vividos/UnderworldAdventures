@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,11 @@
 #include "LuaSourceWindow.hpp"
 #include "GameStringsView.hpp"
 
+/// filter for Lua source files
 LPCTSTR g_luaFileFilter = _T("Lua Source Files (*.lua)\0*.lua\0All Files (*.*)\0*.*\0\0");
+
+/// timer ID for timer to process server messages
+const UINT_PTR c_timerIdProcessServerMessage = 64;
 
 bool MainFrame::InitDebugClient(IDebugServer* debugServer)
 {
@@ -118,6 +122,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
    UpdateLayout();
 
+   SetTimer(c_timerIdProcessServerMessage, 100);
+
    return 0;
 }
 
@@ -180,9 +186,15 @@ BOOL MainFrame::OnIdle()
 {
    UIUpdateToolBar();
 
-   ProcessServerMessages();
-
    return FALSE;
+}
+
+LRESULT MainFrame::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+   if (wParam == c_timerIdProcessServerMessage)
+      ProcessServerMessages();
+
+   return 0;
 }
 
 void MainFrame::ProcessServerMessages()
