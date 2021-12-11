@@ -91,7 +91,7 @@ namespace UnitTest
       {
          // set up
          TempFolder testFolder;
-         std::string path = testFolder.GetPathName();
+         std::string path = testFolder.GetPathName() + "/";
 
          Base::File testFile{ path + "testfile.bin", Base::modeWrite };
          Assert::IsTrue(true == testFile.IsOpen());
@@ -104,12 +104,14 @@ namespace UnitTest
 
          try
          {
-            Base::FileSystem::FindFiles(path + "/*.bin", fileList, false);
+            Base::FileSystem::FindFiles(path + "*.bin", fileList, false);
          }
          catch (const Base::FileSystemException& ex)
          {
-            ex;
-            Assert::Fail();
+            std::wstring message{ L"exception: " };
+            std::string text = ex.what();
+            message += std::wstring(text.begin(), text.end());
+            Assert::Fail(message.c_str());
          }
 
          // test list with files
