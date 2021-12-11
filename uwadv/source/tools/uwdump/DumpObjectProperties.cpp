@@ -123,8 +123,9 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       printf("slash=%02x ", data[0]);
       printf("bash=%02x ", data[1]);
       printf("stab=%02x ", data[2]);
-
-      printf("unknown=%02x %02x %02x ", data[3], data[4], data[5]);
+      printf("min_charge=%02x ", data[3]);
+      printf("attack_speed=%02x ", data[4]);
+      printf("max_charge=%02x ", data[5]);
 
       const char* skill;
       switch (data[6])
@@ -173,7 +174,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       const char* category;
       switch (data[3])
       {
-      case 0: category = "shield/none?"; break;
+      case 0: category = "none"; break;
       case 1: category = "body armour"; break;
       case 3: category = "leggings"; break;
       case 4: category = "gloves"; break;
@@ -196,6 +197,70 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       printf("item_id=%04x ", index + 0x0040);
 
       printf("npc_level=%02x ", data[0]);
+      printf("armor=%02x %02x %02x ", data[1], data[2], data[3]);
+      printf("vitality=%02x ", data[4]);
+      printf("npc_power=%02x ", data[5]);
+      printf("dex=%02x ", data[6]);
+      printf("int=%02x ", data[7]);
+
+      const char* blood;
+      switch (data[8] & 0x0F)
+      {
+      case 0: blood = "dust"; break;
+      case 8: blood = "red blood"; break;
+      default: blood = "unknown"; break;
+      }
+
+      const char* remains;
+      switch ((data[8] & 0xF0) >> 4)
+      {
+      case 0: remains = "nothing"; break;
+      case 2: remains = "rotworm"; break;
+      case 4: remains = "rubble"; break;
+      case 6: remains = "woodchips"; break;
+      case 8: remains = "bones"; break;
+      case 10: remains = "green blood"; break;
+      case 12: remains = "red blood"; break;
+      case 14: remains = "g. spider"; break;
+      default: remains = "unknown"; break;
+      }
+      printf("blood-and-remains=(%02x) %- 9s/%- 11s ",
+         data[8], blood, remains);
+
+      printf("unk9_e=%02x %02x %02x %02x %02x %02x ",
+         data[9], data[0xa], data[0xb], data[0xc], data[0xd], data[0xe]);
+
+      printf("poison-damage=%02x ", data[0x0f]);
+
+      const char* category;
+      switch (data[0x10])
+      {
+      case 0: category = "ethereal"; break;
+      case 1: category = "humanoid"; break;
+      case 2: category = "flying"; break;
+      case 3: category = "swimming"; break;
+      case 4: category = "creeping"; break;
+      case 5: category = "crawling"; break;
+      case 0x11: category = "golem"; break;
+      case 0x51: category = "human"; break;
+      default: category = "unknown"; break;
+      }
+      printf("category=(%02x) %- 8s ", data[0x10], category);
+
+      printf("attack-power=%02x ", data[0x11]);
+      printf("defense-power=%02x ", data[0x12]);
+      printf("weapon=%02x ", data[0x13]);
+      printf("damage=%02x ", data[0x14]);
+
+      printf("unk_15_1b=%02x %02x %02x %02x %02x %02x %02x ",
+         data[0x15], data[0x16], data[0x17], data[0x18], data[0x19], data[0x1a], data[0x1b]);
+
+      printf("eyes=%02x ", data[0x1C]);
+
+      printf("unk_1e_2f=%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x ",
+         data[0x1e], data[0x1f],
+         data[0x20], data[0x21], data[0x22], data[0x23], data[0x24], data[0x25], data[0x26], data[0x27],
+         data[0x28], data[0x29], data[0x2a], data[0x2b], data[0x2c], data[0x2d], data[0x2e], data[0x2f]);
 
       printf("name=%s\n", gameStrings.GetString(4, index + 0x0040).c_str());
    }
@@ -233,13 +298,35 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
    {
       printf("item_id=%04x ", index + 0x0090);
 
-      Uint8 brightness = file.Read8();
       Uint8 duration = file.Read8();
+      Uint8 brightness = file.Read8();
 
-      printf("brightness=%02x ", brightness);
       printf("duration=%02x ", duration);
+      printf("brightness=%02x ", brightness);
 
       printf("name=%s\n", gameStrings.GetString(4, index + 0x0090).c_str());
+   }
+
+   printf("\nfood nutrition\n");
+   for (size_t index = 0; index < 16; index++)
+   {
+      printf("item_id=%04x ", index + 0x00b0);
+
+      Uint8 nutrition = file.Read8();
+      printf("nutrition=%02x ", nutrition);
+
+      printf("name=%s\n", gameStrings.GetString(4, index + 0x00b0).c_str());
+   }
+
+   printf("\njewelry\n");
+   for (size_t index = 0; index < 16; index++)
+   {
+      printf("item_id=%04x ", index + 0x00a0);
+
+      Uint8 value = file.Read8();
+      printf("value=%02x ", value);
+
+      printf("name=%s\n", gameStrings.GetString(4, index + 0x00a0).c_str());
    }
 
    printf("\nanimation objects\n");
