@@ -295,7 +295,10 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
    if (containerPos == GetContainerPos())
    {
       // refresh slot list
-      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem
+         ? c_inventorySlotNoItem
+         : GetObjectInfo(containerPos).m_quantity;
+
       BuildSlotList(pos1stObj);
    }
 
@@ -359,7 +362,10 @@ void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
    if (containerPos == GetContainerPos())
    {
       // refresh slot list
-      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem
+         ? c_inventorySlotNoItem
+         : GetObjectInfo(containerPos).m_quantity;
+
       BuildSlotList(pos1stObj);
    }
 }
@@ -494,7 +500,10 @@ bool Inventory::DropOnObject(Uint16 containerPos, Uint16 pos)
       Free(m_floatingObjectPos);
       m_floatingObjectPos = c_inventorySlotNoItem;
 
-      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+      Uint16 pos1stObj = containerPos == c_inventorySlotNoItem
+         ? c_inventorySlotNoItem
+         : GetObjectInfo(containerPos).m_quantity;
+
       BuildSlotList(pos1stObj);
       return true;
    }
@@ -682,7 +691,10 @@ bool Inventory::TryCombineItems(Uint16 pos1, Uint16 pos2)
       break;
    }
 
-   Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+   Uint16 pos1stObj = containerPos == c_inventorySlotNoItem
+      ? c_inventorySlotNoItem
+      : GetObjectInfo(containerPos).m_quantity;
+
    BuildSlotList(pos1stObj);
 
    return true;
@@ -717,10 +729,13 @@ void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
          {
             if (GetObjectInfo(link).m_link == pos)
             {
+               ObjectInfo& dropTargetObj = GetObjectInfo(link);
+               ObjectInfo& floatingObj = GetObjectInfo(m_floatingObjectPos);
+
                // chain previous object to the floating object
-               Uint16 nextLink = GetObjectInfo(link).m_link;
-               GetObjectInfo(link).m_link = GetObjectInfo(m_floatingObjectPos).m_link;
-               GetObjectInfo(m_floatingObjectPos).m_link = nextLink;
+               Uint16 nextLink = dropTargetObj.m_link;
+               dropTargetObj.m_link = floatingObj.m_link;
+               floatingObj.m_link = nextLink;
 
                UaTrace("swapping with item in chain, in pos %04x\n", link);
                break;
@@ -734,7 +749,10 @@ void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
       GetObjectInfo(m_floatingObjectPos).m_link = 0;
    }
 
-   Uint16 pos1stObj = containerPos == c_inventorySlotNoItem ? c_inventorySlotNoItem : GetObjectInfo(containerPos).m_quantity;
+   Uint16 pos1stObj = containerPos == c_inventorySlotNoItem
+      ? c_inventorySlotNoItem
+      : GetObjectInfo(containerPos).m_quantity;
+
    BuildSlotList(pos1stObj);
 }
 
