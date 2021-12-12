@@ -159,6 +159,9 @@ private:
    /// adds message to client message queue
    void AddMessage(DebugServerMessage& msg);
 
+   /// removes messages with matching message type and arg1 from message queue
+   void RemoveMessages(DebugServerMessageType messageType, unsigned int messageArg1);
+
    virtual ICodeDebugger* GetCodeDebugger(unsigned int debuggerId) override;
 
 private:

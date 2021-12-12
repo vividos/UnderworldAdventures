@@ -1124,6 +1124,9 @@ int LowLevelMidiDriver::protectChannel(uint16 sequence_id, int chan, bool protec
 
 int LowLevelMidiDriver::lockChannel(uint16 sequence_id, int chan, bool lock)
 {
+   if (chan < 0 || chan > 16)
+      return 0;
+
 	// When locking, we want to get the highest chan number with the lowest
 	// number of notes playing, that aren't already locked and don't have
 	// protection

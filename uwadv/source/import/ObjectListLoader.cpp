@@ -153,7 +153,9 @@ Underworld::ObjectPtr ObjectListLoader::AddObject(Uint16 pos, Uint8 tilePosX, Ui
 void ObjectListLoader::AddNpcInfos(Underworld::ObjectPtr& obj, Uint8* npcInfos)
 {
    UaAssert(obj->IsNpcObject() == true);
-   UaAssert(npcInfos != NULL);
+   UaAssert(npcInfos != nullptr);
+   if (npcInfos == nullptr)
+      return;
 
    Underworld::NpcObject& npc = obj->GetNpcObject();
    Underworld::NpcInfo& npcInfo = npc.GetNpcInfo();

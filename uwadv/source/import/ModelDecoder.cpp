@@ -283,7 +283,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
          long here = file.Tell();
          long offset = here - ((-unk1) & 0xffff);
-         UaModelTrace(" reloffset=%04x, submodel at 0x%08x\n", unk1, offset);
+         UaModelTrace(" reloffset=%04x, submodel at 0x%08x\n", unk1, (Uint32)offset);
 
          // parse submodel nodes
          file.Seek(offset, Base::seekBegin);

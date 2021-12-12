@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -127,14 +127,16 @@ namespace Underworld
       void SetAttribute(PlayerAttribute attr, Uint16 value)
       {
          UaAssert(attr < attrMax);
-         m_attributes[attr] = value;
+         if (attr < attrMax)
+            m_attributes[attr] = value;
       }
 
       /// Sets player skill value
       void SetSkill(PlayerSkill skill, Uint16 value)
       {
          UaAssert(skill < skillMax);
-         m_skills[skill] = value;
+         if (skill < skillMax)
+            m_skills[skill] = value;
       }
 
       /// Sets player name
@@ -165,14 +167,14 @@ namespace Underworld
       Uint16 GetAttribute(PlayerAttribute attr) const
       {
          UaAssert(attr < attrMax);
-         return m_attributes[attr];
+         return attr < attrMax ? m_attributes[attr] : 0;
       }
 
       /// Returns player skill value
       Uint16 GetSkill(PlayerSkill skill) const
       {
          UaAssert(skill < skillMax);
-         return m_skills[skill];
+         return skill < skillMax ? m_skills[skill] : 0;
       }
 
       /// Returns inventory

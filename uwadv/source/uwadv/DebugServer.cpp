@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -250,17 +250,7 @@ void DebugServer::EndCodeDebugger(ICodeDebugger* codeDebugger)
    UaTrace("debug: ending code debugger, id=%u\n", debuggerId);
 
    // remove all "start code debugger" messages from the same code debugger
-   unsigned int max = static_cast<unsigned int>(m_messageQueue.size());
-   for (unsigned int n = 0; n < max; n++)
-   {
-      DebugServerMessage& queue_msg = m_messageQueue[n];
-      if (queue_msg.messageType == debugMessageStartCodeDebugger && queue_msg.messageArg1 == debuggerId)
-      {
-         m_messageQueue.erase(m_messageQueue.begin() + n);
-         --n;
-         --max;
-      }
-   }
+   RemoveMessages(debugMessageStartCodeDebugger, debuggerId);
 
    // send "end" message
    DebugServerMessage msg;
@@ -281,17 +271,7 @@ void DebugServer::SendCodeDebuggerStatusUpdate(unsigned int debuggerId)
    Lock(true);
 
    // remove all previous "status update" messages from the same code debugger
-   unsigned int max = static_cast<unsigned int>(m_messageQueue.size());
-   for (unsigned int n = 0; n < max; n++)
-   {
-      DebugServerMessage& queue_msg = m_messageQueue[n];
-      if (queue_msg.messageType == msg.messageType && queue_msg.messageArg1 == msg.messageArg1)
-      {
-         m_messageQueue.erase(m_messageQueue.begin() + n);
-         --n;
-         --max;
-      }
-   }
+   RemoveMessages(msg.messageType, msg.messageArg1);
 
    AddMessage(msg);
    Lock(false);
@@ -805,4 +785,21 @@ ICodeDebugger* DebugServer::GetCodeDebugger(unsigned int debuggerId)
 void DebugServer::AddMessage(DebugServerMessage& msg)
 {
    m_messageQueue.push_back(msg);
+}
+
+void DebugServer::RemoveMessages(DebugServerMessageType messageType, unsigned int messageArg1)
+{
+   size_t max = m_messageQueue.size();
+
+   // NOSONAR
+   for (size_t index = 0; index < max; index++)
+   {
+      DebugServerMessage& queue_msg = m_messageQueue[index];
+      if (queue_msg.messageType == messageType && queue_msg.messageArg1 == messageArg1)
+      {
+         m_messageQueue.erase(m_messageQueue.begin() + index);
+         --index;
+         --max;
+      }
+   }
 }

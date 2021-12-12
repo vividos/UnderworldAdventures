@@ -458,7 +458,7 @@ Uint16 ConversationDebugger::BablMenu(const std::vector<Uint16>& answerStringIds
    for (size_t answerIndex = 0; answerIndex < answerStringIds.size(); answerIndex++)
    {
       printf("%i. %s\n",
-         ++answerIndex,
+         answerIndex + 1,
          m_gameStrings.GetString(GetStringBlock(), answerStringIds[answerIndex]).c_str());
    }
 

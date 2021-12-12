@@ -1139,6 +1139,10 @@ int yyFlexLexer::yy_get_next_buffer()
 		ret_val = EOB_ACT_CONTINUE_SCAN;
 
 	yy_n_chars += number_to_move;
+
+	if (yy_current_buffer->yy_buf_size < (yy_size_t)yy_n_chars + 1)
+		return ret_val;
+
 	yy_current_buffer->yy_ch_buf[yy_n_chars] = YY_END_OF_BUFFER_CHAR;
 	yy_current_buffer->yy_ch_buf[yy_n_chars + 1] = YY_END_OF_BUFFER_CHAR;
 
