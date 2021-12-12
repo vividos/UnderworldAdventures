@@ -1,12 +1,12 @@
 /*
 Filename: AtlScintilla.h
-Version: 2.2
+Version: 2.3
 Description: Defines an easy wrapper for the Scintilla control, to be used with ATL/WTL projects.
-Date: 13/01/2020
+Date: 12/12/2021
 
 Copyright (c) 2005/2006 by Gilad Novik.
 Copyright (c) 2006 by Reece Dunn.
-Copyright (c) 2019/2020 by Michael Fink.
+Copyright (c) 2019-2021 by Michael Fink.
 
 License Agreement (zlib license)
 -------------------------
@@ -47,6 +47,8 @@ History (Date/Author/Description):
 2020/01/13: vividos
 - Updated CScintillaEditCommands methods (CanCut, CanClear, etc.) to also
   check read-only status using IsReadOnly().
+2020/01/13: vividos
+- Updated code to work with Scintilla/Lexilla 5.x.
 */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -59,8 +61,9 @@ History (Date/Author/Description):
 #pragma once
 #include <vector>
 #include <string_view>
-#include <Platform.h>
 #include <Scintilla.h>
+#include <ILexer.h>
+#include <Lexilla.h>
 #include <atlfile.h>
 #include <atlfind.h>
 
@@ -2899,10 +2902,25 @@ public:
 		return ::SendMessage(m_hWnd, SCI_GETLEXER, 0, 0L);
 	}
 
-	void SetLexer(int lexer)
+	DEPRECATE_DEFINITION
+	void SetLexer(int lexerID)
+	{
+		const char* lexerName = LexerNameFromID(lexerID);
+		ILexer5* lexer = CreateLexer(lexerName);
+
+		SetILexer(lexer);
+	}
+
+	void SetLexerByName(const char* lexerName)
+	{
+		ILexer5* lexer = CreateLexer(lexerName);
+		SetILexer(lexer);
+	}
+
+	void SetILexer(ILexer5* lexer)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_SETLEXER, lexer, 0L);
+		::SendMessage(m_hWnd, SCI_SETILEXER, (LPARAM)lexer, 0L);
 	}
 
 	void SetLexerLanguage(const char* language)

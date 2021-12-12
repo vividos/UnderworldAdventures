@@ -53,7 +53,7 @@ void LuaScriptEditorView::SetupSourceEditor()
    StyleSetBold(5, true);
    StyleSetBold(10, true);
 
-   SetLexer(SCLEX_LUA);
+   SetLexerByName("lua");
 
    // set Lua keywords and add uwadv specific keywords
    SetKeyWords(0,
