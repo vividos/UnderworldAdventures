@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(SDL_pnglite)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../SDL2-2.0.14)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../SDL2-2.0.18)
 find_package(SDL2 REQUIRED)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../zlib1211)
