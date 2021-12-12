@@ -79,7 +79,7 @@ bool WriteMinidump(LPCTSTR minidumpFilename, _EXCEPTION_POINTERS* exceptionInfo)
    if (INVALID_HANDLE_VALUE == fileHandle)
       return false;
 
-   std::shared_ptr<void> file(fileHandle, &::CloseHandle);
+   std::shared_ptr<void> file{ fileHandle, &::CloseHandle };
 
    // write minidump
    MINIDUMP_EXCEPTION_INFORMATION minidumpExceptionInfo = { 0 };
