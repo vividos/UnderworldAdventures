@@ -127,12 +127,12 @@ There are some Git GUIs for Windows; I recommend:
 
 Some guidelines:
 
-- Development happens on the `master` branch.
-- All pull requests (PRs) should be based on `master` as well.
+- Development happens on the `main` branch.
+- All pull requests (PRs) should be based on `main` as well.
 - Tag names for versions are in the format `x.x-codename`, e.g.
   `0.9-mojito`.
 - Please set Unix-to-DOS line ending option `core.autolf` to `true`.
-- You can use branches in PRs, but rebase them on master before requesting the
+- You can use branches in PRs, but rebase them on `main` before requesting the
   PR.
 
 ### 3.2.2 GitHub issues & pull requests
