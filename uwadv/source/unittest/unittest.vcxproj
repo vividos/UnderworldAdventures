@@ -66,6 +66,7 @@
     <ClCompile Include="ConvCodeGraphTest.cpp" />
     <ClCompile Include="FileSystemTest.cpp" />
     <ClCompile Include="FileTest.cpp" />
+    <ClCompile Include="ImageManagerTest.cpp" />
     <ClCompile Include="ImportTest.cpp" />
     <ClCompile Include="KeymapTest.cpp" />
     <ClCompile Include="LuaStateTest.cpp" />
