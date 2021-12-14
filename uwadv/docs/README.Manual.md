@@ -80,6 +80,8 @@ that the popular 7-zip can also open and extract the file without problems:
 
     "C:\Program Files\7-Zip\7z.exe" x game.gog -ouw1and2
 
+The actual games are in the "UW" and "UW2" subfolders.
+
 ### 2.5 uw_demo download
 
 There is also a demo version of Ultima Underworld 1 available for free on some
@@ -99,8 +101,8 @@ graphics can be used to run Underworld Adventures. Also, modern CPUs are not
 fully used to run the game.
 
 Back in 2004, when the project was started, at least a 600 MHz CPU was needed,
-along with a decent 3D-Graphics card with current OpenGL drivers, e.g. an
-Nvidia GeForce. For sound output a dedicated sound card was often useful.
+along with a decent 3D graphics card with current OpenGL drivers, e.g. an
+Nvidia GeForce card. For sound output a dedicated sound card was often useful.
 
 ## 3. Configuring Underworld Adventures
 
@@ -109,15 +111,34 @@ to run the old Ultima Underworld games.
 
 ### 3.1 Tool "uaconfig"
 
-TODO
+Underworld Adventures is configured using the `uwadv.cfg` file. On Windows,
+there is the `uaconfig` tool that helps you configuring that file. The tool
+shows a dialog with several fields to edit.
 
 ### 3.2 Configuration file
 
-TODO
+You can also configure Underworld Adventures directly, using the `uwadv.cfg`
+file. Just open the file using your favourite text editor. It contains
+instructions on top on how to edit the file. Be sure to keep a copy of the
+original `uwadv.cfg` file, in case you made a mistake editing the file.
 
 ### 3.3 Command line options
 
-TODO
+The `uwadv` program has some command line options that can be specified. The
+syntax of the command line is:
+
+    uwadv {options} [savegame-filename]
+
+An optional save game filename can be specified to directly load a savegame
+from a file with `.uas` file extension. The savegame must match the base game.
+uw_demo savegames won't work correctly with uw1 savegames and vice versa.
+
+The following options may be specified:
+
+    -h -? -H  --help           Shows help
+    -g <game> --game <game>    Starts custom game
+
+Note that custom games are currently not implemented.
 
 ### 3.4 Operating system specific installation
 
@@ -143,7 +164,24 @@ differences, which are explained in more detail later.
 
 ### Keyboard mapping configuration
 
-TODO
+Underworld Adventures has a flexible keyboard key mapping configuration that
+can be used to remap keys to differnt actions. The key mapping is specified in
+a `keymap.cfg` file. The `uwadv.cfg` file specifies the default keymap to be
+used:
+
+    custom-keymap %uahome%/keymap.cfg
+
+The keymap.cfg is found in the `data/uadata00.zip` file that comes with the
+binary distribution of Underworld Adventures. In order to customize keys, open
+the zip archive, go to the `uw1` subfolder and extract the keymap.cfg into the
+main folder. You can then adjust the `custom-keymap` setting in `uwadv.cfg` to
+point to the new file, e.g.
+
+    custom-keymap ./keymap.cfg
+
+Open the file with your favourite text editor. It contains instructions on top
+on how to edit the file. You can always get the original keymap file from the
+zip archive, in case you made a mistake editing the file.
 
 ### Saving and loading games
 
