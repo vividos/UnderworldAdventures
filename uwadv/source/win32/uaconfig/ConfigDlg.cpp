@@ -91,7 +91,7 @@ LRESULT ConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
             continue;
 
          CString buffer;
-         buffer.Format(buffer, sizeof(buffer), sizeof(buffer), _T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
+         buffer.Format(_T("%u x %u"), devmode.dmPelsWidth, devmode.dmPelsHeight);
 
          // check if we already have that one
          if (CB_ERR == SendDlgItemMessage(
