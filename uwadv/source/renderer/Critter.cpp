@@ -121,7 +121,7 @@ void CritterFramesManager::Prepare(Underworld::ObjectList* mapObjects)
          m_allCritters[index].ResetPrepare();
    }
 
-   // go through master object list and check which object frames have to be managed
+   // go through object list and check which object frames have to be managed
    Uint16 max = m_mapObjects->GetObjectListSize();
 
    for (Uint16 i = 1; i < max; i++)

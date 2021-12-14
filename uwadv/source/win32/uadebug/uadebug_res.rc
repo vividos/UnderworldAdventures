@@ -134,7 +134,7 @@ BEGIN
     BEGIN
         MENUITEM "P&roject Info",               ID_VIEW_PROJECT
         MENUITEM "&Player Info",                ID_VIEW_PLAYERINFO
-        MENUITEM "Master &Object List",         ID_VIEW_OBJECTLIST
+        MENUITEM "&Object List",                ID_VIEW_OBJECTLIST
         MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
         MENUITEM "Tile&map View",               ID_VIEW_TILEMAP
         MENUITEM "&Game Strings",               ID_VIEW_GAMESTRINGS

@@ -108,7 +108,7 @@ protected:
 
    // conversation stuff
 
-   /// position in master object list of npc object
+   /// position in object list of npc object
    Uint16 m_convObjectPos;
 
    /// screen state

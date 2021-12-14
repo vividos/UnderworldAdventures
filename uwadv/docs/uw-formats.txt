@@ -36,7 +36,7 @@ Table of Contents
    4      Level maps and object lists
    4.1    File format
    4.2    Level tilemap
-   4.2    Master object list
+   4.2    Object list
    4.2.1  Enchantments
    4.2.2  Item Owner
    4.2.3  Mobile object extra info
@@ -392,7 +392,7 @@ Table of Contents
    dterrain.dat   terrain texture properties for the demo
    dw??.tr        wall textures
    level13.anx    object animation overlay info
-   level13.st     tilemap and master object list for first level
+   level13.st     tilemap and object list for first level
    level13.txm    level texture usage for first level
    newobj.dat
    presd.byt      "... presents a demo of ..." screen for the demo
@@ -1331,7 +1331,7 @@ Table of Contents
    Ultima Underworld 1 has 135 (0x0087) entries (9 levels x 15 blocks). The
    block layout is as following:
 
-   <9 blocks level tilemap/master object list>
+   <9 blocks level tilemap/object list>
    <9 blocks object animation overlay info>
    <9 blocks texture mapping>
    <9 blocks automap infos>
@@ -1342,7 +1342,7 @@ Table of Contents
    The Ultima Underworld Demo uses three separate files to store the map.
    Here's a list of the files and what blocks they contain:
 
-   level13.st    level tilemap/master object list block
+   level13.st    level tilemap/object list block
    level13.txm   texture mapping
    level13.anx   object animation overlay info
 
@@ -1357,7 +1357,7 @@ Table of Contents
    [uw2] Data blocks for Ultima Underworld 2 are compressed using the uw2
    compression scheme described in chapter 9.1.
 
-   The "level tilemap/master object list" for each level contains infos about
+   The "level tilemap/object list" for each level contains infos about
    the level architecture (tilemap) and the objects which live in it:
 
    offset  size   description
@@ -1378,10 +1378,10 @@ Table of Contents
    Each underworld level consists of a 64x64 tile map (just like on a chess
    board). A tile can be of different types and can have various floor
    heights. The ceiling height is fixed. A tile can have an index
-   into the master object list that is the start of an object chain with
+   into the object list that is the start of an object chain with
    objects in this tile.
 
-   The first 0x4000 bytes of each "level tilemap/master object list" contain
+   The first 0x4000 bytes of each "level tilemap/object list" contain
    the tilemap info bytes. For each tile there are two Int16 that describe a
    tile's properties. The map's origin is at the lower left tile, going to the
    right, each line in turn.
@@ -1403,7 +1403,7 @@ Table of Contents
 
       bits     len  description
        0- 5    6    wall texture index (into texture mapping)
-       6-15    10   first object in tile (index into master object list)
+       6-15    10   first object in tile (index into object list)
 
    about word 0000, bit 8:
       For UW2 Bit 8 is set pretty often, and if set the light level changes.
@@ -1428,9 +1428,9 @@ Table of Contents
     09      Sloping up to the west
 
 
-4.2  Master object list
+4.2  Object list
 
-   The master object list is stored after the tilemap data. There are 1024
+   The object list is stored after the tilemap data. There are 1024
    (0x0400) list positions. The first 256 are reserved for "mobile objects"
    that have extra NPC info. The rest of the list is used for "static
    objects". The list entries are allocated from the end to the beginning of
@@ -1581,13 +1581,13 @@ Table of Contents
 
 4.3  Free lists
 
-   The free lists generally contain infos about the master object list usage
+   The free lists generally contain infos about the object list usage
    and are used for object slot allocation/deallocation.
 
    Free list, mobile objects
    -------------------------
    This consists of an Int16 for each mobile object (critter) slot which is
-   not in use, giving the slot position in the master object list. Note that
+   not in use, giving the slot position in the object list. Note that
    there are only 254 entries in this table because object 0 is always the
    null object (and hence is never allocated) and object 1 is always the
    avatar (and can never be free - that's probably a metaphor for life, or
@@ -1640,7 +1640,7 @@ Table of Contents
    0004   Int8    tile x coordinate
    0005   Int8    tile y coordinate
 
-   link1's most significant 10 bits contain a link into the master object
+   link1's most significant 10 bits contain a link into the object
    list, to the object that should get an animation overlay.
 
 
@@ -2503,7 +2503,7 @@ Table of Contents
    * Local Variables store infos during conversation. They are lost when
      conversation ends.
 
-   * NPC infos are stored along with the NPC's data in the Master Object List
+   * NPC infos are stored along with the NPC's data in the Object List
      and contain infos like npc_gtarg or npc_goal. See chapter 7.x for more.
 
    * Game globals are variables that are global to the game, e.g. game time,
@@ -3120,7 +3120,7 @@ Table of Contents
    parameters:   arg1: 0: npc inventory; 1: player inventory
                  arg2: item id
    description:  searches item in npc or player inventory
-   return value: position in master object list, or 0 if not found
+   return value: position in object list, or 0 if not found
    -------------------------------------------------------------------------
 
    id=0031 name="find_barter" ret_type=int

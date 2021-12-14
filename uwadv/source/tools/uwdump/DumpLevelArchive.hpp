@@ -71,7 +71,7 @@ private:
    /// link chain index from tilemap, 64*64 bytes long
    std::vector<Uint16> tilemap_links;
 
-   /// set with free master object list positions
+   /// set with free object list positions
    std::set<Uint16> freelist;
 
    /// common object info bytes, 0x400*8 bytes long

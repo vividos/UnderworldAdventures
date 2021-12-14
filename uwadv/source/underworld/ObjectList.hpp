@@ -100,7 +100,7 @@ namespace Underworld
       void SetListStart(Uint16 objectPos, Uint8 xpos, Uint8 ypos);
 
    private:
-      /// master object list
+      /// object list
       std::vector<ObjectPtr> m_objectList;
 
       /// object list start positions for all tiles in tilemap

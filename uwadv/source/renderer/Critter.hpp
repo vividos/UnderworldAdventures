@@ -145,7 +145,7 @@ protected:
    /// vector with critter animations
    std::vector<Critter> m_allCritters;
 
-   /// manages objects indices into master object list which objects to control
+   /// manages objects indices into object list which objects to control
    std::vector<Uint16> m_objectIndices;
 
    /// frame count for objects

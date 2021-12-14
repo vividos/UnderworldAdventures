@@ -133,7 +133,7 @@ void Import::LevelImporter::LoadObjectList(Underworld::ObjectList& objectList,
    objectList.Destroy();
    objectList.Create();
 
-   // read in master object list
+   // read in object list
    std::vector<Uint16> objectWordsList;
    objectWordsList.reserve(0x0400 * 4);
 

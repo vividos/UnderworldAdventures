@@ -51,7 +51,7 @@ public:
    /// called to init new game
    virtual void InitNewGame() = 0;
 
-   /// evaluates a critter in master object list
+   /// evaluates a critter in object list
    virtual void EvalCritter(Uint16 pos) = 0;
 
    /// executes a trigger action
