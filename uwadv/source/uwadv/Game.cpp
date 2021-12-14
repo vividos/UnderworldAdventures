@@ -195,9 +195,11 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
       case argumentHelp:
          printf(
             "Underworld Adventures command line options\n"
-            " available options:\n"
-            "  -h -? -H  --help           shows help\n"
-            "  -g <game> --game <game>    starts custom game\n"
+            " Syntax:\n"
+            "   uwadv {options} [savegame-filename] {options}\n"
+            " Available options:\n"
+            "  -h -? -H  --help           Shows help\n"
+            "  -g <game> --game <game>    Starts custom game\n"
          );
          return;
          break;
