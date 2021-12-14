@@ -1094,6 +1094,9 @@ int XMidiFile::CreateMT32SystemMessage(const int time, uint32 address_base, uint
 	unsigned char *sysex_buffer = current->ex.sysex_data.buffer =
 			XMidiEvent__Malloc<unsigned char>(current->ex.sysex_data.len);
 
+	if (!sysex_buffer)
+		return 0;
+
 	// MT32 Sysex Header
 	sysex_buffer[0] = 0x41;		// Roland SysEx ID
 	sysex_buffer[1] = 0x10;		// Device ID (assume 0x10, Device 17)
@@ -1112,6 +1115,7 @@ int XMidiFile::CreateMT32SystemMessage(const int time, uint32 address_base, uint
 	// Only copy if required
 	if (data) std::memcpy (sysex_buffer+sysex_data_start, data, len);
 	else if (source) source->read(sysex_buffer+sysex_data_start,len);
+	else len = 0;
 
 	// Calc checksum
 	char checksum = 0;
@@ -1806,6 +1810,9 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 
 void XMidiFile::InsertDisplayEvents()
 {
+	if (!events)
+		return;
+
 	// Change the display
 	current = list = events[0]->events;
 	while (current->next) current = current->next;

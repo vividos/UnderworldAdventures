@@ -136,7 +136,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       case 6: skill = "unarmed"; break;
       default: skill = "unknown"; break;
       }
-      printf("skill=(%02x) % 7s ", data[6], skill);
+      printf("skill=(%02x) %-7s ", data[6], skill);
 
       printf("durability=%02x ", data[7]);
 
@@ -183,7 +183,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       case 9: category = "ring"; break;
       default: category = "unknown"; break;
       }
-      printf("category=(%02x) %- 11s ", data[3], category);
+      printf("category=(%02x) %-11s ", data[3], category);
 
       printf("name=%s\n", gameStrings.GetString(4, index + 0x0020).c_str());
    }
@@ -224,7 +224,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       case 14: remains = "g. spider"; break;
       default: remains = "unknown"; break;
       }
-      printf("blood-and-remains=(%02x) %- 9s/%- 11s ",
+      printf("blood-and-remains=(%02x) %-9s/%-11s ",
          data[8], blood, remains);
 
       printf("unk9_e=%02x %02x %02x %02x %02x %02x ",
@@ -245,7 +245,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       case 0x51: category = "human"; break;
       default: category = "unknown"; break;
       }
-      printf("category=(%02x) %- 8s ", data[0x10], category);
+      printf("category=(%02x) %-8s ", data[0x10], category);
 
       printf("attack-power=%02x ", data[0x11]);
       printf("defense-power=%02x ", data[0x12]);
@@ -286,7 +286,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       case 0xff: type = "any"; break;
       default: type = "unknown"; break;
       }
-      printf("objects=(%02x) %- 7s ", data[1], type);
+      printf("objects=(%02x) %-7s ", data[1], type);
 
       printf("num_slots=%02x ", data[2]);
 

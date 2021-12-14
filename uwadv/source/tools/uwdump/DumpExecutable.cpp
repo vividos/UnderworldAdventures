@@ -247,7 +247,7 @@ void DumpExecutable(const std::string& filename, const GameStrings& gameStrings,
          header.header_paragraphs * c_paragraphSize +
          segmentEntry.segmentBase * c_paragraphSize;
 
-      printf("% 7u  %04x  %04x   %04x  %c%c%c  %08x\n",
+      printf("%7u  %04x  %04x   %04x  %c%c%c  %08x\n",
          segmentIndex,
          segmentEntry.segmentBase,
          segmentEntry.startOffset,

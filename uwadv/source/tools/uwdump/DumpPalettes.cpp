@@ -95,7 +95,7 @@ void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, b
    Uint8 pals[11][256][3] = {};
    for (size_t numPalette = 0; numPalette < maxPaletteNum; numPalette++)
    {
-      printf("dumping palette #%lu\n", numPalette);
+      printf("dumping palette #%zu\n", numPalette);
 
       file.ReadBuffer(&pals[numPalette][0][0], 256 * 3);
 

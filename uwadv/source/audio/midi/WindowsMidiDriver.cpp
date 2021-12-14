@@ -205,6 +205,9 @@ void WindowsMidiDriver::send_sysex(uint8 status, const uint8 *msg, uint16 length
 		_streamBuffer = new uint8[_streamBufferSize];
 	}
 
+	if (!_streamBuffer)
+		return;
+
 	_streamBuffer[0] = status;
 	memcpy(_streamBuffer+1, msg, length);
 

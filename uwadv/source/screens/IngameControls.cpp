@@ -30,7 +30,9 @@
 
 PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()
 {
-   UaAssert(m_parent != NULL);
+   UaAssert(m_parent != nullptr);
+
+   // NOSONAR
    return m_parent->GetPlayerPhysicsObject();
 }
 

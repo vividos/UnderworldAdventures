@@ -1559,7 +1559,10 @@ void LowLevelMidiDriver::extractTimbreLibrary(XMidiEventList *eventlist)
 // address_base is 7-bit, while address_offset is 8 bit!
 void LowLevelMidiDriver::sendMT32SystemMessage(uint32 address_base, uint16 address_offset, uint32 len, const void *data)
 {
-	unsigned char sysex_buffer[512];
+	unsigned char sysex_buffer[512] = {};
+
+	if (sysex_data_start + len + 1 >= sizeof(sysex_buffer))
+		return; // message too long
 
 	// MT32 Sysex Header
 	sysex_buffer[0] = 0x41;		// Roland SysEx ID
@@ -1576,6 +1579,8 @@ void LowLevelMidiDriver::sendMT32SystemMessage(uint32 address_base, uint16 addre
 	// Only copy if required
 	if (data)
 		std::memcpy (sysex_buffer+sysex_data_start, data, len);
+	else
+		len = 0;
 
 	// Calc checksum
 	char checksum = 0;
