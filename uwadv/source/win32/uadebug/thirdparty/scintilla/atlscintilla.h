@@ -1,8 +1,8 @@
 /*
 Filename: AtlScintilla.h
-Version: 2.3
+Version: 2.4
 Description: Defines an easy wrapper for the Scintilla control, to be used with ATL/WTL projects.
-Date: 12/12/2021
+Date: 2021-12-14
 
 Copyright (c) 2005/2006 by Gilad Novik.
 Copyright (c) 2006 by Reece Dunn.
@@ -47,8 +47,11 @@ History (Date/Author/Description):
 2020/01/13: vividos
 - Updated CScintillaEditCommands methods (CanCut, CanClear, etc.) to also
   check read-only status using IsReadOnly().
-2020/01/13: vividos
+2021-12-12: vividos
 - Updated code to work with Scintilla/Lexilla 5.x.
+2020-12-14: vividos
+- Lexilla.dll is now loaded dynamically. Fixed SetILexer() not setting lexer.
+  Also removed SetLexer() and SetLexerLanguage() not supported anymore.
 */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2902,37 +2905,18 @@ public:
 		return ::SendMessage(m_hWnd, SCI_GETLEXER, 0, 0L);
 	}
 
-	DEPRECATE_DEFINITION
-	void SetLexer(int lexerID)
-	{
-		const char* lexerName = LexerNameFromID(lexerID);
-		ILexer5* lexer = CreateLexer(lexerName);
-
-		SetILexer(lexer);
-	}
-
 	void SetLexerByName(const char* lexerName)
 	{
-		ILexer5* lexer = CreateLexer(lexerName);
+		LoadLexilla();
+
+		ILexer5* lexer = m_fnCreateLexer(lexerName);
 		SetILexer(lexer);
 	}
 
 	void SetILexer(ILexer5* lexer)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_SETILEXER, (LPARAM)lexer, 0L);
-	}
-
-	void SetLexerLanguage(const char* language)
-	{
-		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_SETLEXERLANGUAGE, 0, (LPARAM)language);
-	}
-
-	void LoadLexerLibrary(const char* path)
-	{
-		ATLASSERT(::IsWindow(m_hWnd));
-		::SendMessage(m_hWnd, SCI_LOADLEXERLIBRARY, 0, (LPARAM)path);
+		::SendMessage(m_hWnd, SCI_SETILEXER, 0, (LPARAM)lexer);
 	}
 
 	void Colourise(unsigned int start, unsigned int end)
@@ -3160,6 +3144,35 @@ public:
 		SetReadOnly((GetFileAttributes(szFilename) & FILE_ATTRIBUTE_READONLY) ? true : false);
 		return TRUE;
 	}
+
+	CScintillaWindowT()
+		:m_lexilla(nullptr),
+		m_fnCreateLexer(nullptr)
+	{
+	}
+
+	~CScintillaWindowT()
+	{
+		m_fnCreateLexer = nullptr;
+		if (m_lexilla != nullptr)
+			::FreeLibrary(m_lexilla);
+	}
+
+private:
+	void LoadLexilla()
+	{
+		if (m_lexilla != nullptr)
+			return;
+
+		m_lexilla = LoadLibraryA(LEXILLA_LIB LEXILLA_EXTENSION);
+
+		if (m_lexilla != nullptr)
+			m_fnCreateLexer = (Lexilla::CreateLexerFn)GetProcAddress(m_lexilla, LEXILLA_CREATELEXER);
+	}
+
+	HMODULE m_lexilla;
+
+	Lexilla::CreateLexerFn m_fnCreateLexer;
 };
 
 typedef CScintillaWindowT<ATL::CWindow> CScintillaWindow;
@@ -3425,7 +3438,7 @@ public:
 		if (!m_refCount)
 		{
 #ifndef STATIC_SCILEXER
-			m_scintilla = ::LoadLibrary(_T("SciLexer.dll"));
+			m_scintilla = ::LoadLibrary(_T("Scintilla.dll"));
 #else
 			Scintilla_RegisterClasses(instance);
 #endif

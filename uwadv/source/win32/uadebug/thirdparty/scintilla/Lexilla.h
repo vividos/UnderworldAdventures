@@ -24,9 +24,7 @@
 
 // On Win32 use the stdcall calling convention otherwise use the standard calling convention
 #if _WIN32
-// vividos: this is wrong, the Lexilla.dll has C decl exports
-//#define LEXILLA_CALL __stdcall
-#define LEXILLA_CALL __cdecl
+#define LEXILLA_CALL __stdcall
 #else
 #define LEXILLA_CALL
 #endif

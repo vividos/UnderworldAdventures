@@ -53,7 +53,10 @@ void LuaScriptEditorView::SetupSourceEditor()
    StyleSetBold(5, true);
    StyleSetBold(10, true);
 
+   int previousLexer = GetLexer();
    SetLexerByName("lua");
+   int nowLexer = GetLexer();
+   ATLASSERT(previousLexer != nowLexer);
 
    // set Lua keywords and add uwadv specific keywords
    SetKeyWords(0,
