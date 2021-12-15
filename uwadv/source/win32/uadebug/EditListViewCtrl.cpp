@@ -66,6 +66,7 @@ LRESULT EditListInplaceEditCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
          bHandled = true;
          break;
       }
+      // fall through
 
    case VK_ESCAPE:
       Finish();
@@ -156,7 +157,8 @@ LRESULT EditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
    SelectItem(item);
 
-   // create edit-control
+   // create edit-control; deleted in OnDeleteMe handler
+   // NOSONAR
    EditListInplaceEditCtrl* pEdit = new EditListInplaceEditCtrl(item, column);
 
    RECT rect;

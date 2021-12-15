@@ -50,7 +50,7 @@ std::map<Uint32, std::string> c_colorMapping =
    { 0xffa500, "orange" },
 };
 
-std::string GetColorName(unsigned int paletteIndex, Uint32 argb)
+std::string GetColorName(size_t paletteIndex, Uint32 argb)
 {
    if (paletteIndex == 0)
       return "transparent";
@@ -106,7 +106,7 @@ void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, b
          {
             if (0 == memcmp(pals[numPalette], pals[checkPalette], 256 * 3))
             {
-               printf("palette #%lu matches palette #%lu\n\n", numPalette, checkPalette);
+               printf("palette #%zu matches palette #%zu\n\n", numPalette, checkPalette);
                foundPaletteMatch = true;
                break;
             }
@@ -116,11 +116,11 @@ void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, b
             continue;
       }
 
-      for (size_t palIndex = 0; palIndex < 256; palIndex++)
+      for (size_t paletteIndex = 0; paletteIndex < 256; paletteIndex++)
       {
-         Uint8* paletteEntry = pals[numPalette][palIndex];
-         printf("0x%02x: raw %02x %02x %02x, RGB #%02x%02x%02x",
-            palIndex,
+         Uint8* paletteEntry = pals[numPalette][paletteIndex];
+         printf("0x%02zx: raw %02x %02x %02x, RGB #%02x%02x%02x",
+            paletteIndex,
             paletteEntry[0],
             paletteEntry[1],
             paletteEntry[2],
@@ -133,7 +133,7 @@ void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, b
             (((Uint32)paletteEntry[1] << 8) << 2) |
             ((Uint32)paletteEntry[2] << 2);
 
-         std::string colorName = GetColorName(palIndex, argb);
+         std::string colorName = GetColorName(paletteIndex, argb);
 
          printf(" (%s)\n", colorName.c_str());
       }
@@ -172,29 +172,29 @@ void DumpAuxPalettes(const std::string& filename, const GameStrings& gameStrings
 
    Uint32 fileLength = file.FileLength();
 
-   unsigned int numEntries = fileLength / 16;
+   size_t numEntries = fileLength / 16;
 
-   printf("file length: %04x bytes, %u entries, %u bytes extra data\n",
+   printf("file length: %04x bytes, %zu entries, %u bytes extra data\n",
       fileLength, numEntries, fileLength % 16);
 
    // load pals.dat
-   Uint8 palette0[256][3];
+   Uint8 palette0[256][3] = {};
 
    std::string palettesFilename =
       std::filesystem::path{ filename }.parent_path().append("pals.dat").generic_string();
    LoadPalette0(palettesFilename, &palette0[0][0]);
 
 
-   for (unsigned int entryIndex = 0; entryIndex < numEntries; entryIndex++)
+   for (size_t entryIndex = 0; entryIndex < numEntries; entryIndex++)
    {
-      printf("auxpal #%u\n", entryIndex);
+      printf("auxpal #%zu\n", entryIndex);
 
-      for (unsigned int paletteIndex = 0; paletteIndex < 16; paletteIndex++)
+      for (size_t paletteIndex = 0; paletteIndex < 16; paletteIndex++)
       {
          Uint8 auxpalIndex = file.Read8();
          Uint8* paletteEntry = palette0[auxpalIndex];
 
-         printf("index 0x%02x -> 0x%02x: raw %02x %02x %02x, RGB #%02x%02x%02x",
+         printf("index 0x%02zx -> 0x%02x: raw %02x %02x %02x, RGB #%02x%02x%02x",
             paletteIndex,
             auxpalIndex,
             paletteEntry[0],

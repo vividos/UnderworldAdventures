@@ -60,7 +60,7 @@ class ProjectInfoWindow : public DockingWindowBase
    struct ProjectTreeItemInfo
    {
       /// default ctor
-      ProjectTreeItemInfo() : m_enType(tiNone), m_nInfo(0) {}
+      ProjectTreeItemInfo() : m_enType(tiNone), m_codeDebuggerId(0), m_nInfo(0) {}
 
       /// item info ctor for tiLevel, tiCodeDebugger, tiWindow
       ProjectTreeItemInfo(ProjectTreeItemType enType, unsigned int nInfo, unsigned int codeDebuggerId = 0)

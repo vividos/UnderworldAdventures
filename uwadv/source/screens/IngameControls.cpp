@@ -31,8 +31,9 @@
 PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()
 {
    UaAssert(m_parent != nullptr);
+   if (m_parent == nullptr)
+      throw std::runtime_error("m_parent is nullptr!");
 
-   // NOSONAR
    return m_parent->GetPlayerPhysicsObject();
 }
 

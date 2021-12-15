@@ -45,20 +45,19 @@ bool MapViewScreen::ProcessEvent(SDL_Event& event)
       switch (event.key.keysym.sym)
       {
       case SDLK_SPACE:
-         StartFadeout();
-         break;
-
       case SDLK_RETURN:
       case SDLK_ESCAPE:
          StartFadeout();
          break;
 
       default:
+         // ignore other keys
          break;
       }
       break;
 
    default:
+      // ignore other events
       break;
    }
 

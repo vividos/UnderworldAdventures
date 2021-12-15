@@ -170,7 +170,10 @@ namespace Detail
       double delayLine[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
       // number of taps per polyphase filter
-      int numTaps = SDL_TABLESIZE(c_coeff) / c_interpolationFactor;
+      const int numTaps = SDL_TABLESIZE(c_coeff) / c_interpolationFactor;
+
+      static_assert(numTaps == SDL_TABLESIZE(delayLine),
+         "number of taps must match length of delay line");
 
       int currentPhase = 0;
       int outputSamples = 0;
