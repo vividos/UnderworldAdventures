@@ -1,7 +1,7 @@
 @echo off
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019-2020 Underworld Adventures Team
+REM Copyright (c) 2019-2021 Underworld Adventures Team
 REM
 REM Runs SonarCloud analysis build
 REM
@@ -35,6 +35,9 @@ SonarScanner.MSBuild.exe begin ^
     /k:"UnderworldAdventures" ^
     /v:"0.10" ^
     /d:"sonar.cfamily.build-wrapper-output=%CD%\bw-output" ^
+    /d:"sonar.cfamily.threads=4" ^
+    /d:"sonar.cfamily.cache.enabled=true" ^
+    /d:"sonar.cfamily.cache.path=%CD%\.sonarqube\cache" ^
     /d:"sonar.coverageReportPaths=%CD%\CoverageReport-SonarQube.xml" ^
     /d:"sonar.host.url=https://sonarcloud.io" ^
     /o:"vividos-github" ^
