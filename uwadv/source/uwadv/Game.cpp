@@ -202,7 +202,6 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
             "  -g <game> --game <game>    Starts custom game\n"
          );
          return;
-         break;
 
          // game prefix
       case argumentGame:
