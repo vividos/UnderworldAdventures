@@ -78,7 +78,7 @@ void DumpLevelArchive::Start(const std::string& filename)
       {
          // load uw2 file
          SDL_RWops* rwops = SDL_RWFromFile(filename.c_str(), "rb");
-         Base::ArchiveFile ark(Base::MakeRWopsPtr(rwops));
+         Base::ArchiveFile ark{ Base::MakeRWopsPtr(rwops), m_isUw2 };
 
          if (!ark.IsAvailable(m_currentLevel))
             continue;
@@ -132,7 +132,6 @@ void DumpLevelArchive::Start(const std::string& filename)
          }
 
          // read in free list
-         if (false)
          {
             // note: invalid offsets
             Uint16 mobile_items = decoded[0x7c02] | (decoded[0x7c03] << 8);
@@ -340,6 +339,22 @@ void DumpLevelArchive::ProcessLevel()
 void DumpLevelArchive::DumpObjectInfos()
 {
    printf("dumping infos for level %u (0x%02x)\n\n", m_currentLevel, m_currentLevel);
+
+   // dumping free list
+   {
+      printf("dumping free list:\n");
+
+      size_t count = 0;
+      for (Uint16 free_slot : freelist)
+      {
+         printf("[%04x]%c",
+            free_slot,
+            (count % 16) == 15 ? '\n' : ' ');
+
+         count++;
+      }
+      printf("\n");
+   }
 
    // dump every object in list
    {
