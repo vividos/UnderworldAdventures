@@ -194,8 +194,8 @@ void GameLogic::CheckMoveTrigger()
 
                double triggerPos[3] =
                {
-                  (posInfo.m_xpos + 0.5) / 8.0,
-                  (posInfo.m_ypos + 0.5) / 8.0,
+                  posInfo.m_tileX + (posInfo.m_xpos + 0.5) / 8.0,
+                  posInfo.m_tileY + (posInfo.m_ypos + 0.5) / 8.0,
                   double(posInfo.m_zpos),
                };
 
