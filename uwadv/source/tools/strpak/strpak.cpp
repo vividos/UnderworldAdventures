@@ -143,15 +143,19 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
    unsigned int char_freq[256];
    { for (unsigned int i = 0; i < 256; char_freq[i++] = 0); }
 
+   // safeguard the buffer
+   const int buffer_length = 2048;
+   char buffer[buffer_length + 1];
+   buffer[buffer_length] = 0;
+
    // read over first line
-   char buffer[2048];
-   fgets(buffer, 2048, in);
+   fgets(buffer, buffer_length, in);
 
    // parse input file
    while (!feof(in))
    {
       // read a line
-      fgets(buffer, 2048, in);
+      fgets(buffer, buffer_length, in);
       if (feof(in)) break;
 
       // remove newline
@@ -432,8 +436,8 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
 
             // encode every character using the lookup table and the
             // huffman tree
-            const char *str = stringList[i].c_str();
-            size_t len = strlen(str);
+            const std::string& str = stringList[i];
+            size_t len = str.size();
             for (size_t n = 0; n < len; n++)
             {
                Uint8 c = static_cast<Uint8>(str[n]);

@@ -158,7 +158,6 @@ LRESULT EditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
    SelectItem(item);
 
    // create edit-control; deleted in OnDeleteMe handler
-   // NOSONAR
    EditListInplaceEditCtrl* pEdit = new EditListInplaceEditCtrl(item, column);
 
    RECT rect;
@@ -184,6 +183,7 @@ LRESULT EditListViewCtrl::OnLeftButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
    HFONT hFont = GetFont();
    pEdit->SetFont(hFont);
 
+   // NOSONAR
    return 0;
 }
 
