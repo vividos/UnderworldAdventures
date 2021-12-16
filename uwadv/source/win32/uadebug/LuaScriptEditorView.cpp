@@ -56,7 +56,7 @@ void LuaScriptEditorView::SetupSourceEditor()
    int previousLexer = GetLexer();
    SetLexerByName("lua");
    int nowLexer = GetLexer();
-   ATLASSERT(previousLexer != nowLexer);
+   ATLVERIFY(previousLexer != nowLexer);
 
    // set Lua keywords and add uwadv specific keywords
    SetKeyWords(0,
