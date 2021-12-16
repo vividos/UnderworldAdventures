@@ -307,13 +307,6 @@ bool Inventory::AddToContainer(Uint16& pos, Uint16 containerPos)
 
 void Inventory::RemoveFromContainer(Uint16 pos, Uint16 containerPos)
 {
-   // if the object to remove is a container, it must not have items in it
-   if (IsContainer(GetObjectInfo(pos).m_itemID))
-   {
-      UaAssert(GetObjectInfo(pos).m_isQuantity == false);
-      UaAssert(GetObjectInfo(pos).m_quantity == 0);
-   }
-
    if (containerPos == c_inventorySlotNoItem)
    {
       // removing from topmost container
@@ -483,6 +476,8 @@ Uint16 Inventory::InsertItem(const ::Underworld::ObjectInfo& info)
    ObjectInfo& newobj = GetObjectInfo(pos);
    newobj = info;
    newobj.m_link = 0;
+   if (IsContainer(newobj.m_itemID))
+      newobj.m_quantity = 0; // remove link to object list
 
    return pos;
 }

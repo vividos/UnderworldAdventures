@@ -815,6 +815,53 @@ int LuaScripting::inventory_get_floating_item(lua_State* L)
    return 1;
 }
 
+Uint16 MoveObjectListItemToInventory(
+   bool isRootObject,
+   Underworld::ObjectList& objectList, Uint16 objectListPos,
+   Underworld::Inventory& inventory, Uint16 parentInventoryPos)
+{
+   Underworld::ObjectPtr obj = objectList.GetObject(objectListPos);
+   const Underworld::ObjectInfo& objInfo = obj->GetObjectInfo();
+   const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
+
+   Uint16 inventoryPos = inventory.InsertItem(objInfo);
+   Underworld::ObjectInfo& inventoryObjInfo = inventory.GetObjectInfo(inventoryPos);
+
+   if (parentInventoryPos != 0)
+      inventory.AddToContainer(inventoryPos, parentInventoryPos);
+
+   if (inventory.IsContainer(inventoryObjInfo.m_itemID))
+   {
+      UaAssert(objInfo.m_isQuantity == false);
+
+      Uint16 objectListLink = objInfo.m_quantity;
+
+      while (objectListLink != 0)
+      {
+         // get next object now, since the next call will remove this object
+         const Underworld::ObjectPtr nextObj = objectList.GetObject(objectListLink);
+         Uint16 nextObjectListLink = nextObj->GetObjectInfo().m_link;
+
+         MoveObjectListItemToInventory(false,
+            objectList, objectListLink,
+            inventory, inventoryPos);
+
+         objectListLink = nextObjectListLink;
+      }
+   }
+
+   if (isRootObject)
+      inventory.FloatObject(inventoryPos);
+
+   if (posInfo.m_tileX != Underworld::c_tileNotAPos &&
+      posInfo.m_tileY != Underworld::c_tileNotAPos)
+      objectList.RemoveObjectFromTileList(objectListPos, posInfo.m_tileX, posInfo.m_tileY);
+
+   objectList.Free(objectListPos);
+
+   return inventoryPos;
+}
+
 int LuaScripting::inventory_float_add_item(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
@@ -826,19 +873,16 @@ int LuaScripting::inventory_float_add_item(lua_State* L)
 
    Uint16 objectListPos = static_cast<Uint16>(lua_tointeger(L, -1));
 
-   Underworld::ObjectPtr obj = objectList.GetObject(objectListPos);
-   const Underworld::ObjectInfo& info = obj->GetObjectInfo();
-   const Underworld::ObjectPositionInfo& posInfo = obj->GetPosInfo();
-
-   Uint16 inventoryPos = inventory.InsertItem(info);
-   inventory.FloatObject(inventoryPos);
-
-   objectList.RemoveObjectFromTileList(objectListPos, posInfo.m_tileX, posInfo.m_tileY);
-   objectList.Free(objectListPos);
+   Uint16 inventoryPos = MoveObjectListItemToInventory(
+      true,
+      objectList, objectListPos,
+      inventory, 0);
 
    lua_pushinteger(L, static_cast<double>(inventoryPos));
 
    // param is the item ID
+   const Underworld::ObjectInfo& info = inventory.GetObjectInfo(inventoryPos);
+
    self.m_game->GetUserInterface()->Notify(notifySelectTarget, info.m_itemID);
 
    return 1;
