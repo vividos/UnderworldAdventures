@@ -34,6 +34,8 @@ Player::Player()
 {
    memset(m_attributes, 0, SDL_TABLESIZE(m_attributes));
    memset(m_skills, 0, SDL_TABLESIZE(m_skills));
+
+   m_questFlags.Resize(35);
 }
 
 void Player::Load(Base::Savegame& sg)

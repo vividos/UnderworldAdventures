@@ -150,4 +150,6 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& f
    for (unsigned int t = Underworld::runeAn; t < Underworld::runeLast; t++)
       runebag.SetRune(static_cast<Underworld::RuneType>(t),
       (Import::GetBits(uiRunes, t, 1) != 0));
+
+   player.GetQuestFlags().Resize(35);
 }

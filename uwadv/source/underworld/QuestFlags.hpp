@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,6 +35,12 @@ namespace Underworld
    public:
       /// ctor
       QuestFlags() {}
+
+      /// Resizes quest flags list
+      void Resize(size_t maxQuestFlagNumber)
+      {
+         m_questFlags.resize(maxQuestFlagNumber + 1);
+      }
 
       /// returns number of flags
       size_t GetFlagCount() const { return m_questFlags.size(); }
