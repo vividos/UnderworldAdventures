@@ -454,18 +454,12 @@ void UnderworldRenderer::RenderTmapObject(const RenderOptions& renderOptions,
    u1 = v1 = 0.0;
    u2 = v2 = 1.0;
 
-   // use wall color
-   glColor3ub(128, 128, 128);
-
    glBegin(GL_QUADS);
    glTexCoord2d(u2, v2); glVertex3d(pos.x + dir.x, pos.y + dir.y, pos.z);
    glTexCoord2d(u2, v1); glVertex3d(pos.x + dir.x, pos.y + dir.y, pos.z + 1.0);
    glTexCoord2d(u1, v1); glVertex3d(pos.x - dir.x, pos.y - dir.y, pos.z + 1.0);
    glTexCoord2d(u1, v2); glVertex3d(pos.x - dir.x, pos.y - dir.y, pos.z);
    glEnd();
-
-   // switch back to object color
-   glColor3ub(192, 192, 192);
 
    glDisable(GL_POLYGON_OFFSET_FILL);
 }
