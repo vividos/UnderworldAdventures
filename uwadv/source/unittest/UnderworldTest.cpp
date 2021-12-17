@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -307,10 +307,11 @@ namespace UnitTest
          inv.GetObjectInfo(pos3).m_itemID = 0x0003;
          Assert::IsTrue(true == inv.AddToContainer(pos3, containerPos));
 
-         // drop the last onto the second last
+         // float the last object
          inv.FloatObject(pos3);
          Assert::AreEqual<size_t>(2, inv.GetNumSlots(), L"container must contain 2 objects now");
 
+         // drop the last onto the second last
          Assert::IsTrue(true == inv.DropFloatingObject(containerPos, pos2));
 
          // drop at the end of the container
