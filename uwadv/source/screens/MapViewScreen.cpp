@@ -21,15 +21,27 @@
 //
 #include "pch.hpp"
 #include "MapViewScreen.hpp"
+#include "ImageManager.hpp"
+#include "Underworld.hpp"
+#include "Player.hpp"
+#include "Audio.hpp"
 
 MapViewScreen::MapViewScreen(IGame& gameInterface)
-   :ImageScreen(gameInterface, 0, 0.5)
+   :ImageScreen(gameInterface, 0, 0.5),
+   m_displayedLevel((size_t)-1)
 {
 }
 
 void MapViewScreen::Init()
 {
    ImageScreen::Init();
+
+   m_displayedLevel = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
+   DisplayLevelMap(m_displayedLevel);
+
+   // start audio track "maps & legends" for map
+   if (!m_game.GetAudioManager().IsPlayingMusicTrack(Audio::musicUw1_MapsAndLegends))
+      m_game.GetAudioManager().StartMusicTrack(Audio::musicUw1_MapsAndLegends, false);
 }
 
 bool MapViewScreen::ProcessEvent(SDL_Event& event)
@@ -62,4 +74,14 @@ bool MapViewScreen::ProcessEvent(SDL_Event& event)
    }
 
    return true;
+}
+
+void MapViewScreen::DisplayLevelMap(size_t levelIndex)
+{
+   IndexedImage& image = GetImage();
+
+   ImageManager& imageManager = m_game.GetImageManager();
+   imageManager.Load(image, "data/blnkmap.byt", 0, 1, imageByt);
+
+   UpdateImage();
 }

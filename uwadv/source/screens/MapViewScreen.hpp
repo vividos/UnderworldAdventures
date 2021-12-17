@@ -35,4 +35,11 @@ public:
    // virtual functions from Screen
    virtual void Init() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
+
+private:
+   /// displays level map with given index
+   void DisplayLevelMap(size_t levelIndex);
+
+   /// currently displayed level
+   size_t m_displayedLevel;
 };
