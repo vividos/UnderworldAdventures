@@ -182,7 +182,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       }
 
       // must be a string line
-      char *pos = strchr(buffer, ':');
+      char* pos = strchr(buffer, ':');
       if (pos == NULL)
       {
          printf("line %zu of block contained no ':'\n", block.size());
@@ -191,7 +191,7 @@ void strpak_pack_strings(const char* infile, const char* outputFilename, const c
       pos += 2; // move forward to actual string
 
       // replace "\n" with real newlines
-      char *pos2;
+      char* pos2;
       while ((pos2 = strstr(pos, "\\n")) != NULL)
       {
          pos2[0] = '\n';

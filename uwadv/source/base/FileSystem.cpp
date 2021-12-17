@@ -62,7 +62,7 @@ bool PatternMatches(const std::string& path, const std::string& pattern)
          if (patternIter + 1 == pattern.end())
             return true;
 
-         size_t max = strlen(&*pathIter);
+         size_t max = std::distance(pathIter, path.end());
          for (size_t i = 0; i < max; i++)
             if (PatternMatches(&*pathIter + i, &*patternIter + 1))
                return true;

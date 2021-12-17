@@ -63,11 +63,11 @@ void ConversationDebugger::Start()
       if (m_isLoaded)
          ListCode(m_instructionPointer);
 
-      char buffer[256];
+      char buffer[256] = {};
       printf(">");
 
       // start getting commands
-      fgets(buffer, 255, stdin);
+      fgets(buffer, sizeof(buffer) - 1, stdin);
 
       if (strlen(buffer) == 0)
          continue;

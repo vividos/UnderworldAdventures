@@ -35,8 +35,10 @@
 
 unsigned int Font::CalcLength(const char* text)
 {
-   unsigned int width = 0, len = strlen(text);
-   for (unsigned int i = 0; i < len; i++)
+   unsigned int width = 0;
+   size_t len = text == nullptr ? 0 : strlen(text);
+
+   for (size_t i = 0; i < len; i++)
    {
       // count length for each char
       unsigned char ch = static_cast<unsigned char>(text[i]);
@@ -56,7 +58,8 @@ unsigned int Font::CalcLength(const char* text)
 void Font::CreateString(IndexedImage& image, const char* text, Uint8 foregroundIndex)
 {
    // create image with proper size
-   unsigned int width = CalcLength(text), len = strlen(text);
+   unsigned int width = CalcLength(text);
+   unsigned int len = text == nullptr ? 0 : strlen(text);
 
    image.Create(width, m_charHeight);
 
@@ -65,7 +68,7 @@ void Font::CreateString(IndexedImage& image, const char* text, Uint8 foregroundI
    unsigned int pos = 0;
 
    // store all chars in the image
-   for (unsigned int i = 0; i < len; i++)
+   for (size_t i = 0; i < len; i++)
    {
       unsigned char ch = static_cast<unsigned char>(text[i]);
 

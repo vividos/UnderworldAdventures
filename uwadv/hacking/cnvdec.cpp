@@ -36,9 +36,9 @@ void dump_import_funcs(FILE* fd, FILE* dest)
       unsigned short fname_len;
       fread(&fname_len,1,2,fd);
 
-      char funcname[256]; // assumes strlen(function name) always < 256 chars
-      fread(funcname,1,fname_len,fd);
-      funcname[fname_len]=0;
+      std::string funcname;
+      funcname.resize(fname_len + 1);
+      fread(funcname.data(), 1, fname_len, fd);
 
       // function ID
       unsigned short func_id;
@@ -56,7 +56,7 @@ void dump_import_funcs(FILE* fd, FILE* dest)
       if (import_type == 0x010F)
       {
          fprintf(dest,"; var mem=%04x (ret_type=%04x, unk1=%04x) name=\"%s\" \n",
-            func_id,ret_type,unk1,funcname);
+            func_id, ret_type, unk1, funcname.c_str());
       }
       else
       if (import_type == 0x0111)
@@ -65,7 +65,7 @@ void dump_import_funcs(FILE* fd, FILE* dest)
             func_id,
             ret_type==0 ? "void" : ret_type==0x0129? "int" :
                ret_type==0x012b ? "string" : "unknown",
-            unk1,funcname);
+            unk1, funcname.c_str());
       }
       else
       {

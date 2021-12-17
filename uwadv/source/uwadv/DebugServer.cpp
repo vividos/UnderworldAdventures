@@ -319,7 +319,7 @@ size_t DebugServer::GetGamePath(char* buffer, size_t bufferSize)
 
    size_t strsize = game_path.size();
 
-   if (bufferSize < strsize + 1)
+   if (buffer == nullptr || bufferSize == 0 || bufferSize < strsize + 1)
       return strsize + 1;
 
    strncpy(buffer, game_path.c_str(), strsize);

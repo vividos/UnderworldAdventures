@@ -275,7 +275,11 @@ namespace Detail
       max = SDL_TABLESIZE(KeyMapping);
       for (unsigned int j = 0; j < max; j++)
       {
-         UaAssert(strlen(KeyMapping[j].keyType) > 1); // no keytype name can be 1 character only
+         UaAssertMsg(
+            KeyMapping[j].keyType != nullptr &&
+            strlen(KeyMapping[j].keyType) > 1,
+            "no keytype name can be 1 character only");
+
          m_mapKeyNames[KeyMapping[j].keyType] = KeyMapping[j].key;
       }
    }

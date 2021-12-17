@@ -67,26 +67,28 @@ bool UnderworldDumper::ParseArgs(unsigned int argc, const char** argv)
 
    for (unsigned int i = 1; i < argc; i++)
    {
-      if (strlen(argv[i]) > 1 && argv[i][0] == '-')
+      std::string arg{ argv[i] };
+
+      if (arg.length() > 1 && arg[0] == '-')
       {
-         if (!ParseOption(argv[i]))
+         if (!ParseOption(arg.c_str()))
             return false;
       }
       else if (!commandAppeared) // no command yet?
       {
          commandAppeared = true;
-         if (strcmp(argv[i], "dump") == 0)
+         if (arg == "dump")
          {
             m_command = commandDump;
             needParameter = true;
          }
-         else if (strcmp(argv[i], "view") == 0)
+         else if (arg == "view")
          {
             m_command = commandView;
             needParameter = true;
          }
          else
-            printf("unknown command: %s\n", argv[i]);
+            printf("unknown command: %s\n", arg.c_str());
       }
       else if (needParameter) // command needs parameter?
       {
@@ -96,7 +98,7 @@ bool UnderworldDumper::ParseArgs(unsigned int argc, const char** argv)
          {
          case commandDump:
          case commandView:
-            m_param.assign(argv[i]);
+            m_param = arg;
             break;
 
          default:
