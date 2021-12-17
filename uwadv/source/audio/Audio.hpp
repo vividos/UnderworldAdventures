@@ -151,6 +151,9 @@ namespace Audio
       /// plays a special sound effect
       void PlaySoundEffect(SoundEffectType sfxType);
 
+      /// checks if the given music track is already playing
+      bool IsPlayingMusicTrack(size_t musicTrack) const;
+
       /// starts music track playback
       void StartMusicTrack(size_t musicTrack, bool repeat);
 

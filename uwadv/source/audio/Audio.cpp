@@ -45,7 +45,8 @@ namespace Detail
       AudioManagerData(const Base::Settings& settings, const Base::ResourceManager& resourceManager)
          :m_midiPlayer(settings),
          m_currentTrack(NULL),
-         m_resourceManager(resourceManager)
+         m_resourceManager(resourceManager),
+         m_currentTrackNumber(std::numeric_limits<size_t>::max())
       {
       }
 
@@ -56,6 +57,15 @@ namespace Detail
       Base::SDL_RWopsPtr& GetCurrentMusicTrackData()
       {
          return m_currentMusicTrackData;
+      }
+
+      /// returns number of current music track
+      size_t GetCurrentMusicTrackNumber() const { return m_currentTrackNumber; }
+
+      /// sets number of current music track
+      void SetCurrentMusicTrackNumber(size_t musicTrackNumber)
+      {
+         m_currentTrackNumber = musicTrackNumber;
       }
 
       /// returns resource manager
@@ -82,6 +92,9 @@ namespace Detail
 
       /// current music track data
       Base::SDL_RWopsPtr m_currentMusicTrackData;
+
+      /// current music track number
+      size_t m_currentTrackNumber;
 
       /// path to current uw game
       std::string m_underworldPath;
@@ -190,6 +203,19 @@ void AudioManager::PlaySoundEffect(Audio::SoundEffectType sfxType)
    UNUSED(sfxType);
 }
 
+bool AudioManager::IsPlayingMusicTrack(size_t musicTrack) const
+{
+   if (IsMusicFadeoutOrStopped())
+      return false;
+
+   Playlist& playlist = m_data->GetPlaylist();
+
+   if (musicTrack >= playlist.GetCount())
+      return false;
+
+   return m_data->GetCurrentMusicTrackNumber() == musicTrack;
+}
+
 /// Starts playing back a sound track from the music playlist. Midi files with
 /// extensions .mid or .xmi are played back using the appropriate midi driver
 /// through MidiPlayer. Other file types are tried to load via SDL_mixer,
@@ -212,6 +238,8 @@ void AudioManager::StartMusicTrack(size_t musicTrack, bool repeat)
 
    UaTrace("audio: playing back %s", trackName.c_str());
 
+   m_data->SetCurrentMusicTrackNumber(musicTrack);
+
    // find extension
    std::string extension;
    std::string::size_type pos = trackName.find_last_of('.');
@@ -231,7 +259,7 @@ void AudioManager::StartMusicTrack(size_t musicTrack, bool repeat)
          Base::SDL_RWopsPtr rwops = m_data->GetResourceManager().GetFileWithPlaceholder(trackName);
 
          // start midi player track
-         if (rwops != NULL)
+         if (rwops != nullptr)
             m_data->GetMidiPlayer().PlayFile(rwops, repeat);
       }
       catch (const Base::Exception&)
