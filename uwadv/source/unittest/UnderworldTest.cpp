@@ -282,6 +282,43 @@ namespace UnitTest
          Assert::IsTrue(8 == inv.GetNumSlots());
       }
 
+      /// Tests inventory functions; in a container, tests dropping items on one another
+      TEST_METHOD(TestInventory_DropItemsOntoOtherItems)
+      {
+         Underworld::Inventory inv;
+         inv.Create();
+
+         // add container and open it
+         Uint16 containerPos = inv.Allocate();
+         inv.GetObjectInfo(containerPos).m_itemID = 0x0080; // a_sack
+         inv.GetObjectInfo(containerPos).m_isQuantity = false;
+         inv.OpenContainer(containerPos);
+
+         // add three objects
+         Uint16 pos1 = inv.Allocate();
+         inv.GetObjectInfo(pos1).m_itemID = 0x0001;
+         Assert::IsTrue(true == inv.AddToContainer(pos1, containerPos));
+
+         Uint16 pos2 = inv.Allocate();
+         inv.GetObjectInfo(pos2).m_itemID = 0x0002;
+         Assert::IsTrue(true == inv.AddToContainer(pos2, containerPos));
+
+         Uint16 pos3 = inv.Allocate();
+         inv.GetObjectInfo(pos3).m_itemID = 0x0003;
+         Assert::IsTrue(true == inv.AddToContainer(pos3, containerPos));
+
+         // drop the last onto the second last
+         inv.FloatObject(pos3);
+         Assert::AreEqual<size_t>(2, inv.GetNumSlots(), L"container must contain 2 objects now");
+
+         Assert::IsTrue(true == inv.DropFloatingObject(containerPos, pos2));
+
+         // drop at the end of the container
+         Assert::IsTrue(true == inv.DropFloatingObject(containerPos));
+
+         Assert::AreEqual<size_t>(3, inv.GetNumSlots(), L"must again be 3 objects in container");
+      }
+
       /// Tests inventory functions; test slot list building for container
       TEST_METHOD(TestInventory_SlotListBuildingContainer)
       {

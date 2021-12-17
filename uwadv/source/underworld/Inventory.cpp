@@ -724,15 +724,15 @@ void Inventory::SwapObjectWithFloating(Uint16 containerPos, Uint16 pos)
          {
             if (GetObjectInfo(link).m_link == pos)
             {
-               ObjectInfo& dropTargetObj = GetObjectInfo(link);
+               UaTrace("swapping with item in chain, in pos %04x\n", link);
+
+               ObjectInfo& beforeDropTargetObj = GetObjectInfo(link);
+               ObjectInfo& dropTargetObj = GetObjectInfo(pos);
                ObjectInfo& floatingObj = GetObjectInfo(m_floatingObjectPos);
 
                // chain previous object to the floating object
-               Uint16 nextLink = dropTargetObj.m_link;
-               dropTargetObj.m_link = floatingObj.m_link;
-               floatingObj.m_link = nextLink;
-
-               UaTrace("swapping with item in chain, in pos %04x\n", link);
+               beforeDropTargetObj.m_link = m_floatingObjectPos;
+               floatingObj.m_link = dropTargetObj.m_link;
                break;
             }
 
