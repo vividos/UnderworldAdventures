@@ -549,7 +549,7 @@ void CreateCharacterScreen::DoAction()
    }
 }
 
-unsigned int CreateCharacterScreen::DrawText(const char* str, int x, int y, int xalign, unsigned char color)
+unsigned int CreateCharacterScreen::DrawText(const std::string& str, int x, int y, int xalign, unsigned char color)
 {
    // set default text color
    if (color == 0)
@@ -580,13 +580,13 @@ unsigned int CreateCharacterScreen::DrawNumber(unsigned int num, int x, int y, u
 {
    std::ostringstream buffer;
    buffer << num;
-   return DrawText(buffer.str().c_str(), x, y, 2, color);
+   return DrawText(buffer.str(), x, y, 2, color);
 }
 
 unsigned int CreateCharacterScreen::DrawText(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
 {
    std::string text(m_game.GetGameStrings().GetString(custstrblock > -1 ? custstrblock : strblock, strnum));
-   return (!text.empty()) ? DrawText(text.c_str(), x, y, xalign, color) : 0;
+   return (!text.empty()) ? DrawText(text, x, y, xalign, color) : 0;
 }
 
 void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnum, int xc, int y)
@@ -603,9 +603,9 @@ void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnu
       unsigned int labelwidth = DrawText(strnum, x + 4, y + 3, 0, m_normalTextColor);
       unsigned int maxnamewidth = button.GetXRes() - labelwidth - 7;
       unsigned int ip = m_inputText.size();
-      while ((m_font.CalcLength(m_inputText.c_str()) > maxnamewidth) && (ip > 0))
+      while ((m_font.CalcLength(m_inputText) > maxnamewidth) && (ip > 0))
          m_inputText.erase(ip--);
-      DrawText(m_inputText.c_str(), x + labelwidth + 4, y + 3, 0, m_highlightTextColor);
+      DrawText(m_inputText, x + labelwidth + 4, y + 3, 0, m_highlightTextColor);
    }
    else if (buttontype == buttonImage)
    {

@@ -33,10 +33,20 @@
 #include "Font.hpp"
 #include <cstring>
 
-unsigned int Font::CalcLength(const char* text)
+Font::Font()
+   :m_charSize(0),
+   m_spaceWidth(0),
+   m_charHeight(0),
+   m_rowWidth(0),
+   m_maxWidth(0),
+   m_numChars(0)
+{
+}
+
+unsigned int Font::CalcLength(const std::string& text)
 {
    unsigned int width = 0;
-   size_t len = text == nullptr ? 0 : strlen(text);
+   size_t len = text.length();
 
    for (size_t i = 0; i < len; i++)
    {
@@ -45,21 +55,20 @@ unsigned int Font::CalcLength(const char* text)
 
       if (ch >= m_numChars)
          width += m_maxWidth;
+      else if (ch == 0x20)
+         width += m_spaceWidth;
       else
-         if (ch == 0x20)
-            width += m_spaceWidth;
-         else
-            width += m_charLengths[ch];
+         width += m_charLengths[ch];
    }
 
    return width;
 }
 
-void Font::CreateString(IndexedImage& image, const char* text, Uint8 foregroundIndex)
+void Font::CreateString(IndexedImage& image, const std::string& text, Uint8 foregroundIndex)
 {
    // create image with proper size
    unsigned int width = CalcLength(text);
-   unsigned int len = text == nullptr ? 0 : strlen(text);
+   size_t len = text.length();
 
    image.Create(width, m_charHeight);
 
@@ -86,8 +95,8 @@ void Font::CreateString(IndexedImage& image, const char* text, Uint8 foregroundI
             for (unsigned int x = 0; x < clen; x++)
             {
                bool pixset =
-                  m_fontData[ch*m_charHeight*m_maxWidth + y * m_maxWidth + x] == 1;
-               pixels[y*width + x + pos] = pixset ? foregroundIndex : 0;
+                  m_fontData[ch * m_charHeight * m_maxWidth + y * m_maxWidth + x] == 1;
+               pixels[y * width + x + pos] = pixset ? foregroundIndex : 0;
             }
 
          pos += clen;

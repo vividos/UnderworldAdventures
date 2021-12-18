@@ -330,7 +330,7 @@ void CutsceneViewScreen::Tick()
    ++m_tickCount;
 }
 
-void CutsceneViewScreen::CreateTextImage(const char* str)
+void CutsceneViewScreen::CreateTextImage(const std::string& str)
 {
    unsigned int maxlen = 310;
 
@@ -344,7 +344,7 @@ void CutsceneViewScreen::CreateTextImage(const char* str)
    else
    {
       std::vector<IndexedImage> lines;
-      std::string text(str), part;
+      std::string text{ str }, part;
 
       // collect all text string lines
       do
@@ -354,7 +354,7 @@ void CutsceneViewScreen::CreateTextImage(const char* str)
          std::string::size_type pos;
 
          // cut down string on ' ' boundaries, until it fits into an image
-         while (m_bigFont.CalcLength(part.c_str()) > maxlen)
+         while (m_bigFont.CalcLength(part) > maxlen)
          {
             pos = part.find_last_of(' ');
             if (pos != std::string::npos)
@@ -368,7 +368,7 @@ void CutsceneViewScreen::CreateTextImage(const char* str)
          // create line image
          {
             IndexedImage img_temp;
-            m_bigFont.CreateString(img_temp, part.c_str(), m_textColor);
+            m_bigFont.CreateString(img_temp, part, m_textColor);
             lines.push_back(img_temp);
          }
 
@@ -449,7 +449,7 @@ void CutsceneViewScreen::DoAction()
       if (m_canShowText)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L, -1));
-         CreateTextImage(m_game.GetGameStrings().GetString(m_stringBlock, strnum).c_str());
+         CreateTextImage(m_game.GetGameStrings().GetString(m_stringBlock, strnum));
          m_textFadeState = 1; // fade in
          m_textFadeCount = 0;
          m_isShowingText = true;
@@ -469,7 +469,7 @@ void CutsceneViewScreen::DoAction()
       if (m_canShowText)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L, -1));
-         CreateTextImage(m_game.GetGameStrings().GetString(m_stringBlock, strnum).c_str());
+         CreateTextImage(m_game.GetGameStrings().GetString(m_stringBlock, strnum));
          m_isShowingText = true;
          m_textFadeState = 0;
       }

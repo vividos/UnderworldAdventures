@@ -98,7 +98,7 @@ void TextEditWindow::UpdateText()
 
    // cursor image pos
    std::string posText(m_text.c_str(), m_cursorPos);
-   unsigned int cursorPosX = m_font.CalcLength(posText.c_str());
+   unsigned int cursorPosX = m_font.CalcLength(posText);
 
    // draw cursor
    image.FillRect(

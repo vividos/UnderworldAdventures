@@ -526,7 +526,7 @@ void Panel::UpdateInventory()
       buffer << leftWeight;
 
       IndexedImage img_weight;
-      m_inventoryWeightFont.CreateString(img_weight, buffer.str().c_str(), 224);
+      m_inventoryWeightFont.CreateString(img_weight, buffer.str(), 224);
       img.PasteImage(img_weight, 70 - img_weight.GetXRes() / 2, 53, true);
    }
 }
@@ -549,8 +549,8 @@ void Panel::UpdateStats()
 
    // player name
    text = player.GetName();
-   xpos = (83 - m_statsFont.CalcLength(text.c_str())) / 2;
-   m_statsFont.CreateString(tempImage, player.GetName().c_str(), 1);
+   xpos = (83 - m_statsFont.CalcLength(text)) / 2;
+   m_statsFont.CreateString(tempImage, player.GetName(), 1);
    img.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(), xpos, 7, true);
 
    // player profession
@@ -558,7 +558,7 @@ void Panel::UpdateStats()
    text = gameStrings.GetString(2, prof + 23);
    Base::String::Uppercase(text);
 
-   m_statsFont.CreateString(tempImage, text.c_str(), 1);
+   m_statsFont.CreateString(tempImage, text, 1);
    img.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(), 7, 15, true);
 
    // player main stats
@@ -579,9 +579,9 @@ void Panel::UpdateStats()
       case 6: buffer << player.GetAttribute(Underworld::attrExperiencePoints); break;
       }
 
-      xpos = 77 - m_statsFont.CalcLength(buffer.str().c_str());
+      xpos = 77 - m_statsFont.CalcLength(buffer.str());
 
-      m_statsFont.CreateString(tempImage, buffer.str().c_str(), 1);
+      m_statsFont.CreateString(tempImage, buffer.str(), 1);
       img.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(), xpos, i * 7 + 15, true);
 
       buffer.str().erase();
@@ -596,7 +596,7 @@ void Panel::UpdateStats()
       text = gameStrings.GetString(2, n + m_startScrollableStatsArea + 31);
       Base::String::Uppercase(text);
 
-      m_statsFont.CreateString(tempImage, text.c_str(), 104);
+      m_statsFont.CreateString(tempImage, text, 104);
       img.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(), 7, n * 7 + 65, true);
 
       // skill value
@@ -605,9 +605,9 @@ void Panel::UpdateStats()
 
       buffer << skill;
 
-      xpos = 77 - m_statsFont.CalcLength(buffer.str().c_str());
+      xpos = 77 - m_statsFont.CalcLength(buffer.str());
 
-      m_statsFont.CreateString(tempImage, buffer.str().c_str(), 104);
+      m_statsFont.CreateString(tempImage, buffer.str(), 104);
       img.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(), xpos, n * 7 + 65, true);
    }
 }

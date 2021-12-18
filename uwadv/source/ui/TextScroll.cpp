@@ -273,7 +273,7 @@ unsigned int TextScroll::CalcColoredLength(const char* text)
          pos++;
    }
 
-   return m_normalFont.CalcLength(line.c_str());
+   return m_normalFont.CalcLength(line);
 }
 
 /// Creates an image from given text. Recognizes color codes and creates

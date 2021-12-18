@@ -48,7 +48,7 @@ public:
 
 protected:
    /// creates text image from string
-   void CreateTextImage(const char* str);
+   void CreateTextImage(const std::string& str);
 
    /// performs cutscene action; called by cuts_do_action
    void DoAction();

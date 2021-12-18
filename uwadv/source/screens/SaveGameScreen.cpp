@@ -115,7 +115,7 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       IndexedImage tempImage;
 
       // normal
-      m_normalFont.CreateString(tempImage, buttonText.c_str(), 162);
+      m_normalFont.CreateString(tempImage, buttonText, 162);
 
       int text_xpos = (signed(c_buttonWidth) - signed(tempImage.GetXRes())) / 2;
       if (text_xpos < 0)
@@ -125,7 +125,7 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       m_buttonImages[1].PasteImage(tempImage, text_xpos, text_ypos, true);
 
       // highlighted
-      m_normalFont.CreateString(tempImage, buttonText.c_str(), 73);
+      m_normalFont.CreateString(tempImage, buttonText, 73);
 
       text_xpos = (signed(c_buttonWidth) - signed(tempImage.GetXRes())) / 2;
       if (text_xpos < 0)
@@ -252,7 +252,7 @@ void SaveGamesList::UpdateList()
       }
 
       // string too long for list field?
-      if (m_normalFont.CalcLength(desc.c_str()) > GetImage().GetXRes() - 2)
+      if (m_normalFont.CalcLength(desc) > GetImage().GetXRes() - 2)
       {
          desc.append("...");
          std::string::size_type pos = desc.size() - 4;
@@ -263,7 +263,7 @@ void SaveGamesList::UpdateList()
             desc.erase(pos, 1);
             pos--;
 
-         } while (pos > 0 && m_normalFont.CalcLength(desc.c_str()) > GetImage().GetXRes() - 2);
+         } while (pos > 0 && m_normalFont.CalcLength(desc) > GetImage().GetXRes() - 2);
       }
 
       // when selected, fill background
@@ -273,7 +273,7 @@ void SaveGamesList::UpdateList()
 
       // paste image
       IndexedImage tempImage;
-      m_normalFont.CreateString(tempImage, desc.c_str(), selected ? 73 : 162);
+      m_normalFont.CreateString(tempImage, desc, selected ? 73 : 162);
 
       GetImage().PasteImage(tempImage, 2, i*(charHeight + 1) + 2, true);
    }
@@ -663,21 +663,21 @@ void SaveGameScreen::UpdateInfo()
       unsigned int textColor = 73;
 
       // player name
-      unsigned int width = m_buttonFont.CalcLength(info.m_title.c_str());
+      unsigned int width = m_buttonFont.CalcLength(info.m_title);
       unsigned int xpos = width > 128 ? 0 : (128 - width) / 2;
-      m_buttonFont.CreateString(tempImage, info.m_title.c_str(), 162);
+      m_buttonFont.CreateString(tempImage, info.m_title, 162);
       infoImage.PasteImage(tempImage, xpos, 2, true);
       tempImage.Clear();
 
       // gender
       std::string text(m_game.GetGameStrings().GetString(2, info.m_gender + 9));
-      m_buttonFont.CreateString(tempImage, text.c_str(), textColor);
+      m_buttonFont.CreateString(tempImage, text, textColor);
       infoImage.PasteImage(tempImage, 2, 13, true);
       tempImage.Clear();
 
       // profession
       text = m_game.GetGameStrings().GetString(2, info.m_profession + 23);
-      m_buttonFont.CreateString(tempImage, text.c_str(), textColor);
+      m_buttonFont.CreateString(tempImage, text, textColor);
       infoImage.PasteImage(tempImage, 125 - tempImage.GetXRes(), 13, true);
 
       // basic attributes
@@ -685,7 +685,7 @@ void SaveGameScreen::UpdateInfo()
       {
          // text
          text = m_game.GetGameStrings().GetString(2, i + 17);
-         m_buttonFont.CreateString(tempImage, text.c_str(), textColor);
+         m_buttonFont.CreateString(tempImage, text, textColor);
          infoImage.PasteImage(tempImage, 75, 42 + i * 17, true);
 
          // number
@@ -701,7 +701,7 @@ void SaveGameScreen::UpdateInfo()
          std::ostringstream buffer;
          buffer << val;
 
-         m_buttonFont.CreateString(tempImage, buffer.str().c_str(), textColor);
+         m_buttonFont.CreateString(tempImage, buffer.str(), textColor);
          infoImage.PasteImage(tempImage, 110, 42 + i * 17, true);
       }
 
@@ -717,7 +717,7 @@ void SaveGameScreen::UpdateInfo()
             if (pos != std::string::npos)
                text.erase(0,pos+1);
 
-            m_normalFont.CreateString(temp,text.c_str(),162);
+            m_normalFont.CreateString(temp,text,162);
             img_back2.PasteImage(temp,5,192,true);
       #endif
       */

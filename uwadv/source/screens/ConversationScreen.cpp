@@ -120,10 +120,10 @@ void ConversationScreen::Init()
       }
 
       IndexedImage img_name;
-      m_normalFont.CreateString(img_name, name1.c_str(), 101);
+      m_normalFont.CreateString(img_name, name1, 101);
       image.PasteImage(img_name, 48, 2, true);
 
-      m_normalFont.CreateString(img_name, name2.c_str(), 101);
+      m_normalFont.CreateString(img_name, name2, 101);
       image.PasteImage(img_name, 144, 2, true);
 
       // barter areas

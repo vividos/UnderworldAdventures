@@ -53,7 +53,7 @@ class Font
 {
 public:
    /// ctor
-   Font() {}
+   Font();
 
    /// loads a font
    void Load(Base::ResourceManager& resourceManager, FontId fontId);
@@ -62,10 +62,10 @@ public:
    unsigned int GetCharHeight() { return m_charHeight; }
 
    /// calculates and returns length of string in pixel
-   unsigned int CalcLength(const char* text);
+   unsigned int CalcLength(const std::string& text);
 
    /// creates image from string, using the font, using a foreground palette index
-   void CreateString(IndexedImage& image, const char* text, Uint8 foregroundIndex);
+   void CreateString(IndexedImage& image, const std::string& text, Uint8 foregroundIndex);
 
 protected:
    friend Import::FontLoader;
