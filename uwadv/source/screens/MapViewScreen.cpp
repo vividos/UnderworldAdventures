@@ -87,7 +87,9 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
    const Underworld::Level& level = m_game.GetUnderworld().GetLevelList().GetLevel(levelIndex);
    const Underworld::Tilemap& tilemap = level.GetTilemap();
 
-   UI::AutomapGenerator generator{ imageManager, tilemap };
+   UI::AutomapGenerator generator{ m_game.GetResourceManager(), imageManager, tilemap };
+
+   generator.DrawLevelNumber(image, levelIndex, level.GetLevelName());
 
    UpdateImage();
 }

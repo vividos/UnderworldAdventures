@@ -21,13 +21,27 @@
 //
 #include "pch.hpp"
 #include "AutomapGenerator.hpp"
+#include "ResourceManager.hpp"
 #include "ImageManager.hpp"
 #include "IndexedImage.hpp"
 #include "Tilemap.hpp"
 
 using UI::AutomapGenerator;
 
-AutomapGenerator::AutomapGenerator(ImageManager& imageManager, const Underworld::Tilemap& tilemap)
+AutomapGenerator::AutomapGenerator(Base::ResourceManager& resourceManager,
+   ImageManager& imageManager, const Underworld::Tilemap& tilemap)
    :m_tilemap(tilemap)
 {
+   m_bigFont.Load(resourceManager, fontBig);
+}
+
+void AutomapGenerator::DrawLevelNumber(IndexedImage& image, size_t levelIndex,
+   const std::string& levelName) const
+{
+   std::string numberText = std::to_string(levelIndex + 1);
+
+   IndexedImage numberImage;
+   m_bigFont.CreateString(numberImage, numberText, 0x2d);
+
+   image.PasteImage(numberImage, 286, 5, true);
 }

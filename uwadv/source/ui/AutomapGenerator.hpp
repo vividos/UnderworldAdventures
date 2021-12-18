@@ -21,8 +21,15 @@
 //
 #pragma once
 
+#include "Font.hpp"
+
 class IndexedImage;
 class ImageManager;
+
+namespace Base
+{
+   class ResourceManager;
+}
 
 namespace Underworld
 {
@@ -36,11 +43,19 @@ namespace UI
    {
    public:
       /// ctor
-      AutomapGenerator(ImageManager& imageManager, const Underworld::Tilemap& tilemap);
+      AutomapGenerator(Base::ResourceManager& resourceManager,
+         ImageManager& imageManager, const Underworld::Tilemap& tilemap);
+
+      /// draws level number
+      void DrawLevelNumber(IndexedImage& image, size_t levelIndex,
+         const std::string& levelName) const;
 
    private:
       /// tilemap to use for generating automap
       const Underworld::Tilemap& m_tilemap;
+
+      /// big font for level number
+      Font m_bigFont;
    };
 
 } // namespace UI
