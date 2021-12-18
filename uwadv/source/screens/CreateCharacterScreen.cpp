@@ -84,6 +84,11 @@ enum CreateCharButtonType
    buttonTimer = 3,  ///< virtual button acting as a countdown timer
 };
 
+CreateCharacterScreen::CreateCharacterScreen(IGame& game)
+   :Screen(game)
+{
+}
+
 /// \todo replace pplayer with reference to player object
 void CreateCharacterScreen::Init()
 {

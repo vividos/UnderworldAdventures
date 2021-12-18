@@ -40,10 +40,7 @@ class CreateCharacterScreen : public Screen
 {
 public:
    /// ctor
-   CreateCharacterScreen(IGame& game)
-      :Screen(game)
-   {
-   }
+   CreateCharacterScreen(IGame& game);
 
    // virtual functions from Screen
    virtual void Init() override;
@@ -55,9 +52,9 @@ public:
    // registered lua C functions
 
    /// performs an action given by the script
-   static int cchar_do_action(lua_State *L);
+   static int cchar_do_action(lua_State* L);
 
-protected:
+private:
    /// loads and initializes Lua script
    void InitLuaScript();
 
@@ -95,31 +92,31 @@ protected:
    MouseCursor m_mouseCursor;
 
    /// string block for button and label text
-   unsigned int strblock;
+   unsigned int strblock = 2;
 
    /// button and text font
    Font m_font;
 
    /// ended
-   bool m_isEnded;
+   bool m_isEnded = false;
 
    /// start a new game
-   bool m_newGame;
+   bool m_newGame = false;
 
    /// the player
    Underworld::Player* m_player;
 
    /// buttons changed
-   bool m_buttonsHaveChanged;
+   bool m_buttonsHaveChanged = false;
 
    /// current fading stage
-   unsigned int m_fadingStage;
+   unsigned int m_fadingStage = 0;
 
    /// current tick count
-   unsigned int m_tickCount;
+   unsigned int m_tickCount = 0;
 
    /// indicates if the mouse button is down
-   bool m_isButtonDown;
+   bool m_isButtonDown = false;
 
    /// screen image
    ImageQuad m_screenImage;
@@ -131,10 +128,10 @@ protected:
    std::vector<IndexedImage> m_buttonImages;
 
    /// number of selected button, or -1 if none
-   int m_selectedButton;
+   int m_selectedButton = -1;
 
    /// number of previous button
-   int m_previousButton;
+   int m_previousButton = -1;
 
    /// input text
    std::string m_inputText;
@@ -143,38 +140,38 @@ protected:
    std::vector<unsigned char> m_buttonImageIndices;
 
    /// x-coordinate for center of buttongroup
-   unsigned int m_buttonGroupPosX;
+   unsigned int m_buttonGroupPosX = 240;
 
    /// palette color index of normal text
-   unsigned char m_normalTextColor;
+   unsigned char m_normalTextColor = 0;
 
    /// palette color index of highlighted text
-   unsigned char m_highlightTextColor;
+   unsigned char m_highlightTextColor = 0;
 
    /// string number of caption in current button group (0 if none)
-   unsigned int m_buttonGroupCaptionStringNumber;
+   unsigned int m_buttonGroupCaptionStringNumber = 0;
 
    /// button type of current button group
-   unsigned int m_buttonGroupButtonType;
+   unsigned int m_buttonGroupButtonType = 0;
 
    /// normal button image for current button group
-   unsigned char m_buttonGroupNormalButtonImage;
+   unsigned char m_buttonGroupNormalButtonImage = 0;
 
    /// highlighted button image for current button group
-   unsigned char m_buttonGroupHighlightButtonImage;
+   unsigned char m_buttonGroupHighlightButtonImage = 0;
 
    /// number of buttons in current group
-   unsigned int m_buttonGroupButtonCount;
+   unsigned int m_buttonGroupButtonCount = 0;
 
    /// number of buttons per column in current group
-   int m_buttonGroupButtonsPerColumn;
+   int m_buttonGroupButtonsPerColumn = 1;
 
    /// array of string numbers for buttons in current group
    std::vector<unsigned int> m_buttonGroupButtonStringNumbers;
 
    /// countdown time in seconds for timer buttons
-   double m_countDownTime;
+   double m_countDownTime = 1.0;
 
    /// tickcount for countdown timer
-   unsigned int m_countDownTickCount;
+   unsigned int m_countDownTickCount = 0;
 };
