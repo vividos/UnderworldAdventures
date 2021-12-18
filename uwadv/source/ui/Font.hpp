@@ -59,13 +59,14 @@ public:
    void Load(Base::ResourceManager& resourceManager, FontId fontId);
 
    /// returns height of chars in pixels
-   unsigned int GetCharHeight() { return m_charHeight; }
+   unsigned int GetCharHeight() const { return m_charHeight; }
 
    /// calculates and returns length of string in pixel
-   unsigned int CalcLength(const std::string& text);
+   unsigned int CalcLength(const std::string& text) const;
 
    /// creates image from string, using the font, using a foreground palette index
-   void CreateString(IndexedImage& image, const std::string& text, Uint8 foregroundIndex);
+   void CreateString(IndexedImage& image, const std::string& text,
+      Uint8 foregroundIndex) const;
 
 protected:
    friend Import::FontLoader;

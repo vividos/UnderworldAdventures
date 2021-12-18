@@ -43,7 +43,7 @@ Font::Font()
 {
 }
 
-unsigned int Font::CalcLength(const std::string& text)
+unsigned int Font::CalcLength(const std::string& text) const
 {
    unsigned int width = 0;
    size_t len = text.length();
@@ -64,7 +64,8 @@ unsigned int Font::CalcLength(const std::string& text)
    return width;
 }
 
-void Font::CreateString(IndexedImage& image, const std::string& text, Uint8 foregroundIndex)
+void Font::CreateString(IndexedImage& image, const std::string& text,
+   Uint8 foregroundIndex) const
 {
    // create image with proper size
    unsigned int width = CalcLength(text);
