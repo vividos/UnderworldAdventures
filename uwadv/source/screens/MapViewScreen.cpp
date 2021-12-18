@@ -25,6 +25,7 @@
 #include "Underworld.hpp"
 #include "Player.hpp"
 #include "Audio.hpp"
+#include "AutomapGenerator.hpp"
 
 MapViewScreen::MapViewScreen(IGame& gameInterface)
    :ImageScreen(gameInterface, 0, 0.5),
@@ -82,6 +83,11 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 
    ImageManager& imageManager = m_game.GetImageManager();
    imageManager.Load(image, "data/blnkmap.byt", 0, 1, imageByt);
+
+   const Underworld::Level& level = m_game.GetUnderworld().GetLevelList().GetLevel(levelIndex);
+   const Underworld::Tilemap& tilemap = level.GetTilemap();
+
+   UI::AutomapGenerator generator{ imageManager, tilemap };
 
    UpdateImage();
 }
