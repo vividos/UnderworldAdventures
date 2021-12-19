@@ -35,6 +35,7 @@ namespace Base
 namespace Underworld
 {
    class Tilemap;
+   class Player;
    enum TilemapTileType;
    enum AutomapFlag;
 }
@@ -55,6 +56,9 @@ namespace UI
 
       /// generates the automap image
       void DrawTiles(IndexedImage& image) const;
+
+      /// draws the player's pin
+      void DrawPlayerPin(IndexedImage& image, const Underworld::Player& player) const;
 
    private:
       /// draws single tile
@@ -83,6 +87,9 @@ namespace UI
 
       /// big font for level number
       Font m_bigFont;
+
+      /// player pin image
+      IndexedImage m_playerPinImage;
    };
 
 } // namespace UI

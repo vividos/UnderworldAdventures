@@ -25,6 +25,7 @@
 #include "ImageManager.hpp"
 #include "IndexedImage.hpp"
 #include "Tilemap.hpp"
+#include "Player.hpp"
 #include <random>
 
 using UI::AutomapGenerator;
@@ -76,6 +77,7 @@ AutomapGenerator::AutomapGenerator(Base::ResourceManager& resourceManager,
    :m_tilemap(tilemap)
 {
    m_bigFont.Load(resourceManager, fontBig);
+   imageManager.Load(m_playerPinImage, "buttons", 63, 1);
 }
 
 void AutomapGenerator::DrawLevelNumber(IndexedImage& image, size_t levelIndex,
@@ -102,6 +104,18 @@ void AutomapGenerator::DrawTiles(IndexedImage& image) const
          DrawTile(image, tileX, tileY);
       }
    }
+}
+
+void AutomapGenerator::DrawPlayerPin(IndexedImage& image, const Underworld::Player& player) const
+{
+   unsigned int playerX = static_cast<unsigned int>(player.GetXPos());
+   unsigned int playerY = static_cast<unsigned int>(player.GetYPos());
+
+   image.PasteImage(
+      m_playerPinImage,
+      playerX * c_tileSize + c_mapOffsetX + 1,
+      (63 - playerY) * c_tileSize + c_mapOffsetY + 3 - m_playerPinImage.GetYRes(),
+      true);
 }
 
 void AutomapGenerator::DrawTile(IndexedImage& image, size_t tileX, size_t tileY) const
