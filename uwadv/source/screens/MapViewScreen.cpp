@@ -90,6 +90,7 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
    UI::AutomapGenerator generator{ m_game.GetResourceManager(), imageManager, tilemap };
 
    generator.DrawLevelNumber(image, levelIndex, level.GetLevelName());
+   generator.DrawTiles(image);
 
    UpdateImage();
 }

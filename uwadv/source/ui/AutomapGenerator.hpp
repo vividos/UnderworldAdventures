@@ -22,6 +22,7 @@
 #pragma once
 
 #include "Font.hpp"
+#include <array>
 
 class IndexedImage;
 class ImageManager;
@@ -34,6 +35,8 @@ namespace Base
 namespace Underworld
 {
    class Tilemap;
+   enum TilemapTileType;
+   enum AutomapFlag;
 }
 
 namespace UI
@@ -49,6 +52,30 @@ namespace UI
       /// draws level number
       void DrawLevelNumber(IndexedImage& image, size_t levelIndex,
          const std::string& levelName) const;
+
+      /// generates the automap image
+      void DrawTiles(IndexedImage& image) const;
+
+   private:
+      /// draws single tile
+      void DrawTile(IndexedImage& image, size_t tileX, size_t tileY) const;
+
+      /// fills tile pixels for solid tile
+      static void FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
+         std::array<Uint8, 9>& tilePixels);
+
+      void FillDiagonalTilePixels(Underworld::TilemapTileType tileType,
+         std::array<Uint8, 9>& tilePixels,
+         std::vector<Uint8>& paletteIndices) const;
+
+      /// returns if tile in a direction is open in in regards to this tile
+      /// (which is assumed to be solid)
+      bool IsTileOpen(unsigned int tileX, unsigned int tileY,
+         int offsetToCheckX, int offsetToCheckY) const;
+
+      /// fills tile pixels for solid tile
+      void FillSolidTilePixels(unsigned int tileX, unsigned int tileY,
+         std::array<Uint8, 9>& tilePixels) const;
 
    private:
       /// tilemap to use for generating automap
