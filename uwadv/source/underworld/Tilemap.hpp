@@ -51,15 +51,16 @@ namespace Underworld
       tileSlope_w = 0x09      ///< open tile with sloped floor going up west
    };
 
+   /// automap flag
    enum AutomapFlag
    {
-      autommapDefault = 0x0,
-      automapDoor = 0x1,
-      automapTeleport = 0x3,
-      automapWater = 0x4,
-      automapBridge = 0x6,
-      automapLava = 0xc,
-      automapUndiscovered = 0x0f,
+      automapDefault = 0x0,   ///< default tile
+      automapDoor = 0x1,      ///< tile containing door
+      automapTeleport = 0x3,  ///< teleport tile
+      automapWater = 0x4,     ///< walter tile
+      automapBridge = 0x6,    ///< bridge tile
+      automapLava = 0xc,      ///< lava tile
+      automapUndiscovered = 0x0f,   ///< undiscovered tile
    };
 
    /// tilemap tile info
