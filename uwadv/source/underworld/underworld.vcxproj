@@ -50,6 +50,7 @@
     <ClCompile Include="ConvGlobals.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="LevelList.cpp" />
     <ClCompile Include="MapNotes.cpp" />
     <ClCompile Include="Object.cpp" />

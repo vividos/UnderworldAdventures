@@ -64,6 +64,10 @@ namespace Underworld
       /// returns map notes
       const MapNotes& GetMapNotes() const { return m_mapNotes; }
 
+      /// determines automap flag based on the tile and its objects
+      AutomapFlag GetAutomapFlagFromTile(
+         unsigned int xpos, unsigned int ypos) const;
+
       // loading / saving
 
       /// saves level
