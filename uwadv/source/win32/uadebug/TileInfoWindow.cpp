@@ -151,7 +151,7 @@ void TileInfoForm::UpdateTileInfo()
             text += debugClient.GetGameString(10, value);
          else
             // formula to calculate string for texture above 0xFF; uw1 specific!
-            text += debugClient.GetGameString(10, 512 - (value - 256));
+            text += debugClient.GetGameString(10, 510 - (value - 256));
       }
 
       m_tileInfoList.SetItemText(itemIndex, 1, text);
