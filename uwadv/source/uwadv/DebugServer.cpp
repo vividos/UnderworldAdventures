@@ -370,7 +370,8 @@ bool DebugServer::GetMessageText(char* buffer, size_t bufferSize)
    if (!m_messageQueue.empty())
    {
       DebugServerMessage& msg = m_messageQueue.front();
-      strncpy(buffer, msg.messageText.c_str(), bufferSize);
+      if (buffer != nullptr)
+         strncpy(buffer, msg.messageText.c_str(), bufferSize);
    }
 
    return !m_messageQueue.empty();
