@@ -203,7 +203,7 @@ void AutomapGenerator::FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
       auto horizontalAdjacentTileType = m_tilemap.GetTileInfo((tileX + 1) % 64, tileY).m_type;
 
       bool isVertical = verticalAdjacentTileType == Underworld::tileSolid;
-      bool isHorizontal = verticalAdjacentTileType == Underworld::tileSolid;
+      bool isHorizontal = horizontalAdjacentTileType == Underworld::tileSolid;
 
       if (isVertical || isHorizontal)
       {
