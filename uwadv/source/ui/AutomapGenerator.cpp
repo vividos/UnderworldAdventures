@@ -40,25 +40,25 @@ const unsigned int c_mapOffsetX = 4;
 const unsigned int c_mapOffsetY = 2;
 
 /// palette 0 indices for wall pixels
-std::vector<Uint8> c_wallPaletteIndices = { 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48 };
+const std::vector<Uint8> c_wallPaletteIndices = { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48 };
 
 /// palette 0 indices for floor pixels
-std::vector<Uint8> c_floorPaletteIndices = { 0x3c, 0x3e, 0x3f, 0x40 };
+const std::vector<Uint8> c_floorPaletteIndices = { 0x3c, 0x3e, 0x3f, 0x40 };
 
 /// palette 0 indices for door pixels
-std::vector<Uint8> c_doorPaletteIndices = { 0x44, 0x45, 0x43, 0x46, 0x47, 0x48 };
+const std::vector<Uint8> c_doorPaletteIndices = { 0x44, 0x45, 0x43, 0x46, 0x47, 0x48 };
 
 /// palette 0 indices for teleport pixels
-std::vector<Uint8> c_teleportPaletteIndices = { 0x43, 0x44, 0x45, 0x46, 0x47 };
+const std::vector<Uint8> c_teleportPaletteIndices = { 0x43, 0x44, 0x45, 0x46, 0x47 };
 
 /// palette 0 indices for water pixels
-std::vector<Uint8> c_waterPaletteIndices = { 0xb1, 0xb2 };
+const std::vector<Uint8> c_waterPaletteIndices = { 0xb1, 0xb2 };
 
 /// palette 0 indices for bridge pixels
-std::vector<Uint8> c_bridgePaletteIndices = { 0xe9, 0xea, 0xeb };
+const std::vector<Uint8> c_bridgePaletteIndices = { 0xe9, 0xea, 0xeb };
 
 /// palette 0 indices for lava pixels
-std::vector<Uint8> c_lavaPaletteIndices = { 0xb5, 0xb6 };
+const std::vector<Uint8> c_lavaPaletteIndices = { 0xb5, 0xb6 };
 
 /// returns a random palette index from the list of indices
 Uint8 GetRandomPaletteIndex(const std::vector<Uint8>& paletteIndices)
@@ -130,8 +130,6 @@ void AutomapGenerator::DrawTile(IndexedImage& image, size_t tileX, size_t tileY)
       0, 0, 0,
    };
 
-   std::vector<Uint8>& paletteIndices = c_floorPaletteIndices;
-
    auto tileType = m_tilemap.GetTileInfo(tileX, tileY).m_type;
    auto automapType = m_tilemap.GetTileInfo(tileX, tileY).m_automapFlag;
 
@@ -149,7 +147,7 @@ void AutomapGenerator::DrawTile(IndexedImage& image, size_t tileX, size_t tileY)
    case Underworld::tileDiagonal_sw:
    case Underworld::tileDiagonal_nw:
    case Underworld::tileDiagonal_ne:
-      FillDiagonalTilePixels(tileType, tilePixels, paletteIndices);
+      FillDiagonalTilePixels(automapType, tileType, tilePixels);
       break;
 
    case Underworld::tileSolid:
@@ -164,46 +162,48 @@ void AutomapGenerator::DrawTile(IndexedImage& image, size_t tileX, size_t tileY)
    image.PasteImage(tileImage, x, y, true);
 }
 
-void AutomapGenerator::FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
-   std::array<Uint8, 9>& tilePixels)
+std::reference_wrapper<const std::vector<Uint8>> GetPaletteIndicesByAutomapFlag(
+   Underworld::AutomapFlag automapFlag)
 {
-   std::vector<Uint8>& paletteIndices = c_floorPaletteIndices;
-
    switch (automapFlag)
    {
    case Underworld::automapDoor:
-      paletteIndices = c_doorPaletteIndices;
-      break;
+      return c_doorPaletteIndices;
 
    case Underworld::automapTeleport:
-      paletteIndices = c_teleportPaletteIndices;
-      break;
+      return c_teleportPaletteIndices;
 
    case Underworld::automapWater:
-      paletteIndices = c_waterPaletteIndices;
-      break;
+      return c_waterPaletteIndices;
 
    case Underworld::automapBridge:
-      paletteIndices = c_bridgePaletteIndices;
-      break;
+      return c_bridgePaletteIndices;
 
    case Underworld::automapLava:
-      paletteIndices = c_lavaPaletteIndices;
-      break;
+      return c_lavaPaletteIndices;
 
    default:
-      // use floor palette
-      break;
+      return c_floorPaletteIndices;
    }
+}
+
+void AutomapGenerator::FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
+   std::array<Uint8, 9>& tilePixels)
+{
+   std::reference_wrapper<const std::vector<Uint8>> paletteIndices =
+      GetPaletteIndicesByAutomapFlag(automapFlag);
 
    for (Uint8& pixel : tilePixels)
       pixel = GetRandomPaletteIndex(paletteIndices);
 }
 
-void AutomapGenerator::FillDiagonalTilePixels(Underworld::TilemapTileType tileType,
-   std::array<Uint8, 9>& tilePixels,
-   std::vector<Uint8>& paletteIndices) const
+void AutomapGenerator::FillDiagonalTilePixels(
+   Underworld::AutomapFlag automapFlag, Underworld::TilemapTileType tileType,
+   std::array<Uint8, 9>& tilePixels) const
 {
+   std::reference_wrapper<const std::vector<Uint8>> paletteIndices =
+      GetPaletteIndicesByAutomapFlag(automapFlag);
+
    switch (tileType)
    {
    case Underworld::tileDiagonal_se: // diagonal wall, open corner to the lower right

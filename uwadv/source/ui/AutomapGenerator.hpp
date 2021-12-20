@@ -68,9 +68,9 @@ namespace UI
       static void FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
          std::array<Uint8, 9>& tilePixels);
 
-      void FillDiagonalTilePixels(Underworld::TilemapTileType tileType,
-         std::array<Uint8, 9>& tilePixels,
-         std::vector<Uint8>& paletteIndices) const;
+      /// fills tile pixels for diagonal tile types
+      void FillDiagonalTilePixels(Underworld::AutomapFlag automapFlag,
+         Underworld::TilemapTileType tileType, std::array<Uint8, 9>& tilePixels) const;
 
       /// returns if tile in a direction is open in in regards to this tile
       /// (which is assumed to be solid)
