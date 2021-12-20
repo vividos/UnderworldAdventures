@@ -22,6 +22,7 @@
 #include "pch.hpp"
 #include "TileMapViewCtrl.hpp"
 #include "DebugClient.hpp"
+#include "Constants.hpp"
 
 TileMapViewCtrl::TileMapViewCtrl()
 {
@@ -51,12 +52,13 @@ void TileMapViewCtrl::DoPaint(CDCHandle hDC)
 
             COLORREF color = RGB(255, 255, 255);
 
-            if (info.m_textureFloor == 272 || info.m_textureFloor == 273 ||
-               info.m_textureFloor == 288 || info.m_textureFloor == 289 || info.m_textureFloor == 290)
-               color = RGB(64, 64, 255);
+            unsigned int floorTexture = info.m_textureFloor - Base::c_stockTexturesFloor;
+            if (floorTexture == 16 || floorTexture == 17 ||
+               floorTexture == 32 || floorTexture == 33 || floorTexture == 34)
+               color = RGB(64, 64, 255); // water
 
-            if (info.m_textureFloor == 280 || info.m_textureFloor == 281)
-               color = RGB(255, 64, 64);
+            if (floorTexture == 23 || floorTexture == 24 || floorTexture == 25)
+               color = RGB(255, 64, 64); // lava
 
             if (info.m_tileType == 0)
                color = RGB(0, 0, 0);
