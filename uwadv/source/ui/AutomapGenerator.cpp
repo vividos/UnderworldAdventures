@@ -140,7 +140,7 @@ void AutomapGenerator::DrawTile(IndexedImage& image, size_t tileX, size_t tileY)
    case Underworld::tileSlope_e:
    case Underworld::tileSlope_s:
    case Underworld::tileSlope_w:
-      FillOpenTilePixels(automapType, tilePixels);
+      FillOpenTilePixels(automapType, tileX, tileY, tilePixels);
       break;
 
    case Underworld::tileDiagonal_se:
@@ -168,7 +168,8 @@ std::reference_wrapper<const std::vector<Uint8>> GetPaletteIndicesByAutomapFlag(
    switch (automapFlag)
    {
    case Underworld::automapDoor:
-      return c_doorPaletteIndices;
+      // first render floor, and then the door
+      return c_floorPaletteIndices;
 
    case Underworld::automapTeleport:
       return c_teleportPaletteIndices;
@@ -188,13 +189,29 @@ std::reference_wrapper<const std::vector<Uint8>> GetPaletteIndicesByAutomapFlag(
 }
 
 void AutomapGenerator::FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
-   std::array<Uint8, 9>& tilePixels)
+   unsigned int tileX, unsigned int tileY, std::array<Uint8, 9>& tilePixels) const
 {
    std::reference_wrapper<const std::vector<Uint8>> paletteIndices =
       GetPaletteIndicesByAutomapFlag(automapFlag);
 
    for (Uint8& pixel : tilePixels)
       pixel = GetRandomPaletteIndex(paletteIndices);
+
+   if (automapFlag == Underworld::automapDoor)
+   {
+      auto verticalAdjacentTileType = m_tilemap.GetTileInfo(tileX, (tileY + 1) % 64).m_type;
+      auto horizontalAdjacentTileType = m_tilemap.GetTileInfo((tileX + 1) % 64, tileY).m_type;
+
+      bool isVertical = verticalAdjacentTileType == Underworld::tileSolid;
+      bool isHorizontal = verticalAdjacentTileType == Underworld::tileSolid;
+
+      if (isVertical || isHorizontal)
+      {
+         tilePixels[isVertical ? 1 : 3] = GetRandomPaletteIndex(c_doorPaletteIndices);
+         tilePixels[4] = GetRandomPaletteIndex(c_doorPaletteIndices);
+         tilePixels[isVertical ? 7 : 5] = GetRandomPaletteIndex(c_doorPaletteIndices);
+      }
+   }
 }
 
 void AutomapGenerator::FillDiagonalTilePixels(

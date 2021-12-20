@@ -65,8 +65,9 @@ namespace UI
       void DrawTile(IndexedImage& image, size_t tileX, size_t tileY) const;
 
       /// fills tile pixels for solid tile
-      static void FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
-         std::array<Uint8, 9>& tilePixels);
+      void FillOpenTilePixels(Underworld::AutomapFlag automapFlag,
+         unsigned int tileX, unsigned int tileY,
+         std::array<Uint8, 9>& tilePixels) const;
 
       /// fills tile pixels for diagonal tile types
       void FillDiagonalTilePixels(Underworld::AutomapFlag automapFlag,
