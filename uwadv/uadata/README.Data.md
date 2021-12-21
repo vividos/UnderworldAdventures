@@ -6,4 +6,5 @@ needed to run the game.
 If you want to listen to the digital music soundtrack, extract the
 uadata00.zip file (this applies only if you're reading this in the binary
 distribution) and then open "Underworld Adventures Soundtrack.m3u" with your
-favourite audio playback software.
+favourite audio playback software. When using 7-zip, use the "Extract here"
+option.
