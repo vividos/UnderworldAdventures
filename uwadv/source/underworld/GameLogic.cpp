@@ -159,6 +159,9 @@ unsigned int GameLogic::GetInventoryWeight() const
 
 void GameLogic::CheckAutomapTileChanged()
 {
+   if (GetUnderworld().GetCurrentLevel().GetTilemap().IsAutomapDisabled())
+      return;
+
    const Player& player = GetUnderworld().GetPlayer();
    size_t currentLevel = player.GetAttribute(attrMapLevel);
 

@@ -78,6 +78,7 @@ void LevelImporter::LoadUwDemoLevel(Underworld::LevelList& levelList)
 void LevelImporter::LoadUw1Levels(Underworld::LevelList& levelList)
 {
    LoadUwLevels(levelList, false, 9, 18, 27);
+   levelList.GetLevel(8).GetTilemap().SetAutomapDisabled(true);
 }
 
 void LevelImporter::LoadUw2Levels(Underworld::LevelList& levelList)

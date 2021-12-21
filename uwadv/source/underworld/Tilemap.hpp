@@ -146,6 +146,15 @@ namespace Underworld
       /// returns if the tilemap is used (it contains tiles)
       bool IsUsed() const { return m_isUsed; }
 
+      /// sets if auto-mapping this tilemap is allowed
+      void SetAutomapDisabled(bool isAutomapDisabled)
+      {
+         m_isAutomapDisabled = isAutomapDisabled;
+      }
+
+      /// returns if auto-mapping this tilemap is allowed
+      bool IsAutomapDisabled() const { return m_isAutomapDisabled; }
+
       /// returns floor height on specific position
       double GetFloorHeight(double xpos, double ypos) const;
 
@@ -181,6 +190,9 @@ namespace Underworld
 
       /// indicates if tilemap is filled with actual tiles
       bool m_isUsed;
+
+      /// indicates if auto-mapping this tilemap is disabled
+      bool m_isAutomapDisabled = false;
    };
 
 } // namespace Underworld

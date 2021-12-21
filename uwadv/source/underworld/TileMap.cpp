@@ -117,7 +117,9 @@ void Tilemap::Load(Base::Savegame& sg)
 {
    sg.BeginSection("tilemap");
 
-   m_isUsed = sg.Read8() != 0;
+   Uint8 flags = sg.Read8();
+   m_isUsed = (flags & 1) != 0;
+   m_isAutomapDisabled = (flags & 2) != 0;
 
    if (!m_isUsed)
       return; // don't read empty tilemaps
@@ -154,7 +156,11 @@ void Tilemap::Save(Base::Savegame& sg) const
 {
    sg.BeginSection("tilemap");
 
-   sg.Write8(m_isUsed ? 1 : 0);
+   Uint8 flags =
+      (m_isUsed ? 1 : 0) |
+      (m_isAutomapDisabled ? 2 : 0);
+
+   sg.Write8(flags);
 
    if (!m_isUsed)
       return; // don't write empty tilemaps
