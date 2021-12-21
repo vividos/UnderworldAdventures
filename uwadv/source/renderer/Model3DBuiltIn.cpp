@@ -42,6 +42,10 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
       const Triangle3dTextured& tri = m_triangles[triangleIndex];
 
       Uint8 color[3] = { 255, 255, 255 };
+      if (tri.m_colorIndex != 0)
+      {
+         textureManager.GetPaletteColor(tri.m_colorIndex, color[0], color[1], color[2]);
+      }
 
       glBegin(GL_TRIANGLES);
 
@@ -56,6 +60,14 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
 
       glNormal3d(normal.x, normal.y, normal.z);
 
+      if (tri.m_textureNumber == 0)
+         glDisable(GL_TEXTURE_2D);
+      else
+      {
+         glEnable(GL_TEXTURE_2D);
+         textureManager.Use(tri.m_textureNumber);
+      }
+
       for (unsigned index = 0; index < 3; index++)
       {
          Vector3d lightDirection = -viewerPos - (base + tri.m_vertices[index].pos);
@@ -67,6 +79,9 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
             color[0] * diffuseFactor,
             color[1] * diffuseFactor,
             color[2] * diffuseFactor);
+
+         if (tri.m_textureNumber != 0)
+            glTexCoord2d(tri.m_vertices[index].u, tri.m_vertices[index].v);
 
          glVertex3d(
             base.x - origin.x + tri.m_vertices[index].pos.x,
