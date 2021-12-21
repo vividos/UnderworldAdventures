@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,7 +26,8 @@
 using Underworld::GameLogic;
 
 GameLogic::GameLogic(IScripting* scripting)
-   :m_scripting(scripting)
+   :m_scripting(scripting),
+   m_lastPlayerLevel(std::numeric_limits<size_t>::max())
 {
    m_lastEvalTime = -1.0;
 
@@ -54,6 +55,7 @@ void GameLogic::EvaluateUnderworld(double time)
          m_userInterface->Notify(::notifyUpdatePowergem);
    }
 
+   CheckAutomapTileChanged();
    CheckMoveTrigger();
 
    m_lastEvalTime = time;
@@ -153,6 +155,53 @@ unsigned int GameLogic::GetInventoryWeight() const
    const Inventory& inventory = GetUnderworld().GetPlayer().GetInventory();
 
    return inventory.GetInventoryWeight() / 10;
+}
+
+void GameLogic::CheckAutomapTileChanged()
+{
+   const Player& player = GetUnderworld().GetPlayer();
+   size_t currentLevel = player.GetAttribute(attrMapLevel);
+
+   unsigned int tileX = (unsigned int)player.GetXPos();
+   unsigned int tileY = (unsigned int)player.GetYPos();
+
+   if (m_lastPlayerLevel != currentLevel ||
+      m_lastPlayerTileX != tileX ||
+      m_lastPlayerTileY != tileY)
+   {
+      RevealAutomapAtTile(tileX, tileY);
+   }
+
+   m_lastPlayerLevel = currentLevel;
+   m_lastPlayerTileX = tileX;
+   m_lastPlayerTileY = tileY;
+}
+
+void GameLogic::RevealAutomapAtTile(unsigned int tileX, unsigned tileY)
+{
+   Level& level = GetCurrentLevel();
+
+   for (int offsetX = -2; offsetX <= 2; offsetX++)
+      for (int offsetY = -2; offsetY <= 2; offsetY++)
+      {
+         int x = (int)tileX + offsetX;
+         int y = (int)tileY + offsetY;
+         if (x < 0 || x >= c_underworldTilemapSize ||
+            y < 0 || y >= c_underworldTilemapSize)
+            continue;
+
+         unsigned int posX = (unsigned int)x;
+         unsigned int posY = (unsigned int)y;
+
+         TileInfo& tileInfo = level.GetTilemap().GetTileInfo(posX, posY);
+
+         bool isBorderTile = offsetX == -2 || offsetX == 2 || offsetY == -2 || offsetY == 2;
+
+         // for tiles with offset 2 away, reveal solid tiles
+         if ((tileInfo.m_type == tileSolid && isBorderTile) ||
+            !isBorderTile)
+            tileInfo.m_automapFlag = level.GetAutomapFlagFromTile(posX, posY);
+      }
 }
 
 void GameLogic::CheckMoveTrigger()

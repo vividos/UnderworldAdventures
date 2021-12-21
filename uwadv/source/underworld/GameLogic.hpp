@@ -107,6 +107,12 @@ namespace Underworld
       }
 
    private:
+      /// check if the player changed the tile and automapping should be updated
+      void CheckAutomapTileChanged();
+
+      /// reveals automap at and around tile
+      void RevealAutomapAtTile(unsigned int tileX, unsigned tileY);
+
       /// checks if player is near move triggers
       void CheckMoveTrigger();
 
@@ -128,6 +134,15 @@ namespace Underworld
 
       /// last timestamp that evaluation occured
       double m_lastEvalTime;
+
+      /// last player level
+      size_t m_lastPlayerLevel;
+
+      /// last player tile, X position
+      unsigned int m_lastPlayerTileX = 0;
+
+      /// last player tile, Y position
+      unsigned int m_lastPlayerTileY = 0;
 
       /// set with active triggers
       std::set<Uint16> m_activeTriggers;
