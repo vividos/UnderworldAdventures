@@ -1,4 +1,4 @@
-# README - Manual for Underworld Adventures #
+# README - Manual for Underworld Adventures
 
 Underworld Adventures is a project to recreate Ultima Underworld 1 on modern
 operating systems (e.g. Win32, Linux or MacOS), using the original game files.
@@ -339,6 +339,31 @@ Note: The debugger is a work in progress and may not be completely functional.
 
 
 # C. Release Notes
+
+## Release Notes for "0.10-", 2021-12-??
+
+This release is the first one in 17 years. It was mainly released to restore,
+refactor and improve the old code base that I stopped developing at around
+2007. My main goal was to show what the project 
+
+This release contains several improvements and bug fixes:
+
+- Refactored the whole code base to compile again and to use modern C++
+  language constructs
+- Implemented displaying the current map when looking at the map object
+- Reactivated displaying 3D models provided by Servus
+- Objects and critters now use the hqx 4x scaler to improve image quality
+- Binaries include the digital music pack, provided by Martin Shetty (QQtis)
+- Improved decompiling conversation code
+- No need to lowercase game files anymore
+- Extended `uwdump` tool to recognize more file types
+- Improved Underworld Debugger, including debugging Lua and conversation
+  scripts
+- Updated all external libraries, like SDL2, Lua, zlib, etc.
+- New CMake based build system to help porting the project to other platforms
+- Fixed rendering the 3D models, especially the shrine ankh
+- Fixed picking up items and containers
+- Many more small bugfixes
 
 ## Release Notes for "0.9-mojito", 2004-04-10
 
