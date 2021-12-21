@@ -5,7 +5,7 @@
                https://vividos.github.com/UnderworldAdventures
  +--------------------------------------------------------------------------+
 
-Document version: 1.77, as of 2021-12-11
+Document version: 1.78, as of 2021-12-21
 
 
 Table of Contents
@@ -2658,7 +2658,7 @@ Table of Contents
                          register.
    24  PUSH_REG   0 0 1  push the value of the result register on the stack.
    25  STRCMP     ? ? ?  string compare.
-   26  EXIT_OP    0 0 0  end program (?)
+   26  EXIT_OP    0 0 0  end program
    27  SAY_OP     0 1 0  NPC says something. Print a conversation string (from
                          the stack).
    28  RESPOND_OP ? ? ?  respond (?)
@@ -3078,21 +3078,25 @@ Table of Contents
    -------------------------------------------------------------------------
 
    id=002c name="x_skills" ret_type=int
-   parameters:   arg1: when 10001, increase skill by 1?
+   parameters:   arg1: when >= 0 and <= 30, sets skill to this value
+                       when 10001, increase skill by 1?
                        when 9999, return skill value?
                  arg2: skill to use; one of:
                     0 attack, 1 defense, 2 unarmed, 3 swords
                     6 missile, 7 mana, 8 lore, 9 casting,
                     10 disarm, 11 searching, 14 repair,
                     15 charisma, 16 lockpick, 18 evaluation, 19 swimming
-   description:  improves skill?
-   return value: unknown
+                    (maps to the savegame skill values, starting at 0021h,
+                    see chapter 9.2.1)
+   description:  returns or sets skill value
+   return value: skill value/newly set skill value
    -------------------------------------------------------------------------
 
    id=002d name="x_traps" ret_type=int
-   parameters:   unknown
-   description:  unknown
-   return value: unknown
+   parameters:   arg1: value >= 0 and <= 0x3f
+                 arg2: index into savegame array at 0070h
+   description:  unknown; gets or sets some value
+   return value: current value, or newly set value (same as arg1 when in range)
    -------------------------------------------------------------------------
 
    id=002e name="x_obj_pos" ret_type=void
@@ -3290,21 +3294,26 @@ Table of Contents
     npc_yhome          y coord of home tile
     npc_whoami         npc conversation slot number
     npc_hunger
-    npc_health
-    npc_hp
+    npc_health         vitality?
+    npc_hp             vitality?
     npc_arms           (not used in uw1)
-    npc_power
-    npc_goal           goal that NPC has; 5:kill player 6:? 9:?
+    npc_power          attack power
+    npc_goal           goal that NPC has; see below
     npc_attitude       attitude; 0:hostile, 1:upset, 2:mellow, 3:friendly
     npc_gtarg          goal target; 1:player
     npc_talkedto       is 1 when player already talked to npc
-    npc_level
+    npc_level          NPC level
     npc_name           (not used in uw1)
     dungeon_level      (not used in uw1)
     riddlecounter      (not used in uw1)
     game_time
     game_days
     game_mins
+
+   The npc_goal has the following possible values:
+     5: attack
+     6: flee from goal target
+     9: attack
 
 
 7.8  Quest flags
@@ -3350,6 +3359,19 @@ Table of Contents
     109   Lord British gave his startgame speech
     110   Mors Gotha is invading the castle
     112   The Avatar is persona non grata (?)
+
+7.9 Ultima Underworld 2 specialities
+
+Ultima Underworld 1 conversations always have some stock function in the code,
+starting from 0012 up to 029c, even when unused. Conversations always start
+at 029d. In Ultima Underworld 2, the "linker" removed all unused functions and
+conversations may start at a lower position, saving on space in the cnv.ark
+file.
+
+It seems that one conversation has some CALL 0xFFFF opcodes; I guess this call
+is just a no-op, or it would crash the conversation virtual machine.
+
+
 
  +--------------------------------------------------------------------------+
 
@@ -4034,7 +4056,7 @@ Table of Contents
    006A   Int8    Quest flag 33
    006B   Int8    Quest flag 34
    006C   Int8    Quest flag 35
-   006D   Int8    num. talismans remaining
+   006D   Int8    Quest flag 36 and above (number of talismans remaining)
    006E   Int8    Garamon dream related
    006F   Int8    unknown
    0070-00A4      conv. variables? 0-52
@@ -4042,9 +4064,8 @@ Table of Contents
    00B4   Int8    difficulty (0=normal, 1=easy)
    00B5   Int8    game options
    ...
-   00CE   Int16   game time related (frame ticks?)
-   00D0   Int8    hour of day (sort of)
-   00D1   Int8    game day (sort of)
+   00CE   Int16   game_time; lower 32 bits
+   00D0   Int16   game_time; upper 32 bits
    ...
    00DC   Int8    current vitality (duplicate of 0035)?
    ...
