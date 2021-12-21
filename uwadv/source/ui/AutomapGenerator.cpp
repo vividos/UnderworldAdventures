@@ -106,6 +106,11 @@ void AutomapGenerator::DrawTiles(IndexedImage& image) const
    }
 }
 
+void AutomapGenerator::DrawMapNotes(IndexedImage& image, const Underworld::MapNotes& mapNotes) const
+{
+   // TODO
+}
+
 void AutomapGenerator::DrawPlayerPin(IndexedImage& image, const Underworld::Player& player) const
 {
    unsigned int playerX = static_cast<unsigned int>(player.GetXPos());

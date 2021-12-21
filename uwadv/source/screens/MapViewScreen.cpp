@@ -91,6 +91,8 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 
    generator.DrawLevelNumber(image, levelIndex, level.GetLevelName());
    generator.DrawTiles(image);
+   generator.DrawMapNotes(image, level.GetMapNotes());
+
    const Underworld::Player& player = m_game.GetUnderworld().GetPlayer();
 
    size_t playerLevel = player.GetAttribute(Underworld::attrMapLevel);
