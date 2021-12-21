@@ -260,7 +260,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          vy = ModelReadFixed(file);
          vz = ModelReadFixed(file);
 
-         unk1 = file.Read16();
+         unk1 = file.Read16(); // always 0
          UaModelTrace("[origin] vertno=%u unk1=%04x origin=(%f,%f,%f)",
             vertno, unk1, vx, vy, vz);
          break;
@@ -431,7 +431,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          vertno = ModelReadVertexNumber(file);
 
          refvect = vertex_list[refvert];
-         refvect.z = 32.0; // todo: ceiling value
+         refvect.z = 32.0; // use fixed value for ceiling height
          ModelStoreVertex(refvect, vertno, vertex_list);
 
          UaModelTrace("[vertex] vertno=%u vertex=(%f,%f,ceil) to-ceil from=%u unk1=%04x",
@@ -572,7 +572,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          if (cmd == M3_UW_FACE_SHORT)
          {
             unk1 = file.Read16();
-            UaModelTrace("unk1=%04x ", unk1);
+            UaModelTrace("texnum=%04x ", unk1);
          }
 
          PolygonTessellator tess;
@@ -675,13 +675,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
          palIndex = MapColorOffsetToPaletteIndex(colorOffset);
          unk1 = file.Read16();
 
-         UaModelTrace("[shade] shade color=%04x (%02x) unk1=%02x", colorOffset, palIndex, unk1);
+         UaModelTrace("[shade] face color=%04x (%02x) unk1=%02x", colorOffset, palIndex, unk1);
          break;
 
       case M3_UW_FACE_TWOSHADES: // 00BE ??? seems to define 2 colors
          colorOffset = file.Read16();
          palIndex = MapColorOffsetToPaletteIndex(colorOffset);
-         UaModelTrace("[shade] twoshade color1=%04x (%02x) ", colorOffset, palIndex);
+         UaModelTrace("[shade] twoshades color1=%04x (%02x) ", colorOffset, palIndex);
 
          colorOffset = file.Read16();
          palIndex = MapColorOffsetToPaletteIndex(colorOffset);
