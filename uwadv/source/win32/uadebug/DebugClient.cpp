@@ -444,7 +444,7 @@ CString DebugClient::GetLevelName(unsigned int level) const
    case 5: return _T("Mages");
    case 6: return _T("Tyball");
    case 7: return _T("Volcano");
-   case 8: return _T("Moogate");
+   case 8: return _T("Moongate");
    default:
       ATLASSERT(false);
       break;
