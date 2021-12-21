@@ -293,8 +293,16 @@ bool AutomapGenerator::IsTileOpen(unsigned int tileX, unsigned int tileY,
    bool toTop = offsetToCheckX == 0 && offsetToCheckY > 0;
    bool toBottom = offsetToCheckX == 0 && offsetToCheckY < 0;
 
+   const Underworld::TileInfo& adjacentTileInfo =
+      m_tilemap.GetTileInfo(tileX + offsetToCheckX, tileY + offsetToCheckY);
+
+   Underworld::AutomapFlag adjacentAutomapFlag = adjacentTileInfo.m_automapFlag;
+
+   if (adjacentAutomapFlag == Underworld::automapUndiscovered)
+      return false; // treat undiscovered tiles as solid
+
    Underworld::TilemapTileType adjacentTileType =
-      m_tilemap.GetTileInfo(tileX + offsetToCheckX, tileY + offsetToCheckY).m_type;
+      adjacentTileInfo.m_type;
 
    switch (adjacentTileType)
    {
@@ -365,8 +373,16 @@ void AutomapGenerator::FillSolidTilePixels(
       bool toTop = offsetToCheckX == 0 && offsetToCheckY > 0;
       bool toBottom = offsetToCheckX == 0 && offsetToCheckY < 0;
 
+      const Underworld::TileInfo& adjacentTileInfo =
+         m_tilemap.GetTileInfo(tileX + offsetToCheckX, tileY + offsetToCheckY);
+
+      Underworld::AutomapFlag adjacentAutomapFlag = adjacentTileInfo.m_automapFlag;
+
+      if (adjacentAutomapFlag == Underworld::automapUndiscovered)
+         continue; // don't draw corner wall pixels for undiscovered tiles
+
       Underworld::TilemapTileType adjacentTileType =
-         m_tilemap.GetTileInfo(tileX + offsetToCheckX, tileY + offsetToCheckY).m_type;
+         adjacentTileInfo.m_type;
 
       if (adjacentTileType == Underworld::tileDiagonal_nw && (toLeft || toTop))
          tilePixels[0] = GetRandomPaletteIndex(c_wallPaletteIndices);
