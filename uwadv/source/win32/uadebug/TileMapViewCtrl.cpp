@@ -53,7 +53,7 @@ void TileMapViewCtrl::DoPaint(CDCHandle hDC)
             COLORREF color = RGB(255, 255, 255);
 
             unsigned int floorTexture = info.m_textureFloor - Base::c_stockTexturesFloor;
-            if (floorTexture == 16 || floorTexture == 17 ||
+            if (floorTexture == 8 || floorTexture == 16 || floorTexture == 17 ||
                floorTexture == 32 || floorTexture == 33 || floorTexture == 34)
                color = RGB(64, 64, 255); // water
 

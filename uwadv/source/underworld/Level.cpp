@@ -63,7 +63,7 @@ Underworld::AutomapFlag Underworld::Level::GetAutomapFlagFromTile(
 
    // check floor textures
    Uint16 floorTexture = tileInfo.m_textureFloor - Base::c_stockTexturesFloor;
-   if (floorTexture == 16 || floorTexture == 17 ||
+   if (floorTexture == 8 || floorTexture == 16 || floorTexture == 17 ||
       floorTexture == 32 || floorTexture == 33 || floorTexture == 34)
       return automapWater;
 
