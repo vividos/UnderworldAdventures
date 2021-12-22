@@ -47,6 +47,13 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
          textureManager.GetPaletteColor(tri.m_colorIndex, color[0], color[1], color[2]);
       }
 
+      if (tri.m_textureNumber == 0)
+         glDisable(GL_TEXTURE_2D);
+      else
+      {
+         textureManager.Use(tri.m_textureNumber);
+      }
+
       glBegin(GL_TRIANGLES);
 
       // generate normal vector
@@ -59,14 +66,6 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
       normal *= -1;
 
       glNormal3d(normal.x, normal.y, normal.z);
-
-      if (tri.m_textureNumber == 0)
-         glDisable(GL_TEXTURE_2D);
-      else
-      {
-         glEnable(GL_TEXTURE_2D);
-         textureManager.Use(tri.m_textureNumber);
-      }
 
       for (unsigned index = 0; index < 3; index++)
       {
@@ -91,6 +90,9 @@ void Model3DBuiltIn::Render(const RenderOptions& renderOptions,
       }
 
       glEnd();
+
+      if (tri.m_textureNumber == 0)
+         glEnable(GL_TEXTURE_2D);
    }
 
    glEnable(GL_CULL_FACE);
