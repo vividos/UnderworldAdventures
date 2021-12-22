@@ -90,6 +90,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
    else
    {
       UIEnable(ID_FILE_OPEN_PROJECT, false);
+      UIEnable(ID_FILE_NEW_PROJECT, false);
    }
 
    // create command bar window
@@ -458,6 +459,7 @@ LRESULT MainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
       CRect rect(0, 0, cx, cy);
       m_tilemapChildFrame.CreateEx(m_hWndClient, rect);
       AddDebugWindow(&m_tilemapChildFrame);
+      MDIMaximize(m_tilemapChildFrame.m_hWnd);
 
       // send notifications
       DebugWindowNotification notify;
