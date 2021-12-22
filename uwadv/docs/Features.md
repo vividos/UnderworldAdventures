@@ -22,7 +22,7 @@ Create character screen           | :heavy_check_mark:
 Cutscene screen                   | :heavy_check_mark:
 Load/save game screen             | :heavy_check_mark:
 Ingame screen                     | :warning:
-Map view                          | :x:
+Map view                          | :warning:
 Conversation screen               | :warning:
 Acknowledgements screen           | :heavy_check_mark:
 End game screen                   | :x:
@@ -35,10 +35,10 @@ Rendering Tilemap                      | :heavy_check_mark:
 Rendering Objects                      | :heavy_check_mark:
 Rendering and animating critters       | :warning:
 Rendering special objects, doors, etc. | :warning:
-Animating tile textures                | :x:
-Rendering Underworld 3D models         | :warning:
-Rendering VRML98 3D models             | :soon:
-2D scaler support (hqx)                | :x:
+Animating tile textures                | :heavy_check_mark:
+Rendering Underworld 3D models         | :soon:
+Rendering VRML98 3D models             | :heavy_check_mark:
+2D scaler support (hqx)                | :heavy_check_mark:
 Optimized rendering using VBO/VBA/texture atlas | :x:
 
 ## Keyboard & mouse commands
@@ -103,11 +103,11 @@ Combat       | :x:
 Feature | State
 ------- | -----
 Looking at tilemap, objects | :soon:
-Picking up objects          | :warning:
+Picking up objects          | :heavy_check_mark:
 Putting down objects        | :x:
 Throwing objects            | :x:
 Inventory handling          | :soon:
-Combining objects           | :x:
+Combining objects           | :heavy_check_mark:
 Using objects               | :x:
 Casting spells              | :x:
 Modifying tilemap           | :x:
@@ -134,7 +134,7 @@ uwdump: dumping all file types             | :warning:
 uwdump: viewing some file types            | :x:
 mapdisp: displaying maps                   | :soon:
 convdbg: debug conversations               | :heavy_check_mark:
-convdec: decompile conversations           | :warning:
+convdec: decompile conversations           | :soon:
 xmi2mid: exporting .xmi files              | :heavy_check_mark:
 
 ## Underworld Debugger
@@ -145,7 +145,7 @@ Reading game.cfg                      | :x:
 2D Tilemap                            | :soon:
 3D Tilemap with editor                | :x:
 Code debugger for Lua                 | :x:
-Code debugger for conversation script | :x:
+Code debugger for conversation script | :soon:
 
 ## Underworld Adventures Studio
 
@@ -175,7 +175,7 @@ Support russian translation        | :x:
 Feature | State
 ------- | -----
 Visual Studio project       | :heavy_check_mark:
-CMake projects              | :warning:
+CMake projects              | :soon:
 Debian package              | :warning:
 AppVeyor build              | :heavy_check_mark:
 SonarCloud, cppcheck checks | :heavy_check_mark:
