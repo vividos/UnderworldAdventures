@@ -26,6 +26,7 @@
 #include "File.hpp"
 #include "Math.hpp"
 #include <vector>
+#include <array>
 #include "PolygonTessellator.hpp"
 
 #pragma warning(disable: 4063) // case 'X' is not a valid value for switch of enum 'ModelNodeCommand'
@@ -51,35 +52,80 @@ struct
    { 0x000550e0, 0x59aa64d4, 0x0005517a }, // another UW2 build
 };
 
-static std::map<Uint16, Uint8> s_colorOffsetToPaletteIndexMapping =
+/// all palette indices for all uw1 models
+const std::vector<Uint8> uw1_paletteIndices[32] =
 {
-   // uw1
-   { 0x2920, 0x63 }, // gray
-   { 0x2922, 0x30 }, // blue
-   { 0x2924, 0x50 }, // yellow
-   { 0x2926, 0 }, // black/transparent
-   { 0x292a, 0 },
-   { 0x292c, 0 }, // only used in 00be node in model 1 door frame
-   { 0x292e, 0 }, // only used in 00be node in model 1 door frame
-   { 0x2936, 0 }, // only used in bridge
-
-   // uw2
-   { 0x2680, 0x63 },
-   { 0x2682, 0x30 },
-   { 0x2684, 0x50 },
-   { 0x2686, 0 },
-   { 0x268a, 0 },
-   { 0x268c, 0 }, // only used in 00be node in model 1 door frame
-   { 0x268e, 0 }, // only used in 00be node in model 1 door frame
-   { 0x2696, 0 }, // only used in bridge
-
-   // blackrock gem colors
-   { 0x2698, 0 },
-   { 0x269a, 0 },
-   { 0x269c, 0 },
-   { 0x269e, 0 },
-   { 0x26a0, 0 },
+  { 0xEC }, //  00
+  { 0xEB }, //  01 door frame
+  { 0xEC }, //  02 bridge
+  { 0xE4 }, //  03 bench
+  { 0xB6, 0xB0 }, //  04 Lotus Turbo Esprit
+  { 0x64, 0x6C }, //  05 small boulder
+  { 0x64, 0x6C }, //  06 medium boulder
+  { 0x64, 0x6C }, //  07 large boulder
+  { 0xE8, 0xB8 }, //  08 arrow
+  { 0xE4 }, //  09 beam
+  { 0xE4 }, //  0a pillar
+  { 0xA3, 0xA4, 0xA6 }, //  0b shrine
+  { 0x68 }, //  0c
+  { 0x68 }, //  0d painting
+  { 0xEC }, //  0e
+  { 0xEC }, //  0f
+  { 0xB0 }, //  10 texture map
+  { 0xB0 }, //  11 texture map
+  { 0xB0 }, //  12 texture map
+  { 0x6A }, //  13 gravestone
+  { 0xB0 }, //  14 texture map
+  { 0xB0 }, //  15
+  { 0xB0 }, //  16 texture map
+  { 0x00, 0x02, 0x04 }, //  17  moongate
+  { 0xE4, 0x68 }, //  18 table
+  { 0xE6, 0x68 }, //  19 chest
+  { 0xE4 }, //  1a nightstand
+  { 0xE4, 0x6A }, //  1b barrel
+  { 0xE6, 0x6A, 0x71 }, //  1c chair
+  { 0xE2, 0x62, 0xC4 }, //  1d
+  { 0xEC }, //  1e
+  { 0xEC }, //  1f
 };
+
+/// all palette indices for all uw2 models
+const std::vector<Uint8> uw2_paletteIndices[32] =
+{
+  { 0x8F }, //  00
+  { 0x93 }, //  01  door frame
+  { 0x8F }, //  02 bridge
+  { 0x8C }, //  03  bench
+  { 0x21, 0x1B }, //  04 Lotus Turbo Esprit
+  { 0xC6, 0xCC }, //  05 small boulder
+  { 0xC6, 0xCC }, //  06 medium boulder
+  { 0xC6, 0xCC }, //  07 large boulder
+  { 0x88, 0x23, 0x56 }, //  08 arrow
+  { 0x8C }, //  09 beam
+  { 0x8C }, //  0a pillar
+  { 0xB9, 0xBA, 0xBC }, //  0b shrine
+  { 0xCA }, //  0c
+  { 0x8D }, //  0d painting
+  { 0x8F }, //  0e
+  { 0x8F }, //  0f
+  { 0x1B }, //  10 texture map
+  { 0x1B }, //  11 texture map
+  { 0x1B }, //  12 texture map
+  { 0xCB }, //  13 gravestone
+  { 0x1B }, //  14 texture map
+  { 0x1B }, //  15
+  { 0x1B }, //  16 texture map
+  { 0x21, 0x02, 0x04 }, //  17  moongate
+  { 0x8E, 0xCA }, //  18 table
+  { 0x8E, 0xCA }, //  19 chest
+  { 0x8C }, //  1a nightstand
+  { 0x8C, 0xCB }, //  1b barrel
+  { 0x8F }, //  1c chair
+  { 0x31, 0xC6, 0x52, 0x4D }, //  1d  bed
+  { 0xCC, 0x02 }, //  1e  blackrock gem
+  { 0x15, 0x35 }, //  1f  shelf
+};
+
 
 #define UaModelTrace if (dump) printf
 
@@ -200,13 +246,19 @@ double ModelReadTextureCoord(Base::File& file)
 /// Takes a color offset that points into the uw's executable's segment at the
 /// position where color indices are stored, maps it to the palette index and
 /// returns it
-Uint8 MapColorOffsetToPaletteIndex(Uint16 colorOffset)
+Uint8 MapColorOffsetToPaletteIndex(Uint16 colorOffset, unsigned int modelNumber, bool isUw2)
 {
-   UaAssertMsg(
-      s_colorOffsetToPaletteIndexMapping.find(colorOffset) != s_colorOffsetToPaletteIndexMapping.end(),
-      "color offset must be mapped to a palette index");
+   size_t colorIndex = (colorOffset - (isUw2 ? 0x2680 : 0x2920)) >> 1;
 
-   return s_colorOffsetToPaletteIndexMapping[colorOffset];
+   std::reference_wrapper<const std::vector<Uint8>> paletteIndicesRef =
+      (isUw2 ? uw2_paletteIndices : uw1_paletteIndices)[modelNumber];
+
+   const std::vector<Uint8>& paletteIndices = paletteIndicesRef;
+
+   if (colorIndex < paletteIndices.size())
+      return paletteIndices[colorIndex % paletteIndices.size()];
+   else
+      return 0;
 }
 
 /// stores a vertex in the vertex list, resizing it when necessary
@@ -219,7 +271,7 @@ void ModelStoreVertex(const Vector3d& vertex, Uint16 vertno,
    vertex_list[vertno] = vertex;
 }
 
-void ModelParseNode(Base::File& file, Vector3d& origin,
+void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vector3d& origin,
    std::vector<Vector3d>& vertex_list,
    std::vector<Triangle3dTextured>& triangles,
    Uint8 palIndex,
@@ -276,7 +328,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       case M3_UW_SUBMODEL: // 00ba submodel
       {
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
 
          UaModelTrace("[submodel] start, color=%04x (%02x) ", colorOffset, palIndex);
          unk1 = file.Read16();
@@ -287,7 +339,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
          // parse submodel nodes
          file.Seek(offset, Base::seekBegin);
-         ModelParseNode(file, origin, vertex_list, triangles, palIndex, dump);
+         ModelParseNode(modelNumber, isUw2, file, origin, vertex_list, triangles, palIndex, dump);
 
          // return to "here"
          file.Seek(here, Base::seekBegin);
@@ -645,13 +697,13 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
          // parse left nodes
          file.Seek(left, Base::seekBegin);
-         ModelParseNode(file, origin, vertex_list, triangles, palIndex, dump);
+         ModelParseNode(modelNumber, isUw2, file, origin, vertex_list, triangles, palIndex, dump);
 
          UaModelTrace("      [sort] end left node/start right node\n");
 
          // parse right nodes
          file.Seek(right, Base::seekBegin);
-         ModelParseNode(file, origin, vertex_list, triangles, palIndex, dump);
+         ModelParseNode(modelNumber, isUw2, file, origin, vertex_list, triangles, palIndex, dump);
 
          // return to "here"
          file.Seek(here, Base::seekBegin);
@@ -664,7 +716,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       case M3_UW_COLOR_DEF: // 0014 colour definition
          refvert = ModelReadVertexNumber(file);
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
          vertno = ModelReadVertexNumber(file);
 
          UaModelTrace("[shade] color refvert=%u color=%04x (%02x) vertno=%u", refvert, colorOffset, palIndex, vertno);
@@ -672,7 +724,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
       case M3_UW_FACE_SHADE: // 00BC define face shade
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
          unk1 = file.Read16();
 
          UaModelTrace("[shade] face color=%04x (%02x) unk1=%02x", colorOffset, palIndex, unk1);
@@ -680,11 +732,11 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
 
       case M3_UW_FACE_TWOSHADES: // 00BE ??? seems to define 2 colors
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
          UaModelTrace("[shade] twoshades color1=%04x (%02x) ", colorOffset, palIndex);
 
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
          UaModelTrace("color2=%04x (%02x) ", colorOffset, palIndex);
          break;
 
@@ -692,7 +744,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       {
          Uint16 nvert = file.Read16();
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
 
          UaModelTrace("[shade] gouraud nvert=%u, color=%04x (%02x) vertlist=",
             nvert, colorOffset, palIndex);
@@ -723,7 +775,7 @@ void ModelParseNode(Base::File& file, Vector3d& origin,
       case M3_UW_FACE_UNK16: // 0016 ??? unknown
          vertno = ModelReadVertexNumber(file);
          colorOffset = file.Read16();
-         palIndex = MapColorOffsetToPaletteIndex(colorOffset);
+         palIndex = MapColorOffsetToPaletteIndex(colorOffset, modelNumber, isUw2);
          unk1 = file.Read16();
 
          UaModelTrace("[unkn] 0016 vertno=%02x color=%04x (%02x) unk1=%04x", vertno, colorOffset, palIndex, unk1);
@@ -823,7 +875,7 @@ bool DecodeBuiltInModels(const char* filename,
       Uint8 palIndex = 0;
 
       // parse root node
-      ModelParseNode(file, origin, vertex_list, model->m_triangles, palIndex, dump);
+      ModelParseNode(n, isUw2, file, origin, vertex_list, model->m_triangles, palIndex, dump);
 
       UaModelTrace("\n");
 
