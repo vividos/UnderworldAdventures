@@ -60,12 +60,9 @@ public:
       m_imageManager(m_resourceManager),
       m_currentLevel(0),
       m_showAllMaps(false),
-      //m_cameraPos(32.0, -64.0, 1800.0),
-      m_cameraPos(32.0, 2.0, 128.0),
-      //m_panAngle(90.0),
-      //m_rotateAngle(70.0),
-      m_panAngle(90.0),
-      m_rotateAngle(70.0),
+      m_cameraPos(80.0, -64.0, 2000.0),
+      m_panAngle(70.0),
+      m_rotateAngle(90.0),
       m_leftButtonDown(false)
    {
       m_viewport.SetViewport3D(0, 0, 800, 600);
@@ -350,23 +347,26 @@ void MapDisplay::PrepareLevel(size_t levelIndex)
 void MapDisplay::OnTick(bool& resetTickTimer)
 {
    Vector3d dirX{ 1.0, 0.0, 0.0 };
-   dirX.RotateZ(m_rotateAngle - 90.0);
-   //dirX.RotateX(-m_panAngle);
+   dirX.RotateZ(-(-m_rotateAngle + 90.0));
+   dirX.RotateX(-(m_panAngle + 270.0));
 
    dirX *= m_moveDirectionX;
 
-   m_cameraPos += dirX;
-
-   Vector3d dirY{ 0.0, 1.0, 0.0 };
-   dirY.RotateZ(- m_rotateAngle + 90.0);
-   //dirY.RotateX(-m_panAngle);
+   Vector3d dirY{ 0.0, 0.0, -1.0 };
+   dirY.RotateX(-(m_panAngle + 270.0));
+   dirY.RotateZ(-m_rotateAngle + 90.0);
 
    dirY *= m_moveDirectionY;
 
-   if (dirX.Length() > 1e-12)
-      UaTrace("dirX = (%3.2f; %3.2f; %3.2f)\n", dirX.x, dirX.y, dirX.z);
+   Vector3d dir = dirX + dirY;
 
-   m_cameraPos += dirY;
+   m_cameraPos += dir;
+
+   if (dir.Length() > 1e-12)
+      UaTrace("dir = (%3.2f; %3.2f; %3.2f) pos = (%3.2f; %3.2f; %3.2f)\n",
+         dir.x, dir.y, dir.z,
+         m_cameraPos.x, m_cameraPos.y, m_cameraPos.z
+      );
 }
 
 void MapDisplay::OnRender()
@@ -384,20 +384,6 @@ void MapDisplay::RenderLevel()
 
    // clear color and depth buffers
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-   glLoadIdentity();
-
-   // position move
-   //glTranslated(xpos, -ypos, -zpos);
-
-   //// rotation
-   //glRotated(m_rotateAngle, 1.0, 0.0, 0.0);
-   //glRotated(m_panAngle, 0.0, 0.0, 1.0);
-
-   //// move to center of map
-   //glTranslated(-32.0, -32.0, midz);
-
-   //glLoadIdentity();
 
    const Underworld::Level& level = m_levelList.GetLevel(m_currentLevel);
    if (level.GetTilemap().IsUsed())
@@ -639,7 +625,7 @@ void MapDisplay::CreateScreenshot(bool big)
                unsigned int pos =
                   (x * xres) +
                   (n * xres * tilex) +
-                  ((y)* xres * yres * tilex)
+                  ((y)*xres * yres * tilex)
                   ;
 
                glReadPixels(0, n, xres, 1, GL_BGRA_EXT, GL_UNSIGNED_BYTE,
