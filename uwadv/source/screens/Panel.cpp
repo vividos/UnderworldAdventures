@@ -267,13 +267,15 @@ void Panel::MouseEvent(bool buttonClicked, bool leftButton,
             Underworld::Inventory& inventory = m_panelParent->GetGameInterface().
                GetUnderworld().GetPlayer().GetInventory();
 
-            // user dragged item out of area
-            m_checkDragging = false;
-            inventory.FloatObject(m_draggedItemIndex);
+            if (inventory.GetFloatingObjectPos() == Underworld::c_inventorySlotNoItem)
+            {
+               // user dragged item out of area
+               m_checkDragging = false;
+               inventory.FloatObject(m_draggedItemIndex);
 
-            UpdateCursorImage();
-            UpdatePanel();
-
+               UpdateCursorImage();
+               UpdatePanel();
+            }
          }
       }
       /*
