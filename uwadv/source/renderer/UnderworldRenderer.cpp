@@ -349,8 +349,9 @@ void UnderworldRenderer::RenderDecal(const Underworld::Object& obj, unsigned int
    case 6: to_right.Set(0.0, 1.0);  base.y += posInfo.m_ypos / 8.0; base.x += wall_offset; break;
 
    default:
-      UaAssert(false);
-      break; // should not occur
+      // should not occur; use 0 as value
+      to_right.Set(1.0, 0.0);  base.x += posInfo.m_xpos / 8.0; base.y += 1.0 - wall_offset; break;
+      break;
    }
 
    const double decalheight = 1.0 / 8.0;
