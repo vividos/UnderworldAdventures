@@ -81,6 +81,27 @@ void UnderworldRenderer::PrepareLevel(Underworld::Level& level)
          m_textureManager.Prepare(Base::c_stockTexturesObjects + n, m_scaleFactor);
    }
 
+   // prepare all wall textures used by tmap objects
+   {
+      const Underworld::ObjectList& objectList = level.GetObjectList();
+      for (unsigned int xpos = 0; xpos < Underworld::c_underworldTilemapSize; xpos++)
+         for (unsigned int ypos = 0; ypos < Underworld::c_underworldTilemapSize; ypos++)
+         {
+            Uint16 link = objectList.GetListStart(xpos, ypos);
+            while (link != 0)
+            {
+               const Underworld::Object& obj = *objectList.GetObject(link);
+               const Underworld::ObjectInfo& info = obj.GetObjectInfo();
+
+               if (info.m_itemID == 0x016e || info.m_itemID == 0x016f)
+                  m_textureManager.Prepare(info.m_owner, m_scaleFactor);
+
+               // next object in link chain
+               link = obj.GetObjectInfo().m_link;
+            }
+         }
+   }
+
    UaTrace("done\npreparing critter images... ");
 
    // prepare critters controlled by critter frames manager
