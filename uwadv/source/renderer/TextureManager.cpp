@@ -263,7 +263,7 @@ void TextureManager::MapStockToExternalTexture(unsigned int index, Texture& tex)
 
 void TextureManager::GetPaletteColor(Uint8 paletteIndex, Uint8& red, Uint8& green, Uint8& blue)
 {
-   Uint8* color = m_palette0->Get() + (paletteIndex * 3);
+   Uint8* color = m_palette0->Get() + (paletteIndex * 4);
    red = color[0];
    green = color[1];
    blue = color[2];
