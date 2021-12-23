@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "Resource.h"
+#include "resource.h"
 #include <atlscrl.h>
 
 class DebugClient;

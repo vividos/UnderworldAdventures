@@ -28,7 +28,7 @@
 #include <atlstr.h>
 #include <atlconv.h>
 #include <mmsystem.h> // for midiOutGet*
-#include <shlobj.h> // for SHBrowseForFolder
+#include <ShlObj.h> // for SHBrowseForFolder
 #include <tchar.h> // for _sntprintf
 
 #ifndef BIF_USENEWUI

@@ -20,7 +20,7 @@
 /// \brief debugger entry point and main application function
 //
 #include "pch.hpp"
-#include "Resource.h"
+#include "resource.h"
 #include "MainFrame.hpp"
 
 CAppModule _Module;

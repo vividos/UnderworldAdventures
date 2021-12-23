@@ -25,7 +25,7 @@
 #include <sstream>
 #include <SDL_rwops.h>
 #ifdef HAVE_WIN32
-#include <windows.h> // for OutputDebugStringA
+#include <Windows.h> // for OutputDebugStringA
 #endif
 
 /// delete function for SDL_RWops shared ptr

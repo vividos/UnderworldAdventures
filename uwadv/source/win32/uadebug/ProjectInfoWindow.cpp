@@ -22,7 +22,7 @@
 #include "pch.hpp"
 #include "ProjectInfoWindow.hpp"
 #include "ProjectManager.hpp"
-#include "Resource.h"
+#include "resource.h"
 #include "BreakpointListWindow.hpp"
 
 LPCTSTR g_pszActive = _T(" (active)");

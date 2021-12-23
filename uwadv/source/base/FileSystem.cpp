@@ -30,7 +30,7 @@
 #ifdef HAVE_MINGW
 #define _WIN32_IE 0x0500 // define this to find SHGFP_TYPE_CURRENT in shlobj.h
 #endif
-#include <shlobj.h> // for SHGetFolderPathA
+#include <ShlObj.h> // for SHGetFolderPathA
 #endif
 
 #if defined(HAVE_WIN32)

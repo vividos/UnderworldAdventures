@@ -21,7 +21,7 @@
 //
 #include "pch.hpp"
 
-#include <dockimpl.cpp>
+#include <DockImpl.cpp>
 
 CScintillaAutoRegister s_scintillaAutoRegister;
 

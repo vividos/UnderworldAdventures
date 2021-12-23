@@ -20,7 +20,7 @@
 /// \brief main application frame
 //
 #include "pch.hpp"
-#include "aboutdlg.hpp"
+#include "AboutDlg.hpp"
 #include "MainFrame.hpp"
 #include "LuaSourceWindow.hpp"
 #include "GameStringsView.hpp"

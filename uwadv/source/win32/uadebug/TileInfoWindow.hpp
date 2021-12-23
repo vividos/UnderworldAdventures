@@ -22,7 +22,7 @@
 #pragma once
 
 #include "EditListViewCtrl.hpp"
-#include "Resource.h"
+#include "resource.h"
 
 /// form with tile infos
 class TileInfoForm :

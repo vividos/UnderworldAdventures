@@ -29,7 +29,7 @@
 #include "HotspotListWindow.hpp"
 #include "TileMapViewChildFrame.hpp"
 #include "TileInfoWindow.hpp"
-#include "Resource.h"
+#include "resource.h"
 
 #define WM_UNDOCK_WINDOW (WM_APP + 10)
 

@@ -25,7 +25,7 @@
 #include "CodeVM.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
-#include "Gamestrings.hpp"
+#include "GameStrings.hpp"
 
 /// conversation debugger class
 class ConversationDebugger :

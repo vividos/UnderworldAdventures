@@ -34,9 +34,9 @@ using std::endl;
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include <windows.h>
+#include <Windows.h>
 #include <mmsystem.h>
-#include <winbase.h>
+#include <WinBase.h>
 #include <cstdlib>
 
 WindowsMidiDriver::WindowsMidiDriver() :

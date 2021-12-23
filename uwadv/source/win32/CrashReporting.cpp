@@ -24,7 +24,7 @@
 #include <tchar.h> // for _sntprintf, _tcslen
 #include <strsafe.h>
 #include <ctime>
-#include <dbghelp.h>
+#include <DbgHelp.h>
 #pragma comment(lib, "dbghelp.lib")
 
 #ifdef HAVE_WIN64
