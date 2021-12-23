@@ -344,14 +344,16 @@ Note: The debugger is a work in progress and may not be completely functional.
 
 This release is the first one in 17 years. It was mainly released to restore,
 refactor and improve the old code base that I stopped developing at around
-2007. My main goal was to show what the project 
+2007. My main goal was to show what the project was like in the 0.9 release,
+and what the team accomplished at the time. So keep in mind that most gameplay
+elements are still not implemented yet.
 
 This release contains several improvements and bug fixes:
 
 - Refactored the whole code base to compile again and to use modern C++
   language constructs
 - Implemented displaying the current map when looking at the map object
-- Reactivated displaying 3D models provided by Servus
+- Reactivated displaying 3D models provided by Sam Matthews (servus)
 - Objects and critters now use the hqx 4x scaler to improve image quality
 - Binaries include the digital music pack, provided by Martin Shetty (QQtis)
 - Improved decompiling conversation code

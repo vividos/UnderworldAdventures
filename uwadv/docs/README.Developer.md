@@ -830,7 +830,7 @@ This chapter lists all authors and contributors of Underworld Adventures.
 - Tels (SDL_mixer MIDI driver)
 - Cuneyt Cuneyitoglu (perl script to convert uw1 files/folders to lowercase)
 - Radoslaw Grzanka (Debian port)
-- Sam Matthews (servus; ideas)
+- Sam Matthews (servus; ideas, 3D models)
 - Marc A. Pelletier (Coren; ideas)
 
 
