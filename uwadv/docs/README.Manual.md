@@ -340,7 +340,7 @@ Note: The debugger is a work in progress and may not be completely functional.
 
 # C. Release Notes
 
-## Release Notes for "0.10-", 2021-12-??
+## Release Notes for "0.10.0-pina-colada", 2021-12-25
 
 This release is the first one in 17 years. It was mainly released to restore,
 refactor and improve the old code base that I stopped developing at around
