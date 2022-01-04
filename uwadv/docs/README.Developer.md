@@ -169,8 +169,10 @@ Adventures release:
    bugs
 
 4. Adjust version numbers in the following files:
-   - source/doxygen/doxygen.cfg
-   - source/version.hpp
+   - uwadv/source/doxygen/doxygen.cfg
+   - uwadv/source/version.hpp
+   - uwadv/SonarCloud.cmd
+   - uwadv/appveyor.yml
 
 5. Update release notes in [README.Manual.md](README.Manual.md) file
 
