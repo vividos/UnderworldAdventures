@@ -1,4 +1,4 @@
-﻿//
+//
 // Underworld Adventures - an Ultima Underworld remake project
 // Copyright (c) 2019-2022 Underworld Adventures Team
 //
