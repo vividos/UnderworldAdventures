@@ -2,7 +2,7 @@
                Ultima Underworld 1 and 2 Formats Specification
 
                             Underworld Adventures
-               https://vividos.github.com/UnderworldAdventures
+               https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
 Document version: 1.78, as of 2021-12-21
