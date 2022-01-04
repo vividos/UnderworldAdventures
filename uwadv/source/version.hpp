@@ -1,6 +1,6 @@
-//
+﻿//
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2019-2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,15 +22,15 @@
 #pragma once
 
 #define MAJOR_VERSION 0
-#define MINOR_VERSION 10
+#define MINOR_VERSION 11
 #define RELEASE_NUMBER 0
 #define BUILD_NUMBER 0
-#define BUILD_YEAR 2019
-#define CODENAME "mojito"
+#define BUILD_YEAR 2022
+#define CODENAME ""
 
 #define STRINGIFY(s) STRINGIFY2(s)
 #define STRINGIFY2(s) #s
 
-#define COPYRIGHT_TEXT "Copyright � 2002-" STRINGIFY(BUILD_YEAR) " Underworld Adventures Team"
+#define COPYRIGHT_TEXT "Copyright © 2002-" STRINGIFY(BUILD_YEAR) " Underworld Adventures Team"
 
 #define VERSION_TEXT STRINGIFY(MAJOR_VERSION) "." STRINGIFY(MINOR_VERSION) "-" CODENAME

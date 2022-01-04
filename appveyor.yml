@@ -1,10 +1,10 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2019 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # AppVeyor build configuration file
 #
-version: 0.10.0.{build}
+version: 0.11.0.{build}
 
 image: Visual Studio 2019
 
