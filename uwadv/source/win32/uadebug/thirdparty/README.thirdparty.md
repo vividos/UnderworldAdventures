@@ -26,3 +26,9 @@ Docking framework by Sergey Klimov, taken from CodeProject. It provides
 docking windows.
 
 https://www.codeproject.com/Articles/1808/WTL-Docking-Windows
+
+## AtlOpengl.h
+
+ATL OpenGL wrapper by Zilin, taken from CodeProject.
+
+https://www.codeproject.com/Articles/1411/A-WTL-class-for-developping-OpenGL-programs-using
