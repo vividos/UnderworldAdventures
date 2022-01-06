@@ -90,7 +90,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
    else
    {
       UIEnable(ID_FILE_OPEN_PROJECT, false);
-      UIEnable(ID_FILE_NEW_PROJECT, false);
    }
 
    // create command bar window
