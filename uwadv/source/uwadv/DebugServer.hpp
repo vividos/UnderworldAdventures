@@ -82,6 +82,12 @@ public:
    /// locks or unlocks debugger access to underworld
    virtual void Lock(bool locked) override;
 
+   /// returns underworld object; const version
+   virtual const Underworld::Underworld& GetUnderworld() const override;
+
+   /// returns underworld object; non-const version
+   virtual Underworld::Underworld& GetUnderworld() override;
+
    /// starts code debugger
    virtual void StartCodeDebugger(ICodeDebugger* codeDebugger) override;
 

@@ -343,6 +343,16 @@ bool DebugServer::PauseGame(bool pause)
    return m_game->PauseGame(pause);
 }
 
+const Underworld::Underworld& DebugServer::GetUnderworld() const
+{
+   return m_game->GetUnderworld();
+}
+
+Underworld::Underworld& DebugServer::GetUnderworld()
+{
+   return m_game->GetUnderworld();
+}
+
 size_t DebugServer::GetNumMessages()
 {
    return m_messageQueue.size();

@@ -422,6 +422,16 @@ void DebugClient::PauseGame(bool pause)
    m_debugInterface->Lock(false);
 }
 
+const Underworld::Underworld& DebugClient::GetUnderworld() const
+{
+   return m_debugInterface->GetUnderworld();
+}
+
+Underworld::Underworld& DebugClient::GetUnderworld()
+{
+   return m_debugInterface->GetUnderworld();
+}
+
 size_t DebugClient::GetNumLevels()
 {
    return m_debugInterface->GetNumLevels();

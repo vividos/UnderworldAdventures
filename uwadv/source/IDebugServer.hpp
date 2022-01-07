@@ -236,6 +236,12 @@ public:
    /// pauses or unpauses game; returns previous game state
    virtual bool PauseGame(bool pause) = 0;
 
+   /// returns underworld object; const version
+   virtual const Underworld::Underworld& GetUnderworld() const = 0;
+
+   /// returns underworld object; non-const version
+   virtual Underworld::Underworld& GetUnderworld() = 0;
+
    // code debugger stuff
 
    /// starts code debugger

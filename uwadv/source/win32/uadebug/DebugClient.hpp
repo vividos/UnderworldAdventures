@@ -250,6 +250,12 @@ public:
    bool IsGamePaused();
    void PauseGame(bool pause);
 
+   /// returns underworld object; const version
+   const Underworld::Underworld& GetUnderworld() const;
+
+   /// returns underworld object; non-const version
+   Underworld::Underworld& GetUnderworld();
+
    // level stuff
 
    size_t GetNumLevels();
