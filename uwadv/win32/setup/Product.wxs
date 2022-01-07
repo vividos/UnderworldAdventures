@@ -175,7 +175,11 @@
       </Component>
 
       <Component Id="ScintillaLexer">
-        <File Id="SciLexerDll" Name="SciLexer.dll" Source="$(var.OutputFolder)SciLexer.dll" />
+        <File Id="ScintillaDll" Name="Scintilla.dll" Source="$(var.OutputFolder)Scintilla.dll" />
+      </Component>
+
+      <Component Id="LexillaLexer">
+        <File Id="LexillaDll" Name="Lexilla.dll" Source="$(var.OutputFolder)Lexilla.dll" />
       </Component>
     </ComponentGroup>
 
