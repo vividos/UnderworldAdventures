@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,6 +45,10 @@ public:
    void LoadList(std::vector<IndexedImage>& imageList, const char* basename,
       unsigned int imageFrom = 0, unsigned int imageTo = 0,
       unsigned int palette = 0);
+
+   /// loads an image from an uw2 archive file (byt.ark)
+   void LoadFromArk(IndexedImage& image, const char* arkFilename,
+      unsigned int imageNumber, unsigned int paletteIndex);
 
    /// returns ptr to palette
    Palette256Ptr GetPalette(unsigned int paletteIndex)

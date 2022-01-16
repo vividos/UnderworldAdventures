@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "pch.hpp"
 #include "ImageManager.hpp"
 #include "ImageLoader.hpp"
+#include "ResourceManager.hpp"
+#include "ArchiveFile.hpp"
 
 void ImageManager::Init()
 {
@@ -85,4 +87,22 @@ void ImageManager::LoadList(std::vector<IndexedImage>& imageList, const char* ba
    unsigned int max = imageList.size();
    for (unsigned int i = 0; i < max; i++)
       imageList[i].SetPalette(m_allPalettes[paletteIndex]);
+}
+
+void ImageManager::LoadFromArk(IndexedImage& image, const char* arkFilename,
+   unsigned int imageNumber, unsigned int paletteIndex)
+{
+   Base::ArchiveFile arkFile
+   {
+      m_resourceManager.GetUnderworldFile(Base::resourceGameUw2, "data/byt.ark"),
+      true
+   };
+
+   image.Create(320, 200);
+
+   Base::File imageFile = arkFile.GetFile(imageNumber);
+   std::vector<Uint8>& pixels = image.GetPixels();
+   imageFile.ReadBuffer(&pixels[0], 320 * 200);
+
+   image.SetPalette(m_allPalettes[paletteIndex]);
 }
