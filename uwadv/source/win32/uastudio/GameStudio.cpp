@@ -37,8 +37,7 @@
 /// Underworld Adventures studio
 class GameStudio :
    public IBasicGame,
-   public IUserInterface,
-   public IPhysicsModelCallback
+   public IUserInterface
 {
 public:
    /// ctor
@@ -63,7 +62,6 @@ public:
    virtual Underworld::Underworld& GetUnderworld() override { return m_gameLogic->GetUnderworld(); }
    virtual Underworld::GameLogic& GetGameLogic() override { return *m_gameLogic.get(); }
    virtual IUserInterface* GetUserInterface() override { return this; }
-   virtual IPhysicsModelCallback& GetPhysicsModelCallback() override { return *this; }
 
    // virtual IGame methods
    virtual void InitGame();
@@ -100,13 +98,6 @@ public:
    virtual void ShowMap() override
    {
       UaTrace("ShowMap\n");
-   }
-
-   // virtual IPhysicsModelCallback methods
-   virtual void GetSurroundingTriangles(unsigned int xpos,
-      unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) override
-   {
-      // returns no triangles
    }
 
 private:

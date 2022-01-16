@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include "Triangle3d.hpp"
 #include <vector>
+#include <functional>
 
 class PhysicsBody;
 
@@ -36,27 +37,20 @@ enum PhysicsParam
    physicsParamMax
 };
 
-/// physics model callback interface
-class IPhysicsModelCallback
-{
-public:
-   /// returns surrounding triangles on given position
-   virtual void GetSurroundingTriangles(unsigned int xpos,
-      unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles) = 0;
-};
+/// function type that returns surrounding triangles on given position
+typedef std::function<
+   void (unsigned int xpos, unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles)>
+   T_fnGetSurroundingTriangles;
 
 /// physics model class
 class PhysicsModel
 {
 public:
    /// ctor
-   PhysicsModel()
-      :m_callback(NULL)
-   {
-   }
+   PhysicsModel();
 
    /// inits the physics model
-   void Init(IPhysicsModelCallback* callback);
+   void Init(T_fnGetSurroundingTriangles fnGetSurroundingTriangles);
 
    bool GetPhysicsParam(PhysicsParam param) const
    {
@@ -94,8 +88,8 @@ private:
    /// model parameters
    bool m_params[physicsParamMax];
 
-   /// callback interface pointer
-   IPhysicsModelCallback* m_callback;
+   /// function to get surrounding triangles
+   T_fnGetSurroundingTriangles m_fnGetSurroundingTriangles;
 
    /// list of pointer to bodies tracked by physics model
    std::vector<PhysicsBody*> m_trackedBodies;

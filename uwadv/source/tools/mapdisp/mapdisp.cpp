@@ -213,11 +213,6 @@ private:
       throw std::runtime_error("object not available");
    }
 
-   virtual IPhysicsModelCallback& GetPhysicsModelCallback() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
    virtual void InitGame() override
    {
    }

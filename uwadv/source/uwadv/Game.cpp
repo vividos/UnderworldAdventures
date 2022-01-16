@@ -449,7 +449,9 @@ void Game::InitGame()
 
    m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 
-   m_physicsModel.Init(this);
+   m_physicsModel.Init(std::bind(
+      &Game::GetSurroundingTriangles, this,
+      std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
    UaTrace("loading game strings ... ");
    Import::GameStringsImporter importer(GetGameStrings());

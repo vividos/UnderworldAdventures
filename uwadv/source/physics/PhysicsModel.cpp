@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,9 +24,14 @@
 #include "PhysicsBody.hpp"
 #include "CollisionDetection.hpp"
 
-void PhysicsModel::Init(IPhysicsModelCallback* callback)
+PhysicsModel::PhysicsModel()
 {
-   m_callback = callback;
+   std::uninitialized_fill(std::begin(m_params), std::end(m_params), false);
+}
+
+void PhysicsModel::Init(T_fnGetSurroundingTriangles fnGetSurroundingTriangles)
+{
+   m_fnGetSurroundingTriangles = fnGetSurroundingTriangles;
 
    // initial params
    SetPhysicsParam(physicsGravity, true);
@@ -55,8 +60,8 @@ void PhysicsModel::TrackObject(PhysicsBody& body)
    // retrieve all tile triangles to check
    std::vector<Triangle3dTextured> allTriangles;
 
-   if (m_callback != NULL)
-      m_callback->GetSurroundingTriangles(xpos, ypos, allTriangles);
+   if (m_fnGetSurroundingTriangles != nullptr)
+      m_fnGetSurroundingTriangles(xpos, ypos, allTriangles);
 
    CollisionDetection detection{ allTriangles, body };
    detection.TrackObject(body);
