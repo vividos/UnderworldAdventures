@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -72,6 +72,31 @@ namespace Audio
       musicUw1_Death,
       musicUw1_Fleeing,
       musicUw1_MapsAndLegends
+   };
+
+   /// \brief all uw2 music tracks
+   /// \details The enum value can be used in a call to AudioManager::StartMusicTrack()
+   /// and reflects the position in the music playlist, not the actual filenames
+   /// in the sound folder
+   enum MusicTrackUw2
+   {
+      musicUw2_LabyrinthOfWorldsTheme = 0,
+      musicUw2_EnemyWounded,
+      musicUw2_Combat,
+      musicUw2_DangerousSituation,
+      musicUw2_Armed,
+      musicUw2_Victory,
+      musicUw2_Sewers,
+      musicUw2_Talorus,
+      musicUw2_PrisonTower,
+      musicUw2_Death,
+      musicUw2_KillornKeep,
+      musicUw2_IceCaverns,
+      musicUw2_ScintillusAcademy,
+      musicUw2_PraecorLoth,
+      musicUw2_LabyrinthOfWorldsReprise,
+      musicUw2_Introduction,
+      musicUw2_GuardiansTrap,
    };
 
    /// \brief enumeration of all sound effects from uw2
