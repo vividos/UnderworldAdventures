@@ -104,8 +104,7 @@ void OriginalIngameScreen::Init()
    {
       if (settings.GetGameType() == Base::gameUw2)
       {
-         // uw2: no background for now
-         m_backgroundImage.GetImage().Create(320, 200);
+         m_game.GetImageManager().LoadFromArk(m_backgroundImage.GetImage(), "data/byt.ark", 4, 0);
       }
       else
       {

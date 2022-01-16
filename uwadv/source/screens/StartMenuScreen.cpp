@@ -48,10 +48,19 @@ void StartMenuScreen::Init()
 
    UaTrace("start menu screen started\n");
 
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
    // load background image
-   m_game.GetImageManager().Load(m_screenImage.GetImage(), "data/opscr.byt",
-      0, 2, imageByt);
-   m_screenImage.GetImage().ClonePalette();
+   if (!isUw2)
+   {
+      m_game.GetImageManager().Load(m_screenImage.GetImage(), "data/opscr.byt",
+         0, 2, imageByt);
+      m_screenImage.GetImage().ClonePalette();
+   }
+   else
+   {
+      m_game.GetImageManager().LoadFromArk(m_screenImage.GetImage(), "data/byt.ark", 5, 0);
+   }
 
    m_screenImage.Init(m_game, 0, 0);
 
@@ -207,17 +216,21 @@ void StartMenuScreen::Tick()
       m_stage++;
    }
 
-   // do palette shifting
-   m_shiftCount += 1.0 / m_game.GetTickRate();
-   if (m_shiftCount >= 1.0 / s_paletteShiftsPerSecond)
+   // uw1: do palette shifting
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   if (!isUw2)
    {
-      m_shiftCount -= 1.0 / s_paletteShiftsPerSecond;
+      m_shiftCount += 1.0 / m_game.GetTickRate();
+      if (m_shiftCount >= 1.0 / s_paletteShiftsPerSecond)
+      {
+         m_shiftCount -= 1.0 / s_paletteShiftsPerSecond;
 
-      // shift palette
-      m_screenImage.GetImage().GetPalette()->Rotate(64, 64, false);
+         // shift palette
+         m_screenImage.GetImage().GetPalette()->Rotate(64, 64, false);
 
-      // initiate new upload
-      m_reuploadImage = true;
+         // initiate new upload
+         m_reuploadImage = true;
+      }
    }
 
    // in stage 3, we really press the selected button

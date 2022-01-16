@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -105,7 +105,16 @@ void CreateCharacterScreen::Init()
    // get a pointer to to current player
    m_player = &(m_game.GetUnderworld().GetPlayer());
 
-   m_game.GetImageManager().Load(m_backgroundImage, "data/chargen.byt", 0, 3, imageByt);
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
+   if (!isUw2)
+   {
+      m_game.GetImageManager().Load(m_backgroundImage, "data/chargen.byt", 0, 3, imageByt);
+   }
+   else
+   {
+      m_game.GetImageManager().LoadFromArk(m_backgroundImage, "data/byt.ark", 1, 0);
+   }
 
    m_game.GetImageManager().LoadList(m_buttonImages, "chrbtns", 0, 0, 3);
 

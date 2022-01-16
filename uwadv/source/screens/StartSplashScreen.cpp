@@ -55,9 +55,9 @@ void StartSplashScreen::Init()
    m_game.GetRenderer().SetupForUserInterface();
 
    // load first image
+   UaTrace("loading first image\n");
+   if (!isUw2)
    {
-      UaTrace("loading first image\n");
-
       const char* firstImageName = "data/pres1.byt";
       if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
          firstImageName = "data/presd.byt";
@@ -65,12 +65,17 @@ void StartSplashScreen::Init()
       // load image, palette 5
       m_game.GetImageManager().Load(m_currentImage.GetImage(),
          firstImageName, 0, 5, imageByt);
-
-      m_currentImage.Init(m_game, 0, 0);
+   }
+   else
+   {
+      m_game.GetImageManager().LoadFromArk(m_currentImage.GetImage(), "data/byt.ark", 6, 5);
    }
 
+   m_currentImage.Init(m_game, 0, 0);
+
    // demo game?
-   if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+   if (!isUw2 &&
+      m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
    {
       // write a string under the demo title
       Font font;
@@ -232,6 +237,8 @@ void StartSplashScreen::Tick()
       m_fader.Init(true, m_game.GetTickRate(), c_blendTime);
    }
 
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
    // check other stages
    switch (m_stage)
    {
@@ -241,8 +248,15 @@ void StartSplashScreen::Tick()
          UaTrace("loading second image\n");
 
          // load second image
-         m_game.GetImageManager().Load(m_currentImage.GetImage(),
-            "data/pres2.byt", 0, 5, imageByt);
+         if (!isUw2)
+         {
+            m_game.GetImageManager().Load(m_currentImage.GetImage(),
+               "data/pres2.byt", 0, 5, imageByt);
+         }
+         else
+         {
+            m_game.GetImageManager().LoadFromArk(m_currentImage.GetImage(), "data/byt.ark", 7, 5);
+         }
 
          m_currentImage.Update();
 
@@ -271,8 +285,18 @@ void StartSplashScreen::Tick()
          // do next frame
          m_currentFrame++;
          m_animationCount -= 1.0 / c_animationFrameRate;
-         if (m_currentFrame >= m_currentCutscene.GetMaxFrames() - 2)
-            m_currentFrame = 0;
+
+         if (!isUw2)
+         {
+            if (m_currentFrame >= m_currentCutscene.GetMaxFrames() - 2)
+               m_currentFrame = 0;
+         }
+         else
+         {
+            // in uw2, just stop at frame 24; all later frames are corrupted
+            if (m_currentFrame > m_currentCutscene.GetMaxFrames() - 14)
+               m_currentFrame = m_currentCutscene.GetMaxFrames() - 14;
+         }
       }
       break;
 
