@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -304,7 +304,9 @@ void ImageLoader::LoadImageGr(IndexedImage& image, const char* imageName,
 
    // load image into pixel vector
    bool isSpecialPanelsGr = (strstr("panels.gr", imageName) != NULL);
-   LoadImageGrImpl(image, file, allAuxPalettes, isSpecialPanelsGr);
+   bool isUw2 = m_resourceManager.IsUnderworldFileAvailable("data/scd.ark");
+
+   LoadImageGrImpl(image, file, allAuxPalettes, isSpecialPanelsGr, isUw2);
 }
 
 void ImageLoader::LoadImageByt(const char* imageName, Uint8* pixels)
@@ -358,6 +360,7 @@ void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imageList,
       offsets[i] = file.Read32();
 
    bool isSpecialPanelsGr = (strstr(imageName, "panels.gr") != NULL);
+   bool isUw2 = m_resourceManager.IsUnderworldFileAvailable("data/scd.ark");
 
    for (unsigned int j = imageFrom; j < imageTo; j++)
    {
@@ -372,12 +375,12 @@ void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imageList,
       IndexedImage& lastImage = imageList.back();
 
       // load image
-      LoadImageGrImpl(lastImage, file, allAuxPalettes, isSpecialPanelsGr);
+      LoadImageGrImpl(lastImage, file, allAuxPalettes, isSpecialPanelsGr, isUw2);
    }
 }
 
 void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
-   Uint8 auxPalettes[32][16], bool isSpecialPanelsGr)
+   Uint8 auxPalettes[32][16], bool isSpecialPanelsGr, bool isUw2)
 {
    Uint8 type, width, height, auxpal = 0;
    Uint16 datalen;
@@ -386,8 +389,8 @@ void ImageLoader::LoadImageGrImpl(IndexedImage& img, Base::File& file,
    {
       // special case for "panels.gr" that lacks a normal header
       type = 4; // 8-bit uncompressed
-      width = 83;
-      height = 114;
+      width = !isUw2 ? 83 : 79;
+      height = !isUw2 ? 114 : 112;
       datalen = width * height;
    }
    else

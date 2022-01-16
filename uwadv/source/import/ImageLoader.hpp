@@ -65,7 +65,7 @@ namespace Import
    private:
       /// loads *.gr image into pixels array
       void LoadImageGrImpl(IndexedImage& image, Base::File& file, Uint8 auxPalettes[32][16],
-         bool special_panels);
+         bool isSpecialPanelsGr, bool isUw2);
 
    private:
       /// resource manager to use for loading
