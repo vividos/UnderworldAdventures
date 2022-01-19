@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -192,10 +192,14 @@ void decode_rle(FILE* fd, FILE* out, unsigned int bits, unsigned int datalen, un
    }
 }
 
+#ifndef HAVE_UW2
 const char* cr_fmt = UWPATH "crit\\cr%02opage.n%02o";
 const char* assocfilename = UWPATH "crit\\assoc.anm";
+#else
+const char* cr_fmt = UWPATH "crit\\cr%02o.%02o";
+const char* assocfilename = UWPATH "crit\\as.an";
+#endif
 
-const char* assocfilename_uw2 = UWPATH "crit\\as.an";
 
 int critdec_main()
 {
@@ -227,62 +231,55 @@ int critdec_main()
    fprintf(log, "critdec log file\n\n");
 
    // get animation and critter lists
-   char critname[32][8];
-#ifndef HAVE_UW2
+   char critname[32][8] = {};
    {
       FILE* assoc = fopen(assocfilename, "rb");
 
+#ifndef HAVE_UW2
       // read in animation names
       fread(critname, 32, 8, assoc);
-
-      // read in critter infos
-      for (int i = 0; i < 64; i++)
-      {
-         unsigned int anim = fgetc(assoc);
-         unsigned int variant = fgetc(assoc);
-
-         fprintf(log, "critter 0x%04x: anim = 0%02o (%-8.8s), variant = %02x, critter = %s\n",
-            i + 64, anim, critname[anim], variant, gs.get_string(4, i + 64).c_str());
-      }
-
-      fprintf(log, "\n");
-
-      fclose(assoc);
-   }
-#else
-   {
-      FILE* assoc = fopen(assocfilename_uw2, "rb");
-
-      // read in critter infos
-      for (int i = 0; i < 64; i++)
-      {
-         unsigned int anim = fgetc(assoc);
-         unsigned int variant = fgetc(assoc);
-
-         fprintf(log, "critter 0x%04x: anim = 0%02o (0x%02x), variant = %02x, critter = %s\n",
-            i + 64, anim, anim, variant, gs.get_string(4, i + 64).c_str());
-      }
-
-      fprintf(log, "\n");
-
-      fclose(assoc);
-   }
 #endif
 
-#ifdef HAVE_UW2
-   {
-      FILE* fd = fopen(UWPATH "\\crit\\Cr.an", "rb");
-
-      unsigned char buffer[16384];
-
-      fread(buffer, 16384, 1, fd);
-      for (unsigned int i = 0; i < 64; i++)
+      // read in critter infos
+      for (int i = 0; i < 64; i++)
       {
-         fprintf(log, "%s\n", gs.get_string(4, i + 64).c_str());
+         unsigned int anim = fgetc(assoc);
+         unsigned int auxpal = fgetc(assoc);
 
-         for (unsigned int j = 0; j < 256; j++)
+#ifndef HAVE_UW2
+         fprintf(log, "critter 0x%04x: anim = 0%02o (%-8.8s), auxpal = %02x, page file cr%02opage.nYY, critter = %s\n",
+            i + 64, anim, critname[anim], auxpal,
+            anim,
+            gs.get_string(4, i + 64).c_str());
+#else
+         fprintf(log, "critter 0x%04x: anim = 0%02o (0x%02x), auxpal = %02x, page file cr%02o.YY, critter = %s\n",
+            i + 64, anim, anim, auxpal,
+            anim,
+            gs.get_string(4, i + 64).c_str());
+#endif
+      }
+
+      fprintf(log, "\n");
+
+      fclose(assoc);
+   }
+
+#ifdef HAVE_UW2
+   // read uw2 slots for all critters
+   {
+      FILE* fd = fopen(UWPATH "\\crit\\cr.an", "rb");
+
+      unsigned char slotListUw2[32][512];
+
+      fread(slotListUw2, 1, sizeof(slotListUw2), fd);
+      for (unsigned int critterIndex = 0; critterIndex < 32; critterIndex++)
+      {
+         fprintf(log, "%s\n", gs.get_string(4, critterIndex + 64).c_str());
+
+         for (unsigned int j = 0; j < 512; j++)
          {
-            fprintf(log, "%02x%c", buffer[i * 256 + j], (j & 7) == 7 ? '\n' : ' ');
+            fprintf(log, "%02x%c",
+               slotListUw2[critterIndex][j], (j & 7) == 7 ? '\n' : ' ');
          }
 
          fprintf(log, "\n");
@@ -290,11 +287,14 @@ int critdec_main()
 
       fclose(fd);
    }
-   return 0;
+
+   FILE* pgmp = fopen(UWPATH "\\crit\\pg.mp", "rb");
 #endif
 
+   // page files go from cr00 to cr37 (octal, = 0x1F)
    for (int crit = 0; crit < 32; crit++)
    {
+#ifndef HAVE_UW2
       // test first page file
       {
          char buffer[256];
@@ -306,29 +306,50 @@ int critdec_main()
 
          fclose(pfile);
       }
+#else
+      unsigned char pageMap[8] = {};
+      fread(pageMap, 1, 8, pgmp);
 
+      // in uw2, we can check the page map
+      if (pageMap[0] == 0xFF)
+         continue;
+#endif
+
+#ifndef HAVE_UW2
       fprintf(log, "anim 0%02o: \"%-8.8s\"\n", crit, critname[crit]);
+#else
+      fprintf(log, "anim 0%02o:\n", crit);
+#endif
+
+      long offsetTableOffsetUw2 = 0x80;
 
       // read in all pages
       for (int page = 0;; page++)
       {
+#ifdef HAVE_UW2
+         // in uw2, we can check the page map
+         if (pageMap[page] == 0xFF)
+            break;
+#endif
+
          char buffer[256];
          sprintf(buffer, cr_fmt, crit, page);
          FILE* pfile = fopen(buffer, "rb");
          if (pfile == NULL)
             break; // no more page files
 
+#ifndef HAVE_UW2
          // read in slot list
          int slotbase = fgetc(pfile);
          int nslots = fgetc(pfile);
 
          if (nslots == 0)
          {
-            fprintf(log, "no slots in file\n");
+            fprintf(log, "%s: no slots in file\n", buffer);
             continue;
          }
 
-         unsigned char *segoffsets = new unsigned char[nslots];
+         unsigned char* segoffsets = new unsigned char[nslots];
          fread(segoffsets, 1, nslots, pfile);
 
          int nsegs = fgetc(pfile);
@@ -365,18 +386,38 @@ int critdec_main()
          // always choose first auxpal
          int useauxpal = 0;
 
-         unsigned char *auxpals = new unsigned char[32 * nauxpals];
+         unsigned char* auxpals = new unsigned char[32 * nauxpals];
          fread(auxpals, 32, nauxpals, pfile);
 
          int noffsets = fgetc(pfile);
          int unknown1 = fgetc(pfile);
+#else
+         int noffsets = pageMap[page] + 1;
+         if (page > 0)
+            noffsets -= pageMap[page - 1] + 1;
 
-         unsigned short *alloffsets = new unsigned short[noffsets];
+         int nauxpals = 4; // all uw2 page files have 4 auxpals
+         int useauxpal = 0; // always choose first auxpal
+
+         unsigned char* auxpals = new unsigned char[32 * nauxpals];
+         fread(auxpals, 32, nauxpals, pfile);
+
+         fseek(pfile, offsetTableOffsetUw2, SEEK_SET);
+#endif
+
+         unsigned short* alloffsets = new unsigned short[noffsets];
          fread(alloffsets, 2, noffsets, pfile);
+
+         // remember offset for next page
+         offsetTableOffsetUw2 = ftell(pfile);
 
          // print all file offsets
          {
+#ifndef HAVE_UW2
             fprintf(log, " noffsets = %u, unk1 = %02x", noffsets, unknown1);
+#else
+            fprintf(log, " noffsets = %u", noffsets);
+#endif
 
             for (unsigned int i = 0; i < unsigned(noffsets); i++)
             {
@@ -421,14 +462,18 @@ int critdec_main()
             if (top > maxtop) maxtop = top;
             if (bottom > maxbottom) maxbottom = bottom;
 
-            continue; // comment out to write all animation frames
+            //continue; // comment out to write all animation frames
 
             unsigned short datalen;
             fread(&datalen, 1, 2, pfile);
 
             // decode bitmap
             char buffer[256];
-            sprintf(buffer, "cr%02o-%.8s-page%02oframe%02x.tga", crit, critname[crit], page, frame);
+#ifndef HAVE_UW2
+            sprintf(buffer, "cr%02o-%.8s-page%02o-frame%02x.tga", crit, critname[crit], page, frame);
+#else
+            sprintf(buffer, "cr%02o-page%02o-frame%02x.tga", crit, page, frame);
+#endif
 
             FILE* tga = fopen(buffer, "wb");
 
@@ -437,7 +482,7 @@ int critdec_main()
             // write palette
             fwrite(palette, 1, 256 * 3, tga);
 
-            decode_rle(pfile, tga, wsize, width*height, auxpals + 32 * useauxpal);
+            decode_rle(pfile, tga, wsize, width * height, auxpals + 32 * useauxpal);
 
             fclose(tga);
          }
@@ -449,13 +494,19 @@ int critdec_main()
 
          delete[] alloffsets;
          delete[] auxpals;
+#ifndef HAVE_UW2
          delete[] segoffsets;
+#endif
          fclose(pfile);
       }
 
       printf(".");
       fprintf(log, "\n");
    }
+
+#ifdef HAVE_UW2
+   fclose(pgmp);
+#endif
 
    fclose(log);
 
