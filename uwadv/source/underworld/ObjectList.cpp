@@ -212,6 +212,15 @@ void ObjectList::Load(Base::Savegame& sg)
    sg.BeginSection("objectlist");
 
    Destroy();
+
+   Uint8 flags = sg.Read8();
+   bool isUsed = (flags & 1) != 0;
+   if (!isUsed)
+   {
+      sg.EndSection();
+      return; // don't read empty object list
+   }
+
    Create();
 
    // read in list start positions
@@ -250,6 +259,19 @@ void ObjectList::Load(Base::Savegame& sg)
 void ObjectList::Save(Base::Savegame& sg) const
 {
    sg.BeginSection("objectlist");
+
+   bool isUsed = !m_tilemapListStart.empty();
+
+   Uint8 flags =
+      isUsed ? 1 : 0;
+
+   sg.Write8(flags);
+
+   if (!isUsed)
+   {
+      sg.EndSection();
+      return; // don't write empty object list
+   }
 
    // write list with start positions
    unsigned int tileIndex = 0;
