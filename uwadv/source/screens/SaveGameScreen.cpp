@@ -379,8 +379,17 @@ void SaveGameScreen::Init()
 
       // load background image
       IndexedImage temp_back;
-      m_game.GetImageManager().
-         Load(temp_back, "data/chargen.byt", 0, 3, imageByt);
+
+      bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
+      if (!isUw2)
+      {
+         m_game.GetImageManager().Load(temp_back, "data/chargen.byt", 0, 3, imageByt);
+      }
+      else
+      {
+         m_game.GetImageManager().LoadFromArk(temp_back, "data/byt.ark", 1, 0);
+      }
 
       // prepare background image
       IndexedImage& img = m_backgroundImage.GetImage();
