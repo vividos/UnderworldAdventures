@@ -31,6 +31,8 @@ using Import::PlayerImporter;
 /// \todo xpos and ypos only store tile position; how is intra-tile coordiate be calculated?
 void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& folder, bool initialPlayer)
 {
+   bool isUw2 = m_resourceManager.IsUnderworldFileAvailable("data/scd.ark");
+
    Base::File file = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, folder + "/player.dat");
 
    Uint8 xorBase = !initialPlayer ? file.Read8() : 0;
@@ -151,5 +153,5 @@ void PlayerImporter::LoadPlayer(Underworld::Player& player, const std::string& f
       runebag.SetRune(static_cast<Underworld::RuneType>(t),
       (Import::GetBits(uiRunes, t, 1) != 0));
 
-   player.GetQuestFlags().Resize(35);
+   player.GetQuestFlags().Resize(!isUw2 ? 35 : 134);
 }
