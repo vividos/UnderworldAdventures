@@ -47,6 +47,35 @@
                 updated occasionally.
             </p>
 
+            <h3>2022-01-20</h3>
+
+            <p>
+                After the release shortly before christmas, I made a little break. After that I
+                tried out what happened when I try to use uw2 game files with uwadv. Of course it
+                crashed at every screen, but in most places the bug fix was to load the background
+                image from "byt.ark", not from the individual files.
+            </p>
+
+            <p>
+                After that I found out that critters loading wasn't implemented yet. I dug a bit
+                through the uw-formats.txt and through reading
+                <a href="https://github.com/hankmorgan/UnderworldExporter/">Hank Morgan's Underworld Exporter</a>
+                code I figured out how to load the critter frames. When starting up in uw2's
+                throne room, that made a funny scene:
+                <a href="images/devel/uwadv-uw2.png" data-sub-html="uw2">
+                    <img src="images/devel/uwadv-uw2-small.png" alt="uw2" />
+                </a>
+            </p>
+
+            <p>
+                All the NPCs were showing me their backs, since uw2 has 8 different animations
+                (like walking, attacking, etc.) for 8 different viewing angles, and I was only
+                loading the first viewing angle's animations. Also some UI elements are off, since
+                uw1 has a different screen layout.
+            </p>
+
+            <hr />
+
             <h3>2021-12-23</h3>
 
             <p>
