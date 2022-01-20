@@ -122,7 +122,10 @@ void Tilemap::Load(Base::Savegame& sg)
    m_isAutomapDisabled = (flags & 2) != 0;
 
    if (!m_isUsed)
+   {
+      sg.EndSection();
       return; // don't read empty tilemaps
+   }
 
    Create();
 
@@ -163,7 +166,10 @@ void Tilemap::Save(Base::Savegame& sg) const
    sg.Write8(flags);
 
    if (!m_isUsed)
+   {
+      sg.EndSection();
       return; // don't write empty tilemaps
+   }
 
    for (unsigned int tileIndex = 0; tileIndex < c_underworldTilemapSize *c_underworldTilemapSize; tileIndex++)
    {
