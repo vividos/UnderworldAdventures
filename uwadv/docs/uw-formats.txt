@@ -5,7 +5,7 @@
                https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
-Document version: 1.78, as of 2021-12-21
+Document version: 1.79, as of 2022-01-20
 
 
 Table of Contents
@@ -410,7 +410,7 @@ Table of Contents
 
    Files in the "data" folder:
 
-   byt.ark
+   byt.ark        game bitmaps archive
    cnv.ark        compressed conversation archive
    dl.dat
    gempt.gr       red gem parts (?)
@@ -803,7 +803,7 @@ Table of Contents
    e.g. the bat and the vampire bat uses the same anim value, but different
    auxiliary palettes.
 
-   Animation for each critter is stored in a file named "CrXXpage.nYY", where
+   Animation for each critter is stored in a file named "crXXpage.nYY", where
       XX = animation number (=anim), YY = page number
       XX and YY are octal numbers
 
@@ -920,14 +920,26 @@ Table of Contents
    The following files of the CRIT folder are involved in Underworld 2
    animations:
 
-   PG.MP :   contains a skiptable to find a frame in the CRxx.yy files
-   CR.AN :   animation sequences for all critter and all actions
-   AS.AN :   contains a mapping of critter IDs to CRxx.yy files and palettes
-   CRxx.yy : the pixel information for critter xx, fragment yy
+   pg.mp     contains a skiptable to find a frame in the crXX.YY files
+   cr.an     animation sequences for all critter and all actions
+   as.an     contains a mapping of critter IDs to crXX.YY files and palettes
+   crXX.YY   the pixel information for critter XX, fragment YY
 
+   XX and YY are using octal digits
 
+   The "pg.mp" file has a map of all crXX.YY files and how many frames are
+   found in each file.
 
-3.6.2.1 Format and use of CR.AN
+   The "as.an" file is like the "assoc.anm" file from uw1, but without the
+   animation name string table at the start; it is 128 bytes long. It maps
+   from actual critter item IDs (0x0040-0x007f, 128) to 32 critter animations,
+   and which auxiliary palette to use for each.
+
+   The "cr.an" file specifies, for each of the 32 critter animation types, the
+   frames needed to render for 8 different animations and 8 viewing
+   directions.
+
+3.6.2.1 Format and use of cr.an
 
    This file contains 32 chunks [C] of 512 bytes each.
    Each chunk contains the complete animation information for one character.
@@ -966,8 +978,8 @@ Table of Contents
       [SC]+0038 : [AS] rear    left
 
    The layout of each animation sequences is as follows:
-   The frame indices reference values in the offset table of CRxx.*
-   Use the values in PG.MP to find the right fragment, see 3.6.2.4
+   The frame indices reference values in the offset table of crXX.*
+   Use the values in pg.mp to find the right fragment, see 3.6.2.4
 
       [CB]+0 .. [CB]+6 : animation frame index
       [CB]+7           : number of valid entries starting at [CB]
@@ -975,23 +987,23 @@ Table of Contents
    Invalid entries in the animation frame indices are marked with 0xFF
 
 
-3.6.2.2 Format and use of AS.AN
+3.6.2.2 Format and use of as.an
 
-   Multiple critters use the same pixel layout with differing palettes.
-   This file contains two int8 for each critterID from 0 to 63. 0xFF
-   marks unused indices (the last entry of AS.AN)
+   Multiple critters use the same pixel data, but with different palettes.
+   This file contains two Int8 for each critter from 0 to 63. 0xFF
+   marks unused indices (the last entry of as.an)
 
-      2*n   : [int8] critter file to use (xx of CRxx.*)
-      2*n+1 : [int8] atom to fragment map index
+      2*n     Int8  critter file to use (XX of crXX.*)
+      2*n+1   Int8  atom to fragment map index (=auxiliary palette index)
 
 
-3.6.2.3 Format and use of CRxx.yy
+3.6.2.3 Format and use of crXX.YY
 
-   Each unique critter is contained in its own file CRxx. For various reasons
+   Each unique critter is contained in its own file crXX. For various reasons
    each critter is split across multiple files. There are 32 critter pixel
-   maps. xx in the filename is encoded in octal.
+   maps. XX in the filename is encoded in octal.
 
-      0000..007F : atom to fragment mapping
+      0000..007F : atom to fragment mapping (4 auxiliary palettes)
       0080..027F : [int16] table of offsets into the file for frame data
       0280..eof  : frame data
 
@@ -1000,12 +1012,12 @@ Table of Contents
       Decompressing the pixel map for a frame yields an atom map. The size of
          an atom for a critter is 5 bit.
       The atom is converted to a fragment using the atom to fragment map
-         determined by the entity id and the index from AS.AN.
+         determined by the entity id and the index from as.an.
       The fragment is converted to a colorindex using the current light level
          and LIGHTS.DAT or MONO.DAT.
       Finally the colorindex is translated to a rgb color by applying PALS.DAT
 
-   All fragments of one critter CRxx.00, CRxx.01, etc have the same
+   All fragments of one critter crXX.00, crYY.01, etc have the same
    header describing the pixel mapping from atom to fragment.
 
       0000..001F : atom to fragment mapping 0
@@ -1013,12 +1025,12 @@ Table of Contents
       0040..005F : atom to fragment mapping 2
       0060..007F : atom to fragment mapping 3
 
-   Mapping 3 is never accessed from AS.AN. The trigger for this mapping is
+   Mapping 3 is never accessed from as.an. The trigger for this mapping is
    unknown.
 
    The offset table of the first file starts at index 0. The offset table of
    the next fragment continues with the index where the previous left off.
-   (see also PG.MP).
+   (see also pg.mp).
 
       0080+frame*2 : [int16] offset into this for file [O]
 
@@ -1033,15 +1045,15 @@ Table of Contents
       [O] + 0007                 start of rle-encoded image data (see 2.3)
 
 
-3.6.2.4 Format and use of PG.MP
+3.6.2.4 Format and use of pg.mp
 
-   The purpose of PG.MP is to find the file fragment yy of a specific critter
-   xx, given a specific frame. The file contains 32 fragment id chunks. Each
+   The purpose of pg.mp is to find the file fragment YY of a specific critter
+   XX, given a specific frame. The file contains 32 fragment id chunks. Each
    fragment id chunk has 8 bytes. Each byte corresponds to a fragment and
    contains the last animation frame contained in the fragment. Invalid
-   combinations of xx and yy (== CRxx.yy does not exist) are marked with 0xFF.
+   combinations of XX and YY (== crXX.YY does not exist) are marked with 0xFF.
 
-      8*xx+yy : [int8] last frame in fragment yy (file CRxx.yy)
+      8*xx+yy : [int8] last frame in fragment YY (file crXX.YY)
 
 
 3.7.1  Cutscene animations [uw1]
