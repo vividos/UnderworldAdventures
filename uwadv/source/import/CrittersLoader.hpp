@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ namespace Import
 
       /// loads all frames of a critter
       void LoadCritterFrames(Critter& critter, const char* filename,
-         unsigned int usedAuxPalette);
+         unsigned int anim, unsigned int usedAuxPalette, bool isUw2);
 
    private:
       /// loads all uw1 critters

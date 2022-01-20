@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include "CrittersLoader.hpp"
 #include "ResourceManager.hpp"
 #include "File.hpp"
+#include "String.hpp"
 #include <SDL.h>
 
 // for optimizing, we omit the first pass in loading frames
@@ -55,7 +56,7 @@ extern unsigned int memory_used;
 #endif
 
 void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* filename,
-   unsigned int usedAuxPalette)
+   unsigned int anim, unsigned int usedAuxPalette, bool isUw2)
 {
    unsigned int& xres = critter.m_xres;
    unsigned int& yres = critter.m_yres;
@@ -74,6 +75,20 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
    m_hotspotXYCoordinates.clear();
    m_imageSizes.clear();
 
+   Base::File segmentFileUw2;
+
+   unsigned char pageMapUw2[32][8] = {};
+   if (isUw2)
+   {
+      // TODO load pg.mp only once for all animations
+      Base::File pageMapFile =
+         m_resourceManager.GetUnderworldFile(Base::resourceGameUw, "crit/pg.mp");
+      pageMapFile.ReadBuffer(&pageMapUw2[0][0], sizeof(pageMapUw2));
+
+      segmentFileUw2 =
+         m_resourceManager.GetUnderworldFile(Base::resourceGameUw, "crit/cr.an");
+   }
+
    // do 2-pass loading:
    // pass 0: determine max. frame image size
    // pass 1: load frame images
@@ -86,6 +101,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
       unsigned int curpage = 0;
       unsigned int segment_offset = 0;
       unsigned int frame_offset = 0;
+      long offsetTableOffsetUw2 = 0x80;
 
       if (pass == 1)
       {
@@ -116,11 +132,9 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
       while (true)
       {
          // construct next pagefile name
-         std::string pagefile = filename;
-
-         char buffer[8];
-         snprintf(buffer, sizeof(buffer), ".n%02u", curpage++);
-         pagefile.append(buffer);
+         std::string pagefile = filename +
+            Base::String::Format(
+               isUw2 ? ".%02u" : ".n%02u", curpage);
 
          // try to open pagefile
          if (!m_resourceManager.IsUnderworldFileAvailable(pagefile.c_str()))
@@ -136,21 +150,27 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
             // pass 0: just skip over all tables
 
             // skip over slot and segment lists and all auxpals
-            file.Read8();
-            unsigned int nslots = file.Read8();
-            file.Seek(nslots, Base::seekCurrent);
+            if (!isUw2)
+            {
+               file.Read8();
+               unsigned int nslots = file.Read8();
+               file.Seek(nslots, Base::seekCurrent);
 
-            unsigned int nsegs = file.Read8();
-            file.Seek(nsegs * 8, Base::seekCurrent);
+               unsigned int nsegs = file.Read8();
+               file.Seek(nsegs * 8, Base::seekCurrent);
 
-            unsigned int nauxpals = file.Read8();
-            file.Seek(nauxpals * 32, Base::seekCurrent);
+               unsigned int nauxpals = file.Read8();
+               file.Seek(nauxpals * 32, Base::seekCurrent);
+            }
+            else
+               file.Seek(offsetTableOffsetUw2, Base::seekBegin);
          }
          else
          {
             // pass 1: read in all tables
 
             // read in slot list
+            if (!isUw2)
             {
                unsigned int slotbase = file.Read8();
                unsigned int nslots = file.Read8();
@@ -166,6 +186,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
             }
 
             // read in segment lists
+            if (!isUw2)
             {
                unsigned int nsegs = file.Read8();
                m_segmentList.resize(nsegs + segment_offset);
@@ -185,8 +206,31 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
 
                segment_offset += nsegs;
             }
+            else
+            {
+               // read segment list only once
+               if (curpage == 0)
+               {
+                  segmentFileUw2.Seek(anim * 0x0200, Base::seekBegin);
+
+                  m_segmentList.resize(8);
+
+                  for (size_t animType = 0; animType < 8; animType++)
+                  {
+                     // read the front angle frames
+                     std::vector<Uint8>& cursegment = m_segmentList[animType];
+                     cursegment.resize(8);
+                     segmentFileUw2.ReadBuffer(cursegment.data(), 8);
+
+                     // skip over the other angle frames, for now
+                     // TODO implement angle-dependent frames
+                     segmentFileUw2.Seek(7 * 8, Base::seekCurrent);
+                  }
+               }
+            }
 
             // read auxiliary palette to use
+            if (!isUw2)
             {
                unsigned int nauxpals = file.Read8();
 
@@ -203,13 +247,38 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
 
                file.Seek(nextdata, Base::seekBegin);
             }
+            else
+            {
+               if (usedAuxPalette >= 4)
+                  usedAuxPalette = 0; // wrong palette given; should not happen
+
+               // skip to used palette
+               if (usedAuxPalette > 0)
+                  file.Seek(usedAuxPalette * 32, Base::seekBegin);
+
+               file.ReadBuffer(auxpal, 32);
+
+               file.Seek(offsetTableOffsetUw2, Base::seekBegin);
+            }
          }
 
-         // read in all frames
+         // read in all offsets
          {
-            unsigned int noffsets = file.Read8();
-            unsigned int unknown1 = file.Read8();
-            UNUSED(unknown1);
+            unsigned int noffsets = 0;
+            if (!isUw2)
+            {
+               noffsets = file.Read8();
+               unsigned int unknown1 = file.Read8();
+               UNUSED(unknown1);
+            }
+            else
+            {
+               noffsets = pageMapUw2[anim][curpage] + 1;
+               if (curpage > 0)
+                  noffsets -= pageMapUw2[anim][curpage - 1] + 1;
+
+               offsetTableOffsetUw2 += noffsets * 2;
+            }
 
             if (pass == 0)
             {
@@ -225,6 +294,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
             for (unsigned int i = 0; i < noffsets; i++)
                alloffsets[i] = file.Read16();
 
+            // read in all frames
             for (unsigned int n = 0; n < noffsets; n++)
             {
                // seek to frame header
@@ -263,10 +333,10 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
                   Uint16 datalen = file.Read16();
 
                   // rle-decode image
-                  unsigned int bytes_offset = curframe * xres*yres;
+                  unsigned int bytes_offset = curframe * xres * yres;
 
                   ImageDecodeRLE(file, &m_allFrameBytes[bytes_offset],
-                     type == 6 ? 5 : 4, datalen, width*height, auxpal,
+                     type == 6 ? 5 : 4, datalen, width * height, auxpal,
                      xres - width, width);
 
 #ifdef DO_CRITLOAD_DEBUG
@@ -286,6 +356,7 @@ void Import::CrittersLoader::LoadCritterFrames(Critter& critter, const char* fil
          file.Close();
 
          // end of page file
+         curpage++;
       }
       // end of all page files
    }
@@ -345,7 +416,6 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
       // construct critter filename base
       if (animnames[anim][0] != 0)
       {
-
          char critterFile[16];
          snprintf(critterFile, sizeof(critterFile), "crit/cr%02opage", anim); // yeah, octal!
 
@@ -358,7 +428,7 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
          critter.maxframes = critframes[anim];
 #endif
          // load it
-         LoadCritterFrames(critter, critterFile, auxpal);
+         LoadCritterFrames(critter, critterFile, anim, auxpal, false);
 
          critter.SetPalette(palette0);
       }
@@ -370,10 +440,35 @@ void Import::CrittersLoader::LoadCrittersUw1(std::vector<Critter>& allCritters,
 void Import::CrittersLoader::LoadCrittersUw2(std::vector<Critter>& allCritters,
    Palette256Ptr palette0)
 {
-   // TODO implement
-   UNUSED(allCritters);
-   UNUSED(palette0);
-
    allCritters.clear();
    allCritters.resize(0x0040);
+
+   UaTrace("loading all uw2 critter animations ... ");
+   unsigned int now = SDL_GetTicks();
+
+   // load infos from "as.an"
+   Base::File assoc = m_resourceManager.GetUnderworldFile(Base::resourceGameUw, "crit/as.an");
+   if (!assoc.IsOpen())
+      throw Base::Exception("could not find as.an");
+
+   // read in critter anim and auxpal values
+   for (unsigned int critterIndex = 0; critterIndex < 64; critterIndex++)
+   {
+      Uint8 animation = assoc.Read8();
+      Uint8 auxpal = assoc.Read8();
+
+      if (animation == 0xFF)
+         continue;
+
+      Critter& critter = allCritters[critterIndex];
+
+      std::string critterFilename = Base::String::Format(
+         "crit/cr%02o", animation); // yeah, octal!
+
+      LoadCritterFrames(critter, critterFilename.c_str(), animation, auxpal, true);
+
+      critter.SetPalette(palette0);
+   }
+
+   UaTrace("done, needed %u ms\n", SDL_GetTicks() - now);
 }
