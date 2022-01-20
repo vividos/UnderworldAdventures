@@ -81,17 +81,24 @@ void ConversationScreen::Init()
 
    // background image
    {
-      Underworld::Player& player = m_game.GetUnderworld().GetPlayer();
-
-      const char* mainscreenname = "data/main.byt";
-
-      // replace name when using uw_demo
-      if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
-         mainscreenname = "data/dmain.byt";
-
       IndexedImage& image = m_backgroundImage.GetImage();
 
-      m_game.GetImageManager().Load(image, mainscreenname, 0, 0, imageByt);
+      bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
+      if (!isUw2)
+      {
+         const char* mainscreenname = "data/main.byt";
+
+         // replace name when using uw_demo
+         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+            mainscreenname = "data/dmain.byt";
+
+         m_game.GetImageManager().Load(image, mainscreenname, 0, 0, imageByt);
+      }
+      else
+      {
+         m_game.GetImageManager().LoadFromArk(image, "data/byt.ark", 2, 0);
+      }
 
       std::vector<IndexedImage> converseImages;
       m_game.GetImageManager().LoadList(converseImages, "converse");
@@ -104,6 +111,8 @@ void ConversationScreen::Init()
 
       // names
       std::string name1 = m_game.GetGameStrings().GetString(7, 16 + convslot);
+
+      Underworld::Player& player = m_game.GetUnderworld().GetPlayer();
       std::string name2 = player.GetName();
 
       if (convslot == 0)
