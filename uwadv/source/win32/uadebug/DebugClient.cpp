@@ -514,6 +514,8 @@ void DebugClient::SetWorkingLevel(unsigned int level)
 
 CString DebugClient::GetLevelName(unsigned int level) const
 {
+   if (IsLevelEmpty(level))
+      return _T("empty");
 
    bool isUw2 = true;
    const std::map<unsigned int, LPCTSTR>& tilemapNames =

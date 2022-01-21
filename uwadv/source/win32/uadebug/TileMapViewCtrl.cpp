@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -212,19 +212,32 @@ void TileMapViewCtrl::UpdateTileMap()
    debugClient.Lock(true);
 
    // rebuild tile info map
-   for (unsigned int y = 0; y < 64; y++)
-      for (unsigned int x = 0; x < 64; x++)
-      {
-         TileMapInfo& info = GetTileMapInfo(x, y);
-         info.m_tileType = debugClient.GetTileInfo(x, y, tiType);
-         info.m_floorHeight = debugClient.GetTileInfo(x, y, tiFloorHeight);
-         info.m_ceilingHeight = debugClient.GetTileInfo(x, y, tiCeilingHeight);
-         info.m_slope = debugClient.GetTileInfo(x, y, tiSlope);
-         info.m_textureWall = debugClient.GetTileInfo(x, y, tiTextureWall);
-         info.m_textureFloor = debugClient.GetTileInfo(x, y, tiTextureFloor);
-         info.m_textureCeiling = debugClient.GetTileInfo(x, y, tiTextureCeil);
-         info.m_nObjectListStart = debugClient.GetTileInfo(x, y, tiObjlistStart);
-      }
+   if (debugClient.IsLevelEmpty(debugClient.GetWorkingLevel()))
+   {
+      for (unsigned int y = 0; y < 64; y++)
+         for (unsigned int x = 0; x < 64; x++)
+         {
+            TileMapInfo& info = GetTileMapInfo(x, y);
+            info.m_tileType = 0;
+            info.m_nObjectListStart = 0;
+         }
+   }
+   else
+   {
+      for (unsigned int y = 0; y < 64; y++)
+         for (unsigned int x = 0; x < 64; x++)
+         {
+            TileMapInfo& info = GetTileMapInfo(x, y);
+            info.m_tileType = debugClient.GetTileInfo(x, y, tiType);
+            info.m_floorHeight = debugClient.GetTileInfo(x, y, tiFloorHeight);
+            info.m_ceilingHeight = debugClient.GetTileInfo(x, y, tiCeilingHeight);
+            info.m_slope = debugClient.GetTileInfo(x, y, tiSlope);
+            info.m_textureWall = debugClient.GetTileInfo(x, y, tiTextureWall);
+            info.m_textureFloor = debugClient.GetTileInfo(x, y, tiTextureFloor);
+            info.m_textureCeiling = debugClient.GetTileInfo(x, y, tiTextureCeil);
+            info.m_nObjectListStart = debugClient.GetTileInfo(x, y, tiObjlistStart);
+         }
+   }
 
    debugClient.Lock(false);
 }
