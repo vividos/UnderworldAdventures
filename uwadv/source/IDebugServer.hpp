@@ -286,7 +286,10 @@ public:
    // level/tile stuff
 
    /// returns number of levels
-   virtual size_t GetNumLevels() = 0;
+   virtual size_t GetNumLevels() const = 0;
+
+   /// returns if level is empty
+   virtual bool IsLevelEmpty(size_t levelIndex) const = 0;
 
    /// returns tile height at given coordinates
    virtual double GetTileHeight(size_t level, double xpos,

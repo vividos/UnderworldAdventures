@@ -131,7 +131,9 @@ private:
 
    virtual void SetPlayerAttribute(size_t index, unsigned int value) override;
 
-   virtual size_t GetNumLevels() override;
+   virtual size_t GetNumLevels() const override;
+
+   virtual bool IsLevelEmpty(size_t levelIndex) const override;
 
    virtual double GetTileHeight(size_t level, double xpos,
       double ypos) override;

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -476,11 +476,18 @@ void DebugServer::SetPlayerAttribute(size_t index, unsigned int value)
    }
 }
 
-size_t DebugServer::GetNumLevels()
+size_t DebugServer::GetNumLevels() const
 {
    if (m_game == NULL)
       return 0;
    return m_game->GetUnderworld().GetLevelList().GetNumLevels();
+}
+
+bool DebugServer::IsLevelEmpty(size_t levelIndex) const
+{
+   if (m_game == nullptr)
+      return true;
+   return !m_game->GetUnderworld().GetLevelList().GetLevel(levelIndex).GetTilemap().IsUsed();
 }
 
 double DebugServer::GetTileHeight(size_t level, double xpos,

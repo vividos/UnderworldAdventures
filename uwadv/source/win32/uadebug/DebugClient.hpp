@@ -258,9 +258,11 @@ public:
 
    // level stuff
 
-   size_t GetNumLevels();
+   size_t GetNumLevels() const;
    void SetWorkingLevel(unsigned int level);
    unsigned int GetWorkingLevel() const { return m_level; }
+
+   bool IsLevelEmpty(unsigned int level) const;
 
    CString GetLevelName(unsigned int level) const;
 

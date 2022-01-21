@@ -497,9 +497,14 @@ Underworld::Underworld& DebugClient::GetUnderworld()
    return m_debugInterface->GetUnderworld();
 }
 
-size_t DebugClient::GetNumLevels()
+size_t DebugClient::GetNumLevels() const
 {
    return m_debugInterface->GetNumLevels();
+}
+
+bool DebugClient::IsLevelEmpty(unsigned int level) const
+{
+   return m_debugInterface->IsLevelEmpty(level);
 }
 
 void DebugClient::SetWorkingLevel(unsigned int level)
