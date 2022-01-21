@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -103,6 +103,71 @@ struct ObjectListColumnInfo
    { _T("ench"),     40,   true,    1 },
    { _T("is_quant"), 55,   false,   1 },
    { _T("hidden"),   55,   false,   1 },
+};
+
+/// tilemap names for uw1 and uw2
+std::map<unsigned int, LPCTSTR> g_tilemapNames[2] =
+{
+   {
+      { 0, _T("Goblins") },
+      { 1, _T("Mountainmen") },
+      { 2, _T("Lizardmen") },
+      { 3, _T("Knights") },
+      { 4, _T("Ghouls") },
+      { 5, _T("Mages") },
+      { 6, _T("Tyball") },
+      { 7, _T("Volcano") },
+      { 8, _T("Moongate") },
+   },
+   {
+      { 0, _T("Castle B1") },
+      { 1, _T("Sewers B2") },
+      { 2, _T("Sewers B3") },
+      { 3, _T("Sewers B4") },
+      { 4, _T("Sewers B5") },
+
+      { 8, _T("Prison Tower PT1") },
+      { 9, _T("Prison Tower PT2") },
+      { 10, _T("Prison Tower PT3") },
+      { 11, _T("Prison Tower PT4") },
+      { 12, _T("Prison Tower PT5") },
+      { 13, _T("Prison Tower PT6") },
+      { 14, _T("Prison Tower PT7") },
+      { 15, _T("Prison Tower PT8") },
+
+      { 16, _T("Killorn Keep KK1") },
+      { 17, _T("Killorn Keep KK2") },
+      // KKA
+
+      { 24, _T("Ice Caverns IC1") },
+      { 25, _T("Ice Caverns IC2") },
+
+      { 32, _T("Talorus T1") },
+      { 33, _T("Talorus T2") },
+
+      { 40, _T("Scintillus Academy SA1") },
+      { 41, _T("Scintillus Academy SA2") },
+      { 42, _T("Scintillus Academy SA3") },
+      { 43, _T("Scintillus Academy SA4") },
+      { 44, _T("Scintillus Academy SA5") },
+      { 45, _T("Scintillus Academy SA6") },
+      { 46, _T("Scintillus Academy SA7") },
+      { 47, _T("Scintillus Academy SA8") },
+
+      { 48, _T("Loth's Tomb LT1") },
+      { 49, _T("Loth's Tomb LT2") },
+      { 50, _T("Loth's Tomb LT3") },
+      { 51, _T("Loth's Tomb LT4") },
+
+      { 56, _T("Pits of Carnage PC1") },
+      { 57, _T("Pits of Carnage PC2") },
+      { 58, _T("Pits of Carnage PC3") },
+
+      { 64, _T("Ethereal Void Red EVR") },
+      { 65, _T("Ethereal Void Blue EVB") },
+      { 66, _T("Ethereal Void Yellow EVY") },
+      { 67, _T("Ethereal Void Purple EVP") },
+   }
 };
 
 unsigned int DebugClientPlayerInterface::GetAttrCount()
@@ -444,23 +509,15 @@ void DebugClient::SetWorkingLevel(unsigned int level)
 
 CString DebugClient::GetLevelName(unsigned int level) const
 {
-   switch (level)
-   {
-   case 0: return _T("Goblins");
-   case 1: return _T("Mountainmen");
-   case 2: return _T("Lizardmen");
-   case 3: return _T("Knights");
-   case 4: return _T("Ghouls");
-   case 5: return _T("Mages");
-   case 6: return _T("Tyball");
-   case 7: return _T("Volcano");
-   case 8: return _T("Moongate");
-   default:
-      ATLASSERT(false);
-      break;
-   }
 
-   return _T("unknown");
+   bool isUw2 = true;
+   const std::map<unsigned int, LPCTSTR>& tilemapNames =
+      g_tilemapNames[isUw2 ? 1 : 0];
+
+   if (tilemapNames.find(level) != tilemapNames.end())
+      return tilemapNames.find(level)->second;
+   else
+      return _T("unknown");
 }
 
 void DebugClient::InsertNewLevel(unsigned int beforeLevel)
