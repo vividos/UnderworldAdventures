@@ -20,6 +20,7 @@
 //
 
 // all main functions
+extern int bytdecode_main();
 extern int cnvdec_main();
 extern int critdec_main();
 extern int cutsdec_main();
@@ -34,6 +35,7 @@ extern int uwmdldec_main();
 /// main function
 int main()
 {
+   //return bytdecode_main();
    return cnvdec_main();
    //return critdec_main();
    //return cutsdec_main();

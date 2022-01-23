@@ -57,6 +57,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bytdecode.cpp" />
     <ClCompile Include="cnvdec.cpp" />
     <ClCompile Include="critdec.cpp" />
     <ClCompile Include="fontdecode.cpp" />
