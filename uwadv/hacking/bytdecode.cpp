@@ -19,6 +19,35 @@
 // byt.ark decoding
 //
 #include "hacking.h"
+#include <algorithm>
+
+static std::map<std::string, unsigned int> g_filenameToPaletteIndexMap =
+{
+   // uw_demo
+   { "dmain.byt", 0 },
+   { "presd.byt", 5 },
+
+   // uw1
+   { "blnkmap.byt", 1 },
+   { "chargen.byt", 3 },
+   { "conv.byt", 0 },
+   { "main.byt", 0 },
+   { "opscr.byt", 2 },
+   { "pres1.byt", 5 },
+   { "pres2.byt", 5 },
+   { "win1.byt", 7 },
+   { "win2.byt", 7 },
+
+   // uw2
+   { "lback000.byt", 0 },
+   { "lback001.byt", 0 },
+   { "lback002.byt", 0 },
+   { "lback003.byt", 0 },
+   { "lback004.byt", 0 },
+   { "lback005.byt", 0 },
+   { "lback006.byt", 0 },
+   { "lback007.byt", 0 },
+};
 
 static std::map<unsigned short, unsigned int> g_entryIndexToPaletteMap =
 {
@@ -105,44 +134,43 @@ bool uw2_uncompress(const unsigned char* compressedData, size_t compressedSize,
    return true;
 }
 
-int bytdecode_main()
+void load_palettes(char* allPalettes, unsigned int numPalettes)
 {
-#ifndef HAVE_UW2
-   // uw1 doesn't have a byt.ark file
-   return 0;
-#endif
+   FILE* pal = fopen(UWPATH"data\\pals.dat", "rb");
 
+   fread(allPalettes, 1, numPalettes * 256 * 3, pal);
+
+   for (unsigned int palidx = 0; palidx < numPalettes; palidx++)
+   {
+      char* palette = &allPalettes[palidx * 256 * 3];
+      // scale
+      for (int j = 0; j < 256 * 3; j++)
+         palette[j] <<= 2;
+
+      // swap R and B
+      for (int k = 0; k < 256; k++)
+      {
+         char h = palette[k * 3 + 0];
+         palette[k * 3 + 0] = palette[k * 3 + 2];
+         palette[k * 3 + 2] = h;
+      }
+   }
+
+   fclose(pal);
+}
+
+void decode_byt_ark_uw2()
+{
    // get 256 colors palette
    char palette[11][256 * 3];
-   {
-      FILE* pal = fopen(UWPATH"data\\pals.dat", "rb");
-
-      fread(palette, 1, 256 * 3 * 11, pal);
-
-      for (int palidx = 0; palidx < 11; palidx++)
-      {
-         // scale
-         for (int j = 0; j < 256 * 3; j++)
-            palette[palidx][j] <<= 2;
-
-         // swap R and B
-         for (int k = 0; k < 256; k++)
-         {
-            char h = palette[palidx][k * 3 + 0];
-            palette[palidx][k * 3 + 0] = palette[palidx][k * 3 + 2];
-            palette[palidx][k * 3 + 2] = h;
-         }
-      }
-
-      fclose(pal);
-   }
+   load_palettes(&palette[0][0], 11);
 
    FILE* fd = fopen(UWPATH"data\\byt.ark", "rb");
 
    if (fd == NULL)
    {
       printf("could not open file\n");
-      return 0;
+      return;
    }
 
    fseek(fd, 0, SEEK_END);
@@ -214,6 +242,119 @@ int bytdecode_main()
    } // end for
 
    fclose(fd);
+}
+
+void save_image(const char* prefix, const char* path, const char* filename, char* allPalettes)
+{
+   FILE* fd = fopen(path, "rb");
+
+   if (fd == NULL)
+   {
+      printf("could not open file\n");
+      return;
+   }
+
+   fseek(fd, 0, SEEK_END);
+   unsigned long flen = ftell(fd);
+   fseek(fd, 0, SEEK_SET);
+
+   std::vector<unsigned char> bitmap;
+   bitmap.resize(flen);
+   fread(bitmap.data(), sizeof(unsigned char), flen, fd);
+
+   fclose(fd);
+
+   if (flen != 64000)
+   {
+      printf("%s: invalid size; %u\n", filename, flen);
+      return;
+   }
+
+   std::string lowerFilename{ filename };
+   std::transform(lowerFilename.begin(), lowerFilename.end(), lowerFilename.begin(), ::tolower);
+
+   unsigned int width = 320;
+   unsigned int height = 200;
+
+   unsigned int paletteIndex = g_filenameToPaletteIndexMap[lowerFilename];
+
+   char tga_fname[256];
+   sprintf(tga_fname, "%s-%s.tga", prefix, lowerFilename.c_str());
+
+   FILE* tga = fopen(tga_fname, "wb");
+
+   tga_writeheader(tga, width, height, 1, 1);
+
+   // write palette
+   fwrite(allPalettes + paletteIndex * 256 * 3, 1, 256 * 3, tga);
+
+   fwrite(bitmap.data(), 1, width * height, tga);
+
+   fclose(tga);
+}
+
+void decode_lback_byt_uw2()
+{
+   // get 256 colors palette
+   char palette[11][256 * 3];
+   load_palettes(&palette[0][0], 11);
+
+   _finddata_t find;
+   long hnd = _findfirst(UWPATH"cuts\\lback00?.byt", &find);
+
+   if (hnd == -1)
+   {
+      printf("no files found!\n");
+      return;
+   }
+
+   do
+   {
+      char fname[256];
+      sprintf(fname, UWPATH"cuts\\%s", find.name);
+
+      save_image("cuts", fname, find.name, &palette[0][0]);
+
+   } while (0 == _findnext(hnd, &find));
+
+   _findclose(hnd);
+}
+
+void decode_data_byt_uw1()
+{
+   // get 256 colors palette
+   char palette[8][256 * 3];
+   load_palettes(&palette[0][0], 8);
+
+   _finddata_t find;
+   long hnd = _findfirst(UWPATH"data\\*.byt", &find);
+
+   if (hnd == -1)
+   {
+      printf("no files found!\n");
+      return;
+   }
+
+   do
+   {
+      char fname[256];
+      sprintf(fname, UWPATH"data\\%s", find.name);
+
+      save_image("data", fname, find.name, &palette[0][0]);
+
+   } while (0 == _findnext(hnd, &find));
+
+   _findclose(hnd);
+}
+
+int bytdecode_main()
+{
+#ifndef HAVE_UW2
+   decode_data_byt_uw1();
+#else
+   decode_byt_ark_uw2();
+   decode_lback_byt_uw2();
+#endif
 
    return 0;
 }
