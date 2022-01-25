@@ -39,6 +39,8 @@ extern void DumpCombineData(const std::string& filename, const GameStrings& game
 extern void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpAuxPalettes(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpBytImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpBytArkFile(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 
 typedef std::function<void(const std::string & filename, const GameStrings & gameStrings, bool isUw2)> T_fileHandler;
 
@@ -54,10 +56,11 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
    { "uwconfig.exe", DumpExecutable },
    { "uwsound.exe", DumpExecutable },
    { "cnv.ark", DumpConversationArchive },
-   { "byt.ark", DumpArkArchive },
+   { "byt.ark", DumpBytArkFile },
    { "scd.ark", DumpArkArchive },
    { "pals.dat", DumpPalettes },
    { "allpals.dat", DumpAuxPalettes },
+   { ".byt", DumpBytImage },
 };
 
 bool UnderworldDumper::ParseArgs(unsigned int argc, const char** argv)
@@ -191,6 +194,16 @@ void UnderworldDumper::DumpFile(const std::string& path)
    Base::String::Lowercase(filename);
 
    auto iter = g_dumpFileHandlerMap.find(filename);
+
+   // check file extension
+   if (iter == g_dumpFileHandlerMap.end())
+   {
+      size_t posDot = filename.find_last_of('.');
+      std::string extension = pos == std::string::npos ? "" : filename.substr(posDot);
+
+      iter = g_dumpFileHandlerMap.find(extension);
+   }
+
    if (iter != g_dumpFileHandlerMap.end())
    {
       printf("dumping file %s\n", path.c_str());

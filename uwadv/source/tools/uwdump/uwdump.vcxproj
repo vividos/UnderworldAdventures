@@ -62,6 +62,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DumpArkArchive.cpp" />
+    <ClCompile Include="DumpBytImage.cpp" />
     <ClCompile Include="DumpCombineData.cpp" />
     <ClCompile Include="DumpConversationArchive.cpp" />
     <ClCompile Include="DumpExecutable.cpp" />
