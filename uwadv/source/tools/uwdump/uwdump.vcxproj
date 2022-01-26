@@ -66,8 +66,10 @@
     <ClCompile Include="DumpCombineData.cpp" />
     <ClCompile Include="DumpConversationArchive.cpp" />
     <ClCompile Include="DumpExecutable.cpp" />
+    <ClCompile Include="DumpGrImage.cpp" />
     <ClCompile Include="DumpLevelArchive.cpp" />
     <ClCompile Include="DumpPalettes.cpp" />
+    <ClCompile Include="DumpTrImage.cpp" />
     <ClCompile Include="DumpUwExe.cpp" />
     <ClCompile Include="DumpObjectProperties.cpp" />
     <ClCompile Include="UnderworldDumper.cpp" />

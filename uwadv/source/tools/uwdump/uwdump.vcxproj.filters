@@ -44,6 +44,12 @@
     <ClCompile Include="DumpBytImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DumpGrImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpTrImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UnderworldDumper.hpp">

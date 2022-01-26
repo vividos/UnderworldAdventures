@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2004,2019,2021 Underworld Adventures Team
+// Copyright (c) 2003,2004,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ extern void DumpPalettes(const std::string& filename, const GameStrings& gameStr
 extern void DumpAuxPalettes(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpBytImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpBytArkFile(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpGrImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpTextureImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 
 typedef std::function<void(const std::string & filename, const GameStrings & gameStrings, bool isUw2)> T_fileHandler;
 
@@ -61,6 +63,8 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
    { "pals.dat", DumpPalettes },
    { "allpals.dat", DumpAuxPalettes },
    { ".byt", DumpBytImage },
+   { ".gr", DumpGrImage },
+   { ".tr", DumpTextureImage },
 };
 
 bool UnderworldDumper::ParseArgs(unsigned int argc, const char** argv)
