@@ -73,6 +73,7 @@
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="Keymap.cpp" />
     <ClCompile Include="KeyValuePairTextFileReader.cpp" />
+    <ClCompile Include="Path.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -108,6 +109,7 @@
     <ClInclude Include="Keymap.hpp" />
     <ClInclude Include="KeyValuePairTextFileReader.hpp" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="Path.hpp" />
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="Plane3d.hpp" />
     <ClInclude Include="ResourceManager.hpp" />

@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for base.
 #
@@ -29,6 +29,7 @@ add_library(${PROJECT_NAME} STATIC
 	"Keymap.cpp" "Keymap.hpp"
 	"KeyValuePairTextFileReader.cpp" "KeyValuePairTextFileReader.hpp"
 	"Math.hpp"
+	"Path.cpp" "Path.hpp"
 	"Plane3d.hpp"
 	"ResourceManager.cpp" "ResourceManager.hpp"
 	"Savegame.cpp" "Savegame.hpp"

@@ -70,6 +70,7 @@
     <ClCompile Include="ImportTest.cpp" />
     <ClCompile Include="KeymapTest.cpp" />
     <ClCompile Include="LuaStateTest.cpp" />
+    <ClCompile Include="PathTest.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
