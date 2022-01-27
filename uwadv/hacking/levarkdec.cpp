@@ -126,8 +126,8 @@ int levarkdec_main()
       sortedoffsets.push_back(std::make_pair(flen, 0));
       std::sort(sortedoffsets.begin(), sortedoffsets.end());
 
-      int max = sortedoffsets.size() - 1;
-      for (int j = 0; j < max; j++)
+      size_t max = sortedoffsets.size() - 1;
+      for (size_t j = 0; j < max; j++)
       {
          fprintf(out2, "entry %02u: offset=%08x size=%04x\n",
             sortedoffsets[j].second, sortedoffsets[j].first,

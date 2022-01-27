@@ -42,16 +42,16 @@ void Screen::Init()
 void Screen::Destroy()
 {
    // destroy all subwindows
-   unsigned int max = m_subWindows.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_subWindows.size();
+   for (size_t i = 0; i < max; i++)
       m_subWindows[i]->Destroy();
 }
 
 void Screen::Draw()
 {
    // draw all subwindows
-   unsigned int max = m_subWindows.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_subWindows.size();
+   for (size_t i = 0; i < max; i++)
       m_subWindows[i]->Draw();
 }
 
@@ -59,8 +59,8 @@ bool Screen::ProcessEvent(SDL_Event& event)
 {
    // send event to all subwindows
    {
-      unsigned int max = m_subWindows.size();
-      for (unsigned int i = 0; i < max; i++)
+      size_t max = m_subWindows.size();
+      for (size_t i = 0; i < max; i++)
       {
          if (m_subWindows[i]->ProcessEvent(event))
             break; // no further processing
@@ -86,8 +86,8 @@ bool Screen::ProcessEvent(SDL_Event& event)
          xpos, ypos);
 
       // send event to subwindows that are in that area
-      unsigned int max = m_subWindows.size();
-      for (unsigned int i = 0; i < max; i++)
+      size_t max = m_subWindows.size();
+      for (size_t i = 0; i < max; i++)
       {
          Window& wnd = *m_subWindows[i];
 
@@ -138,8 +138,8 @@ void Screen::KeyEvent(bool keyDown, Base::KeyType key)
 void Screen::Tick()
 {
    // send tick to all subwindows
-   unsigned int max = m_subWindows.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = m_subWindows.size();
+   for (size_t i = 0; i < max; i++)
       m_subWindows[i]->Tick();
 }
 

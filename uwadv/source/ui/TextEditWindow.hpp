@@ -62,7 +62,7 @@ protected:
    Uint8 m_textColor;
 
    /// cursor position; index into text string
-   unsigned int m_cursorPos;
+   size_t m_cursorPos;
 
    /// indicates if the edit window has a border
    bool m_border;

@@ -43,13 +43,13 @@ static Sint64 gzip_seek(SDL_RWops* context, Sint64 offset, int whence)
 /// wrapper for gzread
 static size_t gzip_read(SDL_RWops* context, void* ptr, size_t size, size_t maxnum)
 {
-   return gzread(SDL_RWOPS_GZFILE(context), ptr, size*maxnum);
+   return gzread(SDL_RWOPS_GZFILE(context), ptr, (unsigned int)(size * maxnum));
 }
 
 /// wrapper for gzwrite
 static size_t gzip_write(SDL_RWops* context, const void* ptr, size_t size, size_t num)
 {
-   return gzwrite(SDL_RWOPS_GZFILE(context), ptr, size*num);
+   return gzwrite(SDL_RWOPS_GZFILE(context), ptr, (unsigned int)(size * num));
 }
 
 /// wrapper for gzclose; automatically frees SDL_RWops ptr

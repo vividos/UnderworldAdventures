@@ -68,10 +68,10 @@ void Cutscene::UpdateFrame(unsigned int frameNumber)
 
 void Cutscene::DecodeFrame(unsigned int frameNumber)
 {
-   unsigned int largepages = m_largePageDescriptorList.size();
+   size_t largepages = m_largePageDescriptorList.size();
 
    // first, search large page to use
-   unsigned int i = 0;
+   size_t i = 0;
    for (; i < largepages; i++)
       if (m_largePageDescriptorList[i].m_base <= frameNumber &&
          unsigned(m_largePageDescriptorList[i].m_base + m_largePageDescriptorList[i].m_records) > frameNumber)

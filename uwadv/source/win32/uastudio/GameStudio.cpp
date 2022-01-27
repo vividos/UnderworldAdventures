@@ -91,7 +91,7 @@ public:
    /// starts showing cutscene with given number
    virtual void ShowCutscene(unsigned int cutsceneNumber) override
    {
-      UaTrace("ShowCutscene: number=%i\n", cutsceneNumber);
+      UaTrace("ShowCutscene: number=%u\n", cutsceneNumber);
    }
 
    /// shows map

@@ -235,7 +235,7 @@ int grdecode_main()
 
 
    _finddata_t find;
-   long hnd = _findfirst(UWPATH"data\\*.gr", &find);
+   intptr_t hnd = _findfirst(UWPATH"data\\*.gr", &find);
 
    if (hnd == -1)
    {

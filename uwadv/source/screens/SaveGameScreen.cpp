@@ -268,14 +268,14 @@ void SaveGamesList::UpdateList()
 
       // when selected, fill background
       if (selected)
-         GetImage().FillRect(0, i*(charHeight + 1) + 2,
+         GetImage().FillRect(0, static_cast<unsigned int>(i * (charHeight + 1) + 2),
             GetImage().GetXRes(), charHeight, 162);
 
       // paste image
       IndexedImage tempImage;
       m_normalFont.CreateString(tempImage, desc, selected ? 73 : 162);
 
-      GetImage().PasteImage(tempImage, 2, i*(charHeight + 1) + 2, true);
+      GetImage().PasteImage(tempImage, 2, static_cast<unsigned int>(i * (charHeight + 1) + 2), true);
    }
 
    Update();
@@ -298,7 +298,7 @@ void SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
 
       // check if user selected an empty slot
       if (item < numItems)
-         m_selectedSavegameItemIndex = item;
+         m_selectedSavegameItemIndex = static_cast<int>(item);
       else
       {
          // only deselect when clicked on empty slot
@@ -763,7 +763,7 @@ void SaveGameScreen::AskForSavegameDescription()
       savegameName = info.m_title;
    }
    else
-      selectedSavegameItemIndex = sgmgr.GetSavegamesCount();
+      selectedSavegameItemIndex = static_cast<int>(sgmgr.GetSavegamesCount());
 
    /// \todo change
    unsigned int height = 6;

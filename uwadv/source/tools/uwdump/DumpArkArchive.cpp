@@ -114,15 +114,15 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
          if (firstEmptyBlock != (size_t)-1)
          {
             if (index - firstEmptyBlock > 1)
-               printf("blocks %i to %i are empty\n", firstEmptyBlock, index - 1);
+               printf("blocks %zu to %zu are empty\n", firstEmptyBlock, index - 1);
             else
-               printf("block %i, empty block\n", firstEmptyBlock); // only one
+               printf("block %zu, empty block\n", firstEmptyBlock); // only one
          }
 
          firstEmptyBlock = (size_t)-1;
       }
 
-      printf("block %i", index);
+      printf("block %zu", index);
 
       if (isEmptyBlock)
       {

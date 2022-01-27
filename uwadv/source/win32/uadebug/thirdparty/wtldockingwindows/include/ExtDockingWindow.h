@@ -325,7 +325,7 @@ public:
 			dc.SetBkMode(TRANSPARENT);
 			HFONT hFontOld = dc.SelectFont(hFont);
 			if( (rc.left<rc.right) && (rc.top<rc.bottom))
-				DrawEllipsisText(dc,sText,_tcslen(sText),&rc,IsHorizontal());
+				DrawEllipsisText(dc,sText,(int)_tcslen(sText),&rc,IsHorizontal());
 			dc.SelectFont(hFontOld);
 		}
 		m_btnClose.Draw(dc);

@@ -300,7 +300,7 @@ void decode_lback_byt_uw2()
    load_palettes(&palette[0][0], 11);
 
    _finddata_t find;
-   long hnd = _findfirst(UWPATH"cuts\\lback00?.byt", &find);
+   intptr_t hnd = _findfirst(UWPATH"cuts\\lback00?.byt", &find);
 
    if (hnd == -1)
    {
@@ -327,7 +327,7 @@ void decode_data_byt_uw1()
    load_palettes(&palette[0][0], 8);
 
    _finddata_t find;
-   long hnd = _findfirst(UWPATH"data\\*.byt", &find);
+   intptr_t hnd = _findfirst(UWPATH"data\\*.byt", &find);
 
    if (hnd == -1)
    {

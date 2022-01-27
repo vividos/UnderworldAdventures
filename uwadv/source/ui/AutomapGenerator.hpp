@@ -66,7 +66,7 @@ namespace UI
 
    private:
       /// draws single tile
-      void DrawTile(IndexedImage& image, size_t tileX, size_t tileY) const;
+      void DrawTile(IndexedImage& image, unsigned int tileX, unsigned int tileY) const;
 
       /// fills tile pixels for solid tile
       void FillOpenTilePixels(Underworld::AutomapFlag automapFlag,

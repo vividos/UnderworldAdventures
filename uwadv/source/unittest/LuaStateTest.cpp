@@ -44,7 +44,7 @@ namespace UnitTest
             "print(text);\n";
 
          Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(
-            SDL_RWFromMem(luaSource.data(), luaSource.size()));
+            SDL_RWFromMem(luaSource.data(), static_cast<int>(luaSource.size())));
 
          // run
          LuaState state;
@@ -65,7 +65,7 @@ namespace UnitTest
             "end;\n";
 
          Base::SDL_RWopsPtr rwops = Base::MakeRWopsPtr(
-            SDL_RWFromMem(luaSource.data(), luaSource.size()));
+            SDL_RWFromMem(luaSource.data(), static_cast<int>(luaSource.size())));
 
          LuaState state;
          state.LoadScript(rwops, "chunk1");
@@ -183,10 +183,10 @@ namespace UnitTest
 
          // check
          Assert::IsFalse(activeLinesList.empty(), L"list must not be empty");
-         Assert::AreEqual(2U, activeLinesList.size(), L"list must contain exactly 2 entries");
+         Assert::AreEqual<size_t>(2, activeLinesList.size(), L"list must contain exactly 2 entries");
 
-         Assert::AreEqual(2U, activeLinesList[0], L"first active line is line 2");
-         Assert::AreEqual(3U, activeLinesList[1], L"active lines are 1-based");
+         Assert::AreEqual<size_t>(2, activeLinesList[0], L"first active line is line 2");
+         Assert::AreEqual<size_t>(3, activeLinesList[1], L"active lines are 1-based");
       }
    };
 

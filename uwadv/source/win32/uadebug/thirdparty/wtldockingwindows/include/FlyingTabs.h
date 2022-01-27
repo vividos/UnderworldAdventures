@@ -159,7 +159,7 @@ public:
 		return baseClass::InsertItem(nItem, pItem, bSelectItem);
 	}
 */
-	int InsertItem(int index, LPCTSTR ptxt = NULL, int image = -1, DWORD param=0)
+	int InsertItem(int index, LPCTSTR ptxt = NULL, int image = -1, DWORD_PTR param=0)
 	{
 		CTabViewTabItem* pItem = baseClass::CreateNewItem();
 		if(pItem)
@@ -173,9 +173,9 @@ public:
 		}
 		return -1;
 	}
-	DWORD GetItemData(int index) const
+	DWORD_PTR GetItemData(int index) const
 	{
-		return reinterpret_cast<DWORD>(GetItem(index)->GetTabView());
+		return reinterpret_cast<DWORD_PTR>(GetItem(index)->GetTabView());
 	}
 
 	void DeleteItem(CTabViewTabItem* pItem)

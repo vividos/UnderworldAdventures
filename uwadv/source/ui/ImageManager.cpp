@@ -84,8 +84,8 @@ void ImageManager::LoadList(std::vector<IndexedImage>& imageList, const char* ba
       m_allAuxPalettes);
 
    // set palette ptr for all images
-   unsigned int max = imageList.size();
-   for (unsigned int i = 0; i < max; i++)
+   size_t max = imageList.size();
+   for (size_t i = 0; i < max; i++)
       imageList[i].SetPalette(m_allPalettes[paletteIndex]);
 }
 

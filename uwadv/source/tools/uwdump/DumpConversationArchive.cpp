@@ -53,11 +53,11 @@ void DumpConversationArchive(const std::string& filename, const GameStrings& gam
 
       if (!convSlot.IsOpen())
       {
-         printf("could not open ark file slot %u!\n", index);
+         printf("could not open ark file slot %zu!\n", index);
          continue;
       }
 
-      printf("block %i, conversation for %s\n",
+      printf("block %zu, conversation for %s\n",
          index,
          gameStrings.GetString(7, index + 16).c_str());
 

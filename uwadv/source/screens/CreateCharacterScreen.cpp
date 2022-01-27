@@ -616,7 +616,7 @@ void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnu
    {
       unsigned int labelwidth = DrawText(strnum, x + 4, y + 3, 0, m_normalTextColor);
       unsigned int maxnamewidth = button.GetXRes() - labelwidth - 7;
-      unsigned int ip = m_inputText.size();
+      size_t ip = m_inputText.size();
       while ((m_font.CalcLength(m_inputText) > maxnamewidth) && (ip > 0))
          m_inputText.erase(ip--);
       DrawText(m_inputText, x + labelwidth + 4, y + 3, 0, m_highlightTextColor);

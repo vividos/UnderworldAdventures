@@ -231,7 +231,7 @@ void TextScroll::UpdateScroll()
          continue; // empty line
 
       // calc y position
-      unsigned int ypos = lineIndex * m_normalFont.GetCharHeight() + m_scrollBaseY;
+      unsigned int ypos = static_cast<unsigned int>(lineIndex * m_normalFont.GetCharHeight() + m_scrollBaseY);
 
       // paste it into final image
       m_image.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(),

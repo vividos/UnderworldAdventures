@@ -131,11 +131,11 @@ void DumpBytArkFile(const std::string& filename, const GameStrings& gameStrings,
    {
       if (!ark.IsAvailable(fileIndex))
       {
-         printf("archive file image %u not available\n", fileIndex);
+         printf("archive file image %zu not available\n", fileIndex);
          continue;
       }
 
-      printf("archive file image %u: ", fileIndex);
+      printf("archive file image %zu: ", fileIndex);
 
       Base::File arkFile = ark.GetFile(fileIndex);
       DumpBytImage(filename, arkFile, static_cast<int>(fileIndex), isUw2);

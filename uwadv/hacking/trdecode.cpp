@@ -48,7 +48,7 @@ int trdecode_main()
 
 
    _finddata_t find;
-   long hnd = _findfirst(UWPATH "data\\*.tr", &find);
+   intptr_t hnd = _findfirst(UWPATH "data\\*.tr", &find);
 
    if (hnd == -1)
    {

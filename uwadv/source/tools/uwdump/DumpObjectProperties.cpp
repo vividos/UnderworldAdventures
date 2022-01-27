@@ -119,7 +119,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       Uint8 data[8];
       file.ReadBuffer(data, sizeof(data));
 
-      printf("item_id=%04x ", index);
+      printf("item_id=%04zx ", index);
       printf("slash=%02x ", data[0]);
       printf("bash=%02x ", data[1]);
       printf("stab=%02x ", data[2]);
@@ -149,7 +149,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       Uint8 data[3];
       file.ReadBuffer(data, sizeof(data));
 
-      printf("item_id=%04x ", index + 0x0010);
+      printf("item_id=%04zx ", index + 0x0010);
 
       Uint16 word = data[0] | (data[1] << 8);
       printf("unknown=%04x ", word);
@@ -165,7 +165,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       Uint8 data[4];
       file.ReadBuffer(data, sizeof(data));
 
-      printf("item_id=%04x ", index + 0x0020);
+      printf("item_id=%04zx ", index + 0x0020);
 
       printf("protection=%02x ", data[0]);
       printf("durability=%02x ", data[1]);
@@ -194,7 +194,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
       Uint8 data[48];
       file.ReadBuffer(data, sizeof(data));
 
-      printf("item_id=%04x ", index + 0x0040);
+      printf("item_id=%04zx ", index + 0x0040);
 
       printf("npc_level=%02x ", data[0]);
       printf("armor=%02x %02x %02x ", data[1], data[2], data[3]);
@@ -268,7 +268,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
    printf("\ncontainer\n");
    for (size_t index = 0; index < 16; index++)
    {
-      printf("item_id=%04x ", index + 0x0080);
+      printf("item_id=%04zx ", index + 0x0080);
 
       Uint8 data[3];
       file.ReadBuffer(data, sizeof(data));
@@ -296,7 +296,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
    printf("\nlight sources\n");
    for (size_t index = 0; index < 16; index++)
    {
-      printf("item_id=%04x ", index + 0x0090);
+      printf("item_id=%04zx ", index + 0x0090);
 
       Uint8 duration = file.Read8();
       Uint8 brightness = file.Read8();
@@ -310,7 +310,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
    printf("\nfood nutrition\n");
    for (size_t index = 0; index < 16; index++)
    {
-      printf("item_id=%04x ", index + 0x00b0);
+      printf("item_id=%04zx ", index + 0x00b0);
 
       Uint8 nutrition = file.Read8();
       printf("nutrition=%02x ", nutrition);
@@ -321,7 +321,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
    printf("\njewelry\n");
    for (size_t index = 0; index < 16; index++)
    {
-      printf("item_id=%04x ", index + 0x00a0);
+      printf("item_id=%04zx ", index + 0x00a0);
 
       Uint8 value = file.Read8();
       printf("value=%02x ", value);
@@ -332,7 +332,7 @@ void DumpObjectProperties(const std::string& filename, const GameStrings& gameSt
    printf("\nanimation objects\n");
    for (size_t index = 0; index < 16; index++)
    {
-      printf("item_id=%04x ", index + 0x01c0);
+      printf("item_id=%04zx ", index + 0x01c0);
 
       Uint8 value = file.Read8();
       printf("value=%02x ", value);

@@ -62,10 +62,10 @@ public:
    int yylex();
 
    /// provides more input for lexer
-   virtual int LexerInput(char* buffer, int maxSize)
+   virtual int LexerInput(char* buffer, int maxSize) override
    {
-      int numBytesRead = SDL_RWread(m_rwops, buffer, 1, maxSize);
-      return numBytesRead == 0 ? YY_NULL : numBytesRead;
+      size_t numBytesRead = SDL_RWread(m_rwops, buffer, 1, maxSize);
+      return numBytesRead == 0 ? YY_NULL : static_cast<int>(numBytesRead);
    }
 
    /// returns read integer value

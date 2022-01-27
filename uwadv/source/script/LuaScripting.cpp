@@ -410,7 +410,7 @@ int LuaScripting::uw_show_cutscene(lua_State* L)
    IUserInterface* callback = self.m_game->GetUserInterface();
    if (callback != NULL)
    {
-      size_t cutsceneNumber = static_cast<size_t>(lua_tointeger(L, -1));
+      unsigned int cutsceneNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
       callback->ShowCutscene(cutsceneNumber);
    }
 

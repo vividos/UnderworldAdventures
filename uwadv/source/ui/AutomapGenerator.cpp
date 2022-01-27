@@ -93,9 +93,9 @@ void AutomapGenerator::DrawLevelNumber(IndexedImage& image, size_t levelIndex,
 
 void AutomapGenerator::DrawTiles(IndexedImage& image) const
 {
-   for (size_t tileX = 0; tileX < 64; tileX++)
+   for (unsigned int tileX = 0; tileX < 64; tileX++)
    {
-      for (size_t tileY = 0; tileY < 64; tileY++)
+      for (unsigned int tileY = 0; tileY < 64; tileY++)
       {
          Underworld::AutomapFlag automapFlag = m_tilemap.GetTileInfo(tileX, tileY).m_automapFlag;
          if (automapFlag == Underworld::AutomapFlag::automapUndiscovered)
@@ -123,7 +123,7 @@ void AutomapGenerator::DrawPlayerPin(IndexedImage& image, const Underworld::Play
       true);
 }
 
-void AutomapGenerator::DrawTile(IndexedImage& image, size_t tileX, size_t tileY) const
+void AutomapGenerator::DrawTile(IndexedImage& image, unsigned int tileX, unsigned int tileY) const
 {
    unsigned int x = tileX * c_tileSize + c_mapOffsetX + 1;
    unsigned int y = (63 - tileY) * c_tileSize + c_mapOffsetY + 1;

@@ -36,12 +36,12 @@ void Model3DVrml::Render(const RenderOptions& renderOptions,
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
    // render all triangles in list
-   unsigned int max = m_coordIndex.size();
-   for (unsigned int i = 0; i < max; i += 3)
+   size_t max = m_coordIndex.size();
+   for (size_t i = 0; i < max; i += 3)
    {
       glBegin(GL_TRIANGLES);
 
-      for (unsigned int n = 0; n < 3; n++)
+      for (size_t n = 0; n < 3; n++)
       {
          int c_idx = m_coordIndex[i + n];
          int t_idx = m_texCoordIndex[i + n];

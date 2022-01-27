@@ -52,7 +52,7 @@ int miscdecode_main()
 
       {
          _finddata_t find;
-         long hnd = _findfirst(UWPATH "data\\*.byt", &find);
+         intptr_t hnd = _findfirst(UWPATH "data\\*.byt", &find);
 
          if (hnd == -1)
          {

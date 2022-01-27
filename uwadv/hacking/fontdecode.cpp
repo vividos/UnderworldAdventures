@@ -45,7 +45,7 @@ int fontdecode_main()
 
 
    _finddata_t find;
-   long hnd = _findfirst(UWPATH "data\\font*.sys", &find);
+   intptr_t hnd = _findfirst(UWPATH "data\\font*.sys", &find);
 
    if (hnd == -1)
    {

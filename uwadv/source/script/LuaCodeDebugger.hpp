@@ -93,7 +93,7 @@ private:
    std::vector<std::string> m_loadedScriptFiles;
 
    /// map with all source files and line numbers
-   std::map<std::string, std::vector<unsigned int>> m_allLineNumbers;
+   std::map<std::string, std::vector<size_t>> m_allLineNumbers;
 
    /// mutex to protect access to all following member variables
    mutable std::mutex m_debuggerMutex;

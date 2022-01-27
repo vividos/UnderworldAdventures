@@ -161,21 +161,21 @@ void ConversationDebugger::Start()
          printf("infos about conversation #%u (string block %04x):\n\n",
             m_conversationSlot, GetStringBlock());
 
-         printf("code size: %04x, call/ret level: %u, verbose mode: %s\n",
+         printf("code size: %04zx, call/ret level: %u, verbose mode: %s\n",
             GetCodeSegment().size(), m_callLevel, m_verbose ? "on" : "off");
 
-         printf("private globals: %04x; imported funcs: %04x; "
-            "imported globals: %04x\n",
+         printf("private globals: %04x; imported funcs: %04zx; "
+            "imported globals: %04zx\n",
             GetReservedGlobals(), GetImportedFunctions().size(), GetImportedGlobals().size());
 
          // list breakpoints
-         unsigned int bps = m_allBreakpoints.size();
+         size_t bps = m_allBreakpoints.size();
          if (bps == 0)
             printf("no breakpoints set.\n");
          else
          {
             printf("all breakpoints:\n");
-            for (unsigned int i = 0; i < bps; i++)
+            for (size_t i = 0; i < bps; i++)
                printf("%04x%c", m_allBreakpoints[i], i % 8 == 7 ? '\n' : ' ');
          }
 
@@ -275,7 +275,7 @@ void ConversationDebugger::Start()
             {
                // look if breakpoint already exists in the list
 
-               int i, max = m_allBreakpoints.size();
+               size_t i, max = m_allBreakpoints.size();
                for (i = 0; i < max; i++)
                   if (m_allBreakpoints[i] == bpt)
                   {
@@ -325,7 +325,7 @@ void ConversationDebugger::Start()
          }
 
          // check if breakpoints are reached
-         int max = m_allBreakpoints.size();
+         size_t max = m_allBreakpoints.size();
          for (int i = 0; i < max; i++)
          {
             if (m_allBreakpoints[i] == m_instructionPointer)
@@ -457,7 +457,7 @@ Uint16 ConversationDebugger::BablMenu(const std::vector<Uint16>& answerStringIds
 {
    for (size_t answerIndex = 0; answerIndex < answerStringIds.size(); answerIndex++)
    {
-      printf("%i. %s\n",
+      printf("%zu. %s\n",
          answerIndex + 1,
          m_gameStrings.GetString(GetStringBlock(), answerStringIds[answerIndex]).c_str());
    }

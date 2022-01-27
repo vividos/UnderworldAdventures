@@ -63,13 +63,13 @@ void DumpGrImage(const std::string& filename, const GameStrings& gameStrings, bo
    {
       if (offsets[imageIndex] == fileLength)
       {
-         printf("image %u: skipping, empty slot\n", imageIndex);
+         printf("image %zu: skipping, empty slot\n", imageIndex);
          continue;
       }
       else if (offsets[imageIndex] == 0 ||
          offsets[imageIndex] > fileLength)
       {
-         printf("image %u: skipping, invalid offset 0x%08x\n", imageIndex, offsets[imageIndex]);
+         printf("image %zu: skipping, invalid offset 0x%08x\n", imageIndex, offsets[imageIndex]);
          continue;
       }
 
@@ -98,7 +98,7 @@ void DumpGrImage(const std::string& filename, const GameStrings& gameStrings, bo
       default: typeText = "unknown"; break;
       }
 
-      printf("image %u, offset=%08x, size=%ux%u, type=%s (%02x)",
+      printf("image %zu, offset=%08x, size=%ux%u, type=%s (%02x)",
          imageIndex,
          offsets[imageIndex],
          width, height,

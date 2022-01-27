@@ -384,7 +384,7 @@ void CutsceneViewScreen::CreateTextImage(const std::string& str)
       // create new image
       {
          unsigned int lineheight = lines[0].GetYRes();
-         unsigned int max = lines.size();
+         unsigned int max = static_cast<unsigned int>(lines.size());
 
          IndexedImage& img = m_textImage.GetImage();
          img.Create(320, lineheight*max);
