@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2020 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2020,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,14 +38,18 @@ void Model3DManager::Init(IGame& game)
    Base::Settings& settings = game.GetSettings();
 
    // loading builtin models
-   std::string underworldExeFilename(settings.GetString(Base::settingUnderworldPath));
+   std::string underworldExeFilename =
+      settings.GetString(Base::settingUnderworldPath);
 
-   if (!settings.GetBool(Base::settingUw1IsUwdemo))
+   bool isUw2 = game.GetSettings().GetGameType() == Base::gameUw2;
+
+   if (isUw2)
+      underworldExeFilename.append("uw2.exe");
+   else if (!settings.GetBool(Base::settingUw1IsUwdemo))
       underworldExeFilename.append("uw.exe");
    else
       underworldExeFilename.append("uwdemo.exe");
 
-   bool isUw2 = game.GetSettings().GetGameType() == Base::gameUw2;
    DecodeBuiltInModels(underworldExeFilename.c_str(), m_allBuiltInModels, false, isUw2);
 
    LoadModelConfigFile(settings, game.GetResourceManager());
