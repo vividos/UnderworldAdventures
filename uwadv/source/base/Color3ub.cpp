@@ -27,9 +27,9 @@ const double c_maxColorDistance = std::sqrt(255 * 255 + 255 * 255 + 255 * 255);
 
 double Color3ub::CalcColorDistance(const Color3ub& color1, const Color3ub& color2)
 {
-   double deltaR = (color2.m_rgb[0] - color1.m_rgb[0]) / 255.0;
-   double deltaG = (color2.m_rgb[1] - color1.m_rgb[1]) / 255.0;
-   double deltaB = (color2.m_rgb[2] - color1.m_rgb[2]) / 255.0;
+   double deltaR = (color2.m_rgb[0] - color1.m_rgb[0]);
+   double deltaG = (color2.m_rgb[1] - color1.m_rgb[1]);
+   double deltaB = (color2.m_rgb[2] - color1.m_rgb[2]);
 
    double distance = std::sqrt(
       deltaR * deltaR + deltaG * deltaG + deltaB * deltaB);
