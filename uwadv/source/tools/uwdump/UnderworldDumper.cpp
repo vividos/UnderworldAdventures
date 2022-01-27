@@ -212,10 +212,11 @@ void UnderworldDumper::DumpFile(const std::string& path)
    {
       printf("dumping file %s\n", path.c_str());
       iter->second(path, m_gameStrings, m_isUw2);
-      printf("--------------------------------\n\n");
    }
    else
       printf("dumping file %s is currently not supported. Sorry!\n", filename.c_str());
+
+   printf("--------------------------------\n\n");
 }
 
 void UnderworldDumper::DumpWildcardFiles(const std::string& path)

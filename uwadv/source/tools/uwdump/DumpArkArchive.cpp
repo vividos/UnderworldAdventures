@@ -186,5 +186,5 @@ void DumpArkArchive(const std::string& filename, const GameStrings& gameStrings,
    }
 
    if (isCnvArk)
-      printf("decode actual conversations from cnv.ark using the convdec tool!\n");
+      printf("decompile conversations from cnv.ark using the convdec tool!\n");
 }
