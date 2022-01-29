@@ -385,15 +385,28 @@ void Panel::UpdatePanel()
 
 void Panel::UpdateChains()
 {
-   unsigned int chain_add = m_isPanelRotating ?
-      unsigned(m_panelRotateAngle / 180.0*8.0) % 8 : 0;
+   const Base::Settings& settings = m_panelParent->GetGameInterface().GetSettings();
+   bool isUw2 = settings.GetGameType() == Base::gameUw2;
+
+   unsigned int maxChainImage = isUw2 ? 4 : 8;
+
+   unsigned int chainIndex = m_isPanelRotating ?
+      unsigned(m_panelRotateAngle / 180.0 * maxChainImage) % maxChainImage : 0;
 
    // set chains images
-   m_chainsTopImage.GetImage().PasteImage(m_chainImages[8 + (chain_add) % 8], 0, 0);
-   m_chainsBottomImage.GetImage().PasteImage(m_chainImages[chain_add % 8], 0, 0);
+   if (!isUw2)
+   {
+      m_chainsTopImage.GetImage().PasteImage(m_chainImages[chainIndex + 8], 0, 0);
+      m_chainsBottomImage.GetImage().PasteImage(m_chainImages[chainIndex], 0, 0);
 
-   m_chainsTopImage.Update();
-   m_chainsBottomImage.Update();
+      m_chainsTopImage.Update();
+      m_chainsBottomImage.Update();
+   }
+   else
+   {
+      m_chainsBottomImage.GetImage().PasteImage(m_chainImages[chainIndex], 0, 0);
+      m_chainsBottomImage.Update();
+   }
 }
 
 void Panel::UpdateInventory()
