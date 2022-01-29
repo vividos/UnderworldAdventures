@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -208,8 +208,8 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
       {
          m_initAction = 2;
 
-         std::string custom_game_prefix(argv[i + 1]);
-         m_settings.SetValue(Base::settingGamePrefix, custom_game_prefix);
+         std::string customGamePrefix{ argv[i + 1] };
+         m_settings.SetValue(Base::settingGamePrefix, customGamePrefix);
       }
       break;
 
@@ -256,20 +256,32 @@ void Game::Run()
 
    case 2: // start custom game
    {
+      std::string customGamePrefix =
+         m_settings.GetString(Base::settingGamePrefix);
+
       // set prefix
-      UaTrace("starting custom game\n");
-      //m_settings.SetValue(Base::settingGamePrefix,custom_game_prefix);
+      UaTrace("starting custom game, with prefix %s\n",
+         customGamePrefix.c_str());
+
+      if (customGamePrefix == "uw2")
+      {
+         m_settings.SetGameType(Base::gameUw2);
+         m_settings.SetValue(Base::settingUnderworldPath,
+            m_settings.GetString(Base::settingUw2Path));
+      }
 
       InitGame();
 
-#ifndef HAVE_DEBUG
-      // start splash screen
-      ReplaceScreen(new StartSplashScreen(*this), false);
-#else
-      // for uw2 testing; splash screens don't work yet
-      //underworld.import_savegame(settings,"data/",true);
-      ReplaceScreen(new OriginalIngameScreen(*this), false);
-#endif
+      if (customGamePrefix == "uw2")
+      {
+         // start splash screen
+         ReplaceScreen(new StartSplashScreen(*this), false);
+      }
+      else
+      {
+         // other custom games currently don't have a splash screen
+         ReplaceScreen(new OriginalIngameScreen(*this), false);
+      }
    }
    break;
 
@@ -409,7 +421,7 @@ void Game::InitGame()
    // rescan, with proper underworld path
    m_resourceManager->Rescan(m_settings);
 
-   std::string prefix(m_settings.GetString(Base::settingGamePrefix));
+   std::string prefix{ m_settings.GetString(Base::settingGamePrefix) };
 
    UaTrace("initializing game; prefix: %s\n", prefix.c_str());
 
