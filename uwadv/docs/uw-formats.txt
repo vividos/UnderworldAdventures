@@ -581,7 +581,9 @@ Table of Contents
 
    - Palette #2: game start screen
 
-    indices 64 through 127: "Ultima Underworld" logo warping effect
+    indices 64 through 127: "Ultima Underworld" logo warping effect [uw1]
+    indices 43 through 48, 49 through 51, 57 through 66: "Labyrinth of Worlds"
+    logo blinking effect [uw2]
 
 
 3.2  Images
