@@ -64,37 +64,48 @@ void TextureManager::Init(IGame& game)
 
       loader.LoadTextures(m_allStockTextureImages, Base::c_stockTexturesFloor,
          floorTexturesFilename, m_palette0);
+   }
+   else if (settings.GetGameType() == Base::gameUw2)
+   {
+      // load all textures
+      const char* texturesFilename = "data/t64.tr";
 
-      // load objects
-      {
-         m_allStockTextureImages.resize(Base::c_stockTexturesObjects);
+      loader.LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
+         texturesFilename, m_palette0);
+   }
 
-         // add images to list; we can do this, since the list isn't clear()ed
-         // before adding more images
-         game.GetImageManager().LoadList(m_allStockTextureImages, "objects");
-      }
+   // load objects
+   {
+      m_allStockTextureImages.resize(Base::c_stockTexturesObjects);
 
-      // load switches/levers/pull chains
-      {
-         m_allStockTextureImages.resize(Base::c_stockTexturesSwitches);
-         game.GetImageManager().LoadList(m_allStockTextureImages, "tmflat");
-      }
+      // add images to list; we can do this, since the list isn't clear()ed
+      // before adding more images
+      game.GetImageManager().LoadList(m_allStockTextureImages, "objects");
+   }
 
-      // load door textures
-      {
-         m_allStockTextureImages.resize(Base::c_stockTexturesDoors);
-         game.GetImageManager().LoadList(m_allStockTextureImages, "doors");
-      }
+   // load switches/levers/pull chains
+   {
+      m_allStockTextureImages.resize(Base::c_stockTexturesSwitches);
+      game.GetImageManager().LoadList(m_allStockTextureImages, "tmflat");
+   }
 
-      // load tmobj textures
-      {
-         m_allStockTextureImages.resize(Base::c_stockTexturesTmobj);
-         game.GetImageManager().LoadList(m_allStockTextureImages, "tmobj");
-      }
+   // load door textures
+   {
+      m_allStockTextureImages.resize(Base::c_stockTexturesDoors);
+      game.GetImageManager().LoadList(m_allStockTextureImages, "doors");
+   }
 
-      m_stockTextureAnimationInfos.resize(m_allStockTextureImages.size(),
-         std::make_pair<unsigned int, unsigned int>(0, 1));
+   // load tmobj textures
+   {
+      m_allStockTextureImages.resize(Base::c_stockTexturesTmobj);
+      game.GetImageManager().LoadList(m_allStockTextureImages, "tmobj");
+   }
 
+   m_stockTextureAnimationInfos.resize(m_allStockTextureImages.size(),
+      std::make_pair<unsigned int, unsigned int>(0, 1));
+
+   if (settings.GetGameType() == Base::gameUw1)
+   {
       // set some animated textures
       {
          m_stockTextureAnimationInfos[0x00ce].second = 8; // 206 lavafall
@@ -112,14 +123,6 @@ void TextureManager::Init(IGame& game)
    }
    else if (settings.GetGameType() == Base::gameUw2)
    {
-      // load all textures
-      const char* texturesFilename = "data/t64.tr";
-
-      loader.LoadTextures(m_allStockTextureImages, Base::c_stockTexturesWall,
-         texturesFilename, m_palette0);
-
-      m_stockTextureAnimationInfos.resize(m_allStockTextureImages.size(),
-         std::make_pair<unsigned int, unsigned int>(0, 1));
    }
 
    // now that all texture images are loaded, we can resize the texture array

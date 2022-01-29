@@ -108,7 +108,7 @@ void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode,
       m_file = levArkFile.GetFile(levelIndex + textureMapOffset);
 
       std::vector<Uint16> textureMapping;
-      LoadTextureMapping(textureMapping, false);
+      LoadTextureMapping(textureMapping, uw2Mode);
 
       // load tilemap
       m_file = levArkFile.GetFile(levelIndex);
