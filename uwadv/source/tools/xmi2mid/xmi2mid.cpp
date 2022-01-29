@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
    int music_conversion;
    music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
 
-   if (argc == 3)
+   if (argc == 4)
    {
       if (strcmp(argv[3], "--mt32-to-gm") != -1)
          music_conversion = XMIDIFILE_CONVERT_MT32_TO_GM;
