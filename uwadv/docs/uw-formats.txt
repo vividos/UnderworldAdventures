@@ -5,7 +5,7 @@
                https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
-Document version: 1.79, as of 2022-01-20
+Document version: 1.80, as of 2022-01-29
 
 
 Table of Contents
@@ -37,6 +37,7 @@ Table of Contents
    4.1    File format
    4.2    Level tilemap
    4.2    Object list
+TODO: section 4.2 defined twice
    4.2.1  Enchantments
    4.2.2  Item Owner
    4.2.3  Mobile object extra info
@@ -569,7 +570,16 @@ Table of Contents
    - Palette #0: in game graphics
 
     indices 16 through 23: lava fire effect
-    indices 48 through 51: water effect
+    These 8 indices are rotated for fire/lava effect, but are not all rotated
+    together. The first 5 are rotated together, and the next 3 are rotated
+    together. These rotations move "up", as in the colors "travel" up the
+    palette from lower indices to higher.
+
+    indices 48 through 63: water effect
+    indices 48 through 63 are rotated for water effects, however the group of
+    16 colors is not all rotated together. They are broken up into 4 groups of
+    4, and those groups are rotated. These rotations move colors "down" from
+    higher indices to lower ones.
 
    - Palette #2: game start screen
 
@@ -613,6 +623,15 @@ Table of Contents
    a width of 83 and a height of 114 pixels for UW1 and a width of 79 and
    height of 112 for UW2.
 
+    Some gr files, particularly GENHEAD.GR and OBJECTS.GR, have a quirk. When a
+    graphic was not defined, the next defined graphic would be used in place.
+    This is obvious for example in objects.gr, there are many traps, triggers,
+    blood splats, and other repeated icons. This does not mean that these icons
+    accurately represent the objects. It means that these objects get their
+    appearance elsewhere, and not are accurately represented by their icon
+    index in this file. To know what an object is, look at the objects table
+    or in the string table block 4. Do not rely on these icons. The last few
+    objects do not have icons as there is no next valid icon to pull from.
 
 3.2.1  Uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
 
@@ -1410,6 +1429,9 @@ Table of Contents
       10-13    4    floor texture index (into texture mapping)
       14       1    when set, no magic is allowed to cast/to be casted upon
       15       1    door bit (when 1, a door is present)
+                    Tiles with this bit set have a door, but not every tile
+                    with a door has this bit set. Perhaps this bit tells if
+                    an NPC can open the door?
 
    0002 tile properties 2 / object list link
 
@@ -2091,7 +2113,7 @@ Table of Contents
    0180  a_damage trap
          player vitality is decreased; number of hit points are in "quality"
          field; if the "owner" field is != 0, the hit points are added
-         instead. the trap is only set of when a random value [0..10] is >= 7.
+         instead. the trap is only set off when a random value [0..10] is >= 7.
 
    0181  a_teleport trap
          teleports the player to another level and tile; destination level is
