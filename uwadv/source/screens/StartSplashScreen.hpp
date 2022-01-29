@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,10 +42,7 @@ class StartSplashScreen : public Screen
 {
 public:
    /// ctor
-   StartSplashScreen(IGame& game)
-      :Screen(game)
-   {
-   }
+   StartSplashScreen(IGame& game);
    /// dtor
    virtual ~StartSplashScreen() {}
 
@@ -56,7 +53,7 @@ public:
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void Tick() override;
 
-protected:
+private:
    /// number of seconds the splash screen images are shown
    static const double c_showTime;
 
@@ -65,6 +62,9 @@ protected:
 
    /// animation frame rate, in frames per second
    static const double c_animationFrameRate;
+
+   /// palette shifts per second
+   static const double c_paletteShiftsPerSecond;
 
    /// fading helper
    FadingHelper m_fader;
@@ -86,4 +86,7 @@ protected:
 
    /// animation time count
    double m_animationCount;
+
+   /// count for palette shifting
+   double m_shiftCount;
 };

@@ -39,6 +39,15 @@ const double StartSplashScreen::c_blendTime = 0.8;
 /// animation frame rate, in frames per second
 const double StartSplashScreen::c_animationFrameRate = 5.0;
 
+/// palette shifts per second
+const double StartSplashScreen::c_paletteShiftsPerSecond = 5.0;
+
+StartSplashScreen::StartSplashScreen(IGame& game)
+   :Screen(game),
+   m_shiftCount(0.0)
+{
+}
+
 void StartSplashScreen::Init()
 {
    Screen::Init();
@@ -319,5 +328,22 @@ void StartSplashScreen::Tick()
       else
          m_game.ReplaceScreen(new StartMenuScreen(m_game), false);
       break;
+   }
+
+   // shift palette when uw2 animation is shown
+   if (isUw2 && m_stage >= 2 && m_stage < 5)
+   {
+      m_shiftCount += 1.0 / m_game.GetTickRate();
+      if (m_shiftCount >= 1.0 / c_paletteShiftsPerSecond)
+      {
+         m_shiftCount -= 1.0 / c_paletteShiftsPerSecond;
+
+         IndexedImage& cutsceneImage = m_currentCutscene.GetImage();
+         cutsceneImage.GetPalette()->Rotate(43, 6, false);
+         cutsceneImage.GetPalette()->Rotate(49, 3, false);
+         cutsceneImage.GetPalette()->Rotate(57, 9, false);
+
+         m_currentCutscene.Update();
+      }
    }
 }
