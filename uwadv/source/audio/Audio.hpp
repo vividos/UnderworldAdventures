@@ -86,17 +86,17 @@ namespace Audio
       musicUw2_DangerousSituation,
       musicUw2_Armed,
       musicUw2_Victory,
-      musicUw2_Sewers,
+      musicUw2_Sewers, ///< track for levels 0 to 7
       musicUw2_Talorus,
       musicUw2_PrisonTower,
       musicUw2_Death,
-      musicUw2_KillornKeep,
+      musicUw2_KillornKeep, ///< also Pits of Carnage
       musicUw2_IceCaverns,
-      musicUw2_ScintillusAcademy,
+      musicUw2_ScintillusAcademy, ///< also Ethereal Void
       musicUw2_PraecorLoth,
       musicUw2_LabyrinthOfWorldsReprise,
-      musicUw2_Introduction,
-      musicUw2_GuardiansTrap,
+      musicUw2_Introduction,  ///< intro track 1
+      musicUw2_GuardiansTrap, ///< intro track 2
    };
 
    /// \brief enumeration of all sound effects from uw2
