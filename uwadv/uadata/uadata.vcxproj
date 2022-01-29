@@ -134,6 +134,9 @@
     <None Include="uw2\game.cfg" />
     <None Include="uw2\keymap.cfg" />
     <None Include="uw2\model3d.cfg" />
+    <CustomBuild Include="uw2\scripts\game.lua">
+      <FileType>Document</FileType>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Image Include="common\uw1title.tga" />

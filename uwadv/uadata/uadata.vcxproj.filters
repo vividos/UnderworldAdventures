@@ -28,6 +28,9 @@
     <Filter Include="models\static\textures">
       <UniqueIdentifier>{01ac5572-e1a8-4f1d-a6fa-3533b56f720f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="uw2\scripts">
+      <UniqueIdentifier>{53e0c7aa-d737-4973-86f6-61d0c5c480df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Image Include="common\uw1title.tga">
@@ -183,6 +186,9 @@
     <None Include="build.cmd" />
     <None Include="README.Data.md" />
     <None Include="Underworld Adventures Soundtrack.m3u" />
+    <None Include="uw2\scripts\game.lua">
+      <Filter>uw2\scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="uw1\scripts\createchar.lua">
