@@ -473,20 +473,19 @@ Table of Contents
    uwa05.xmi      Armed
    uwa06.xmi      Victory
    uwa07.xmi      Sewers
-   uwa10.xmi      Talorus
-   uwa11.xmi      Prison Tower / Goblin Prison Tower
+   uwa10.xmi      Talorus, Ethereal Void
+   uwa11.xmi      Prison Tower
    uwa12.xmi      Death
-   uwa13.xmi      Killorn Keep
-   uwa14.xmi      Ice Caverns / Blackrock Prison
-   uwa15.xmi      Scintillus Academy / Ice Caves
-   uwa16.xmi      Praecor Loth / Castle British
+   uwa13.xmi      Killorn Keep, Pits of Carnage
+   uwa14.xmi      Ice Caverns
+   uwa15.xmi      Scintillus Academy
+   uwa16.xmi      Praecor Loth, Castle British
    uwa17.xmi      The Labyrinth of Worlds Theme (again)
    uwa30.xmi      Introduction
    uwa31.xmi      Guardian's Trap
 
-   The second names come from some mp3 files available here:
-   http://www.stygianabyss.com/uw/music/uw2.htm
-
+   Some variations of the names come from some mp3 files available here:
+   http://stygian.ttlg.mobi/uw/music/uw2.htm
 
  +--------------------------------------------------------------------------+
 
