@@ -229,8 +229,28 @@ void ConversationScreen::Init()
 
    m_waitCount = 0;
 
-   // start audio track "maps & legends" for conversations
-   m_game.GetAudioManager().StartMusicTrack(Audio::musicUw1_MapsAndLegends, false);
+   // uw1: start audio track "maps & legends" for conversations
+   size_t musicTrack = Audio::musicUw1_MapsAndLegends;
+
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   if (isUw2)
+   {
+      // depending on the underworld level, play different tracks
+      size_t level = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
+
+      musicTrack = Audio::musicUw2_Sewers; // 0..4
+      if (level >= 8 && level < 16) musicTrack = Audio::musicUw2_PrisonTower;
+      else if (level >= 16 && level < 24) musicTrack = Audio::musicUw2_KillornKeep;
+      else if (level >= 24 && level < 32) musicTrack = Audio::musicUw2_IceCaverns;
+      else if (level >= 32 && level < 40) musicTrack = Audio::musicUw2_Talorus;
+      else if (level >= 40 && level < 48) musicTrack = Audio::musicUw2_ScintillusAcademy;
+      else if (level >= 48 && level < 56) musicTrack = Audio::musicUw2_PraecorLoth;
+      else if (level >= 56 && level < 64) musicTrack = Audio::musicUw2_KillornKeep; // Pits of Carnage
+      else if (level >= 64) musicTrack = Audio::musicUw2_Talorus; // Ethereal Void
+   }
+
+   if (!m_game.GetAudioManager().IsPlayingMusicTrack(musicTrack))
+      m_game.GetAudioManager().StartMusicTrack(musicTrack, false);
 }
 
 void ConversationScreen::Destroy()
