@@ -615,8 +615,9 @@ Table of Contents
    auxiliary palette to use (see 2.1).
 
    000n  Int16  size of data for the bitmap.
-                in 4-bit formats, this is the number of 4-bit nibbles, not
-                bytes.
+                For bitmap type 08, this is the number of 4-bit nibbles, not
+                bytes. Actual byte count is nibbles/2 rounded up.
+                For bitmap types 04 & 0A, this is the actual byte count.
 
    The file "panels.gr" contains bitmaps that don't have a bitmap header, but
    immediately starts with image data. The bitmaps are of type 04 and have
