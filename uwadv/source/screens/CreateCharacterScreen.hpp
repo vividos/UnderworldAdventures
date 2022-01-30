@@ -24,7 +24,6 @@
 #pragma once
 
 #include "ImageScreen.hpp"
-#include "ImageQuad.hpp"
 #include "Font.hpp"
 #include "MouseCursor.hpp"
 #include "script/CreateCharacterLuaScripting.hpp"
@@ -44,7 +43,6 @@ public:
    // virtual functions from Screen
    virtual void Init() override;
    virtual void Destroy() override;
-   virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void Tick() override;
 
@@ -63,6 +61,7 @@ private:
 
    /// draws text at a coordinate (xalign: 0=left, 1=center, 2=right), returns width of text in pixels
    unsigned int DrawText(const std::string& str, int x, int y, int xalign = 0, unsigned char color = 0);
+
    /// draws a text with given text id and string block
    unsigned int DrawText(int strnum, int x, int y, int xalign = 0, unsigned char color = 0, int custstrblock = -1);
 
@@ -91,16 +90,16 @@ private:
    MouseCursor m_mouseCursor;
 
    /// string block for button and label text
-   unsigned int strblock = 2;
+   unsigned int m_stringBlock = 2;
 
    /// button and text font
    Font m_font;
 
-   /// start a new game
+   /// indicates if a new game is started after leaving the screen
    bool m_newGame = false;
 
    /// the player
-   Underworld::Player* m_player;
+   Underworld::Player* m_player = nullptr;
 
    /// indicates if the mouse button is down
    bool m_isButtonDown = false;

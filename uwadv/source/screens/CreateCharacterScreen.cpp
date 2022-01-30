@@ -39,8 +39,6 @@
 extern "C"
 {
 #include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
 }
 
 /// time needed to fade in/out screen and music
@@ -96,9 +94,6 @@ void CreateCharacterScreen::Init()
    // setup screen
    m_game.GetRenderer().SetupForUserInterface();
 
-   glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
    // get a pointer to to current player
    m_player = &(m_game.GetUnderworld().GetPlayer());
 
@@ -133,7 +128,7 @@ void CreateCharacterScreen::Init()
    m_previousButton = 0;
    m_countDownTickCount = 0;
    m_isButtonDown = false;
-   strblock = 2;
+   m_stringBlock = 2;
    m_buttonGroupPosX = 240;
    m_buttonGroupCaptionStringNumber = 0;
    m_buttonGroupButtonType = 0;
@@ -150,21 +145,9 @@ void CreateCharacterScreen::Init()
 
 void CreateCharacterScreen::Destroy()
 {
+   ImageScreen::Destroy();
+
    UaTrace("character creation screen ended\n\n");
-}
-
-void CreateCharacterScreen::Draw()
-{
-   glClear(GL_COLOR_BUFFER_BIT);
-
-   if (m_selectedButton != m_previousButton)
-   {
-      DrawButtonGroup();
-      m_previousButton = m_selectedButton;
-      UpdateImage();
-   }
-
-   ImageScreen::Draw();
 }
 
 bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
@@ -181,7 +164,7 @@ bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
       // handle key presses
       if ((m_buttonGroupButtonType == buttonInput) &&
          (((event.key.keysym.sym >= SDLK_a) && (event.key.keysym.sym <= SDLK_z)) ||
-         ((event.key.keysym.sym >= SDLK_0) && (event.key.keysym.sym <= SDLK_9)) ||
+            ((event.key.keysym.sym >= SDLK_0) && (event.key.keysym.sym <= SDLK_9)) ||
             (event.key.keysym.sym == SDLK_BACKSPACE) ||
             (event.key.keysym.sym == SDLK_SPACE) ||
             (event.key.keysym.sym == SDLK_MINUS) ||
@@ -278,6 +261,13 @@ bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
 
    default:
       break;
+   }
+
+   if (m_selectedButton != m_previousButton)
+   {
+      DrawButtonGroup();
+      m_previousButton = m_selectedButton;
+      UpdateImage();
    }
 
    return false;
@@ -380,7 +370,7 @@ void CreateCharacterScreen::DoAction()
    case actSetInitVal:
    {
       if (n < 5) break;
-      strblock = static_cast<unsigned int>(lua_tonumber(L, 2));
+      m_stringBlock = static_cast<unsigned int>(lua_tonumber(L, 2));
       m_buttonGroupPosX = static_cast<unsigned int>(lua_tonumber(L, 3));
       m_normalTextColor = static_cast<unsigned int>(lua_tonumber(L, 4));
       m_highlightTextColor = static_cast<unsigned int>(lua_tonumber(L, 5));
@@ -533,18 +523,20 @@ unsigned int CreateCharacterScreen::DrawText(const std::string& str, int x, int 
    // set default text color
    if (color == 0)
       color = m_normalTextColor;
+
    IndexedImage textImage;
-   unsigned int textlength = m_font.CalcLength(str);
    textImage.Clear(0);
+
+   unsigned int textlength = m_font.CalcLength(str);
    m_font.CreateString(textImage, str, color);
+
    if (xalign != 0)
    {
       // adjust horizontal alignment
       if (xalign == 1)
          x -= textlength / 2;
-      else
-         if (xalign == 2)
-            x -= textlength;
+      else if (xalign == 2)
+         x -= textlength;
    }
 
    if (textImage.GetXRes() > 0)
@@ -562,13 +554,17 @@ unsigned int CreateCharacterScreen::DrawNumber(unsigned int num, int x, int y, u
    return DrawText(buffer.str(), x, y, 2, color);
 }
 
-unsigned int CreateCharacterScreen::DrawText(int strnum, int x, int y, int xalign, unsigned char color, int custstrblock)
+unsigned int CreateCharacterScreen::DrawText(int stringNumber, int x, int y, int xalign, unsigned char color, int customStringBlock)
 {
-   std::string text(m_game.GetGameStrings().GetString(custstrblock > -1 ? custstrblock : strblock, strnum));
-   return (!text.empty()) ? DrawText(text, x, y, xalign, color) : 0;
+   std::string text =
+      m_game.GetGameStrings().GetString(
+         customStringBlock > -1 ? customStringBlock : m_stringBlock,
+         stringNumber);
+
+   return !text.empty() ? DrawText(text, x, y, xalign, color) : 0;
 }
 
-void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnum, int xc, int y)
+void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int stringNumber, int xc, int y)
 {
    IndexedImage button = m_buttonImages[m_buttonGroupNormalButtonImage];
    int x = xc - button.GetXRes() / 2;
@@ -576,10 +572,10 @@ void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnu
    GetImage().PasteImage(button, x, y);
 
    if (buttontype == buttonText)
-      DrawText(strnum, xc, y + 3, 1, (highlight ? m_highlightTextColor : m_normalTextColor));
+      DrawText(stringNumber, xc, y + 3, 1, (highlight ? m_highlightTextColor : m_normalTextColor));
    else if (buttontype == buttonInput)
    {
-      unsigned int labelwidth = DrawText(strnum, x + 4, y + 3, 0, m_normalTextColor);
+      unsigned int labelwidth = DrawText(stringNumber, x + 4, y + 3, 0, m_normalTextColor);
       unsigned int maxnamewidth = button.GetXRes() - labelwidth - 7;
       size_t ip = m_inputText.size();
       while ((m_font.CalcLength(m_inputText) > maxnamewidth) && (ip > 0))
@@ -588,7 +584,7 @@ void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnu
    }
    else if (buttontype == buttonImage)
    {
-      button = m_buttonImages[strnum];
+      button = m_buttonImages[stringNumber];
       GetImage().PasteRect(button, 0, 0, button.GetXRes(), button.GetYRes(), x, y, true);
    }
    if (highlight && (buttontype != buttonInput))
@@ -670,22 +666,17 @@ void CreateCharacterScreen::PressButton(int button)
 
    // call "cchar_buttonclick(button)"
    lua_getglobal(L, "cchar_buttonclick");
-   lua_pushnumber(L, static_cast<int>(button));
-   int ret;
+   lua_pushnumber(L, button);
+
+   bool ret;
    if (m_buttonGroupButtonType == buttonInput)
    {
       lua_pushstring(L, m_inputText.c_str());
-      ret = lua_pcall(L, 2, 0, 0);
+      ret = m_lua.CheckedCall(2, 0);
    }
    else
-      ret = lua_pcall(L, 1, 0, 0);
+      ret = m_lua.CheckedCall(1, 0);
 
-   if (ret != 0)
-   {
-      const char* errorText = lua_tostring(L, -1);
-      UaTrace("Lua function call cchar_buttonclick(0x%08x,%u) ended with error code %u: %s\n",
-         this, button, ret, errorText);
-
+   if (!ret)
       StartFadeout();
-   }
 }
