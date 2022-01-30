@@ -16,14 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//
 /// \file CreateCharacterScreen.cpp
 /// \brief character creation screen
 ///
 /// \todo reimplement the whole screen, using own button window class, etc.
 /// also use unicode mode to properly capture keys
 /// use "relative" indexing for lua C call parameters
-/// use fading helper class for fading purposes
 /// put global constants as static members into class
 //
 #include "pch.hpp"
@@ -46,7 +44,7 @@ extern "C"
 #include "lauxlib.h"
 }
 
-/// time needed to fade in/out text
+/// time needed to fade in/out screen and music
 const double c_fadeTime = 0.5;
 
 /// maximum number of buttons in a group (shown on-screen at once)
@@ -85,14 +83,14 @@ enum CreateCharButtonType
 };
 
 CreateCharacterScreen::CreateCharacterScreen(IGame& game)
-   :Screen(game)
+   :ImageScreen(game, 0, c_fadeTime)
 {
 }
 
 /// \todo replace pplayer with reference to player object
 void CreateCharacterScreen::Init()
 {
-   Screen::Init();
+   ImageScreen::Init();
 
    UaTrace("character creation screen started\n");
 
@@ -121,10 +119,8 @@ void CreateCharacterScreen::Init()
    // init text
    m_font.Load(m_game.GetResourceManager(), fontCharacterGeneration);
 
-   m_screenImage.Init(m_game, 0, 0);
-   m_screenImage.GetImage() = m_backgroundImage;
-   m_screenImage.Update();
-   RegisterWindow(&m_screenImage);
+   GetImage() = m_backgroundImage;
+   UpdateImage();
 
    // init mouse cursor
    m_mouseCursor.Init(m_game);
@@ -133,13 +129,9 @@ void CreateCharacterScreen::Init()
    RegisterWindow(&m_mouseCursor);
 
    // intial variable values
-   m_isEnded = false;
    m_newGame = false;
    m_selectedButton = 0;
    m_previousButton = 0;
-   m_buttonsHaveChanged = false;
-   m_fadingStage = 1;
-   m_tickCount = 0;
    m_countDownTickCount = 0;
    m_isButtonDown = false;
    strblock = 2;
@@ -170,38 +162,15 @@ void CreateCharacterScreen::Draw()
    {
       DrawButtonGroup();
       m_previousButton = m_selectedButton;
-      m_buttonsHaveChanged = true;
+      UpdateImage();
    }
 
-   if (m_buttonsHaveChanged || (m_fadingStage != 0))
-   {
-      // set brightness of texture quad
-      Uint8 light = 255;
-
-      switch (m_fadingStage)
-      {
-      case 1:
-         light = Uint8(255 * (double(m_tickCount) / (m_game.GetTickRate()*c_fadeTime)));
-         break;
-
-      case -1:
-         light = Uint8(255 - 255 * (double(m_tickCount) / (m_game.GetTickRate()*c_fadeTime)));
-         break;
-      }
-
-      glColor3ub(light, light, light);
-
-      m_screenImage.Update();
-
-      m_buttonsHaveChanged = false;
-   }
-
-   Screen::Draw();
+   ImageScreen::Draw();
 }
 
 bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
 {
-   Screen::ProcessEvent(event);
+   ImageScreen::ProcessEvent(event);
 
    switch (event.type)
    {
@@ -224,7 +193,7 @@ bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
             c -= 32;
          HandleInputCharacter(c);
          DrawButtonGroup();
-         m_buttonsHaveChanged = true;
+         UpdateImage();
       }
 
       switch (event.key.keysym.sym)
@@ -317,59 +286,56 @@ bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
 
 void CreateCharacterScreen::Tick()
 {
-   if (m_fadingStage != 0)
-   {
-      if (++m_tickCount >= (m_game.GetTickRate()*c_fadeTime))
-      {
-         if (m_isEnded)
-         {
-            if (m_newGame)
-            {
-               // load initial game
-               Import::LoadUnderworld(
-                  m_game.GetSettings(),
-                  m_game.GetResourceManager(),
-                  m_game.GetUnderworld());
+   ImageScreen::Tick();
 
-               // init new game
-               m_game.GetScripting().InitNewGame();
-
-               // start original game
-               m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
-            }
-            else
-               m_game.RemoveScreen();
-
-            return;
-         } // else
-         m_buttonsHaveChanged = true;
-         m_fadingStage = 0;
-         m_tickCount = 0;
-      }
-   }
-
-   if ((m_buttonGroupButtonType == buttonTimer) && (++m_countDownTickCount >= (m_game.GetTickRate()*m_countDownTime)))
+   if ((m_buttonGroupButtonType == buttonTimer) &&
+      (++m_countDownTickCount >= (m_game.GetTickRate() * m_countDownTime)))
    {
       m_countDownTickCount = 0;
       PressButton(0);
    }
 }
 
+void CreateCharacterScreen::OnFadeOutEnded()
+{
+   if (m_newGame)
+   {
+      // load initial game
+      Import::LoadUnderworld(
+         m_game.GetSettings(),
+         m_game.GetResourceManager(),
+         m_game.GetUnderworld());
+
+      // init new game
+      m_game.GetScripting().InitNewGame();
+
+      // start original game
+      m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
+   }
+   else
+      m_game.RemoveScreen();
+}
+
 void CreateCharacterScreen::InitLuaScript()
 {
    m_lua.Init(std::bind(&CreateCharacterScreen::DoAction, this));
 
+   bool hasError = false;
+
    // load lua interface script for constants
    if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/uwinterface"))
-      m_isEnded = true;
+      hasError = true;
 
    // load lua cutscene script
    if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/createchar"))
-      m_isEnded = true;
+      hasError = true;
 
    // Init script with seed value for random numbers
    if (!m_lua.CallGlobal(gactInit, clock()))
-      m_isEnded = true;
+      hasError = true;
+
+   if (hasError)
+      StartFadeout();
 }
 
 void CreateCharacterScreen::HandleInputCharacter(char c)
@@ -394,20 +360,20 @@ void CreateCharacterScreen::DoAction()
    int n = lua_gettop(L);
    unsigned int action = (n < 1) ? 0 : static_cast<unsigned int>(lua_tonumber(L, 1));
 
-   IndexedImage& img = m_screenImage.GetImage();
+   IndexedImage& img = GetImage();
 
    switch (static_cast<CreateCharLuaAction>(action))
    {
    case actEnd:
-      m_isEnded = true;
       m_newGame = (n > 1) && (static_cast<unsigned int>(lua_tonumber(L, 2)) == 1);
-      m_fadingStage = unsigned(-1);
 
       if (m_newGame)
       {
          // fade out music
          m_game.GetAudioManager().FadeoutMusic(static_cast<int>(c_fadeTime * 1000));
       }
+
+      StartFadeout();
 
       //UaTrace("end request by char. creation script\n");
       break;
@@ -533,7 +499,7 @@ void CreateCharacterScreen::DoAction()
       break;
 
    case actUIUpdate:
-      m_buttonsHaveChanged = true;
+      UpdateImage();
       //UaTrace("screen updated by char. creation script\n");
       break;
 
@@ -584,7 +550,7 @@ unsigned int CreateCharacterScreen::DrawText(const std::string& str, int x, int 
 
    if (textImage.GetXRes() > 0)
    {
-      m_screenImage.GetImage().PasteRect(textImage, 0, 0, textImage.GetXRes(), textImage.GetYRes(), x, y, true);
+      GetImage().PasteRect(textImage, 0, 0, textImage.GetXRes(), textImage.GetYRes(), x, y, true);
    }
 
    return textlength;
@@ -608,7 +574,7 @@ void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnu
    IndexedImage button = m_buttonImages[m_buttonGroupNormalButtonImage];
    int x = xc - button.GetXRes() / 2;
 
-   m_screenImage.GetImage().PasteImage(button, x, y);
+   GetImage().PasteImage(button, x, y);
 
    if (buttontype == buttonText)
       DrawText(strnum, xc, y + 3, 1, (highlight ? m_highlightTextColor : m_normalTextColor));
@@ -624,12 +590,12 @@ void CreateCharacterScreen::DrawButton(int buttontype, bool highlight, int strnu
    else if (buttontype == buttonImage)
    {
       button = m_buttonImages[strnum];
-      m_screenImage.GetImage().PasteRect(button, 0, 0, button.GetXRes(), button.GetYRes(), x, y, true);
+      GetImage().PasteRect(button, 0, 0, button.GetXRes(), button.GetYRes(), x, y, true);
    }
    if (highlight && (buttontype != buttonInput))
    {
       button = m_buttonImages[m_buttonGroupHighlightButtonImage];
-      m_screenImage.GetImage().PasteRect(button, 0, 0, button.GetXRes(), button.GetYRes(), x, y, true);
+      GetImage().PasteRect(button, 0, 0, button.GetXRes(), button.GetYRes(), x, y, true);
    }
 }
 
@@ -720,6 +686,7 @@ void CreateCharacterScreen::PressButton(int button)
       const char* errorText = lua_tostring(L, -1);
       UaTrace("Lua function call cchar_buttonclick(0x%08x,%u) ended with error code %u: %s\n",
          this, button, ret, errorText);
-      m_isEnded = true;
+
+      StartFadeout();
    }
 }

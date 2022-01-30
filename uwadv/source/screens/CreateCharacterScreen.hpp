@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 //
 #pragma once
 
-#include "Screen.hpp"
+#include "ImageScreen.hpp"
 #include "ImageQuad.hpp"
 #include "Font.hpp"
 #include "MouseCursor.hpp"
@@ -35,8 +35,7 @@ namespace Underworld
 }
 
 /// \brief create character screen class
-/// \todo reimplement using new Window and Screen features
-class CreateCharacterScreen : public Screen
+class CreateCharacterScreen : public ImageScreen
 {
 public:
    /// ctor
@@ -84,7 +83,12 @@ private:
    /// HandleInputCharacter
    void HandleInputCharacter(char c);
 
-protected:
+   // virtual methods from ImageScreen
+
+   /// called when fadeout has ended
+   virtual void OnFadeOutEnded() override;
+
+private:
    /// lua scripting interface
    CreateCharacterLuaScripting m_lua;
 
@@ -97,29 +101,14 @@ protected:
    /// button and text font
    Font m_font;
 
-   /// ended
-   bool m_isEnded = false;
-
    /// start a new game
    bool m_newGame = false;
 
    /// the player
    Underworld::Player* m_player;
 
-   /// buttons changed
-   bool m_buttonsHaveChanged = false;
-
-   /// current fading stage
-   unsigned int m_fadingStage = 0;
-
-   /// current tick count
-   unsigned int m_tickCount = 0;
-
    /// indicates if the mouse button is down
    bool m_isButtonDown = false;
-
-   /// screen image
-   ImageQuad m_screenImage;
 
    /// background image
    IndexedImage m_backgroundImage;
