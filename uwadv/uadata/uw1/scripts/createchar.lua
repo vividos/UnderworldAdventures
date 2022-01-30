@@ -1,6 +1,6 @@
 --
 -- Underworld Adventures - an Ultima Underworld remake project
--- Copyright (c) 2002,2003 Underworld Adventures Team
+-- Copyright (c) 2002,2003,2022 Underworld Adventures Team
 --
 -- This program is free software; you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -31,10 +31,6 @@
 --
 
 -- constants
-
--- global actions (incoming param values for Lua function cchar_global)
-gactInit = 0    -- initialize
-gactDeinit = 1  -- deinitialize
 
 -- actions (outgoing param values for C function cchar_do_action)
 actEnd = 0             -- ends the character creation screen (no params)
@@ -221,34 +217,48 @@ ccharui = {
 
 -- functions
 
--- initializes/deinitializes create character screen
-function cchar_global(globalaction, seed)
-   if globalaction==gactInit then
-      skills = {}
-      math.randomseed(seed)
-      cchar_do_action(actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
-      finished = 0
-   end
+-- starts character creation
+function cchar_start(seed)
+
+   skills = {}
+   math.randomseed(seed)
+
+   cchar_do_action(actSetInitVal, ccharui.strblock, ccharui.btngxcoord, ccharui.textcolor_normal, ccharui.textcolor_highlight, ccharui.btnimages)
+   finished = 0
+
+   cchar_show_first_button_group();
+end
+
+
+-- show the first button group
+function cchar_show_first_button_group()
+   curstep = 0
+   psex = 0
+   pclass = 0
+   pstr = 0
+   pdex = 0
+   pint = 0
+   pvit = 0
+   img = 0
+   pname = ""
+   curgroup = 1
+   numberofskills = 0
+
+   cchar_do_action(actUIClear)
+   cchar_do_action(actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
+   cchar_do_action(actUIUpdate)
+end
+
+
+-- cancels character creation, and either restarts the process or ends the
+-- screen
+function cchar_cancel()
 
    -- end it all when we're at the first page and a deinit was received
-   if globalaction==gactDeinit and curgroup==1 then
+   if curgroup == 1 then
       cchar_do_action(actEnd)
    else
-      -- show the first button group
-      curstep = 0
-      psex = 0
-      pclass = 0
-      pstr = 0
-      pdex = 0
-      pint = 0
-      pvit = 0
-      img = 0
-      pname = ""
-      curgroup = 1
-      numberofskills = 0
-      cchar_do_action(actUIClear)
-      cchar_do_action(actSetUIBtnGroup, ccharui.btngroups[curgroup].heading, ccharui.btngroups[curgroup].btntype, ccharui.btngroups[curgroup].btns)
-      cchar_do_action(actUIUpdate)
+      cchar_show_first_button_group();
    end
 end
 

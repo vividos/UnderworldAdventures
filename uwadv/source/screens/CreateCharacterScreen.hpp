@@ -48,11 +48,6 @@ public:
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void Tick() override;
 
-   // registered lua C functions
-
-   /// performs an action given by the script
-   static int cchar_do_action(lua_State* L);
-
 private:
    /// loads and initializes Lua script
    void InitLuaScript();

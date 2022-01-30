@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,13 +24,6 @@
 #include "LuaState.hpp"
 #include <functional>
 
-/// global script actions
-enum CreateCharGlobalAction
-{
-   gactInit = 0,   ///< initialize
-   gactDeinit = 1  ///< deinitialize
-};
-
 /// Lua scripting for character creation
 class CreateCharacterLuaScripting : public LuaState
 {
@@ -41,11 +34,14 @@ public:
    /// dtor
    ~CreateCharacterLuaScripting() noexcept;
 
-   /// initializes Lua scripting, using action function
-   void Init(T_actionFunc doActionFunc);
+   /// sets action handler function
+   void SetActionHandler(T_actionFunc doActionFunc);
 
-   /// calls global action function
-   bool CallGlobal(CreateCharGlobalAction globalAction, int seed);
+   /// starts character creation
+   bool Start();
+
+   /// cancels character creation
+   void Cancel();
 
 private:
    /// registered function to do action

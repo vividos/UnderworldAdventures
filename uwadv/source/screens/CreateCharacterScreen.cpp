@@ -35,7 +35,6 @@
 #include "ImageManager.hpp"
 #include "script/LuaScripting.hpp"
 #include <sstream>
-#include <ctime>
 
 extern "C"
 {
@@ -199,7 +198,7 @@ bool CreateCharacterScreen::ProcessEvent(SDL_Event& event)
       switch (event.key.keysym.sym)
       {
       case SDLK_ESCAPE:
-         m_lua.CallGlobal(gactDeinit, 0);
+         m_lua.Cancel();
          break;
 
       case SDLK_PAGEUP:
@@ -318,7 +317,7 @@ void CreateCharacterScreen::OnFadeOutEnded()
 
 void CreateCharacterScreen::InitLuaScript()
 {
-   m_lua.Init(std::bind(&CreateCharacterScreen::DoAction, this));
+   m_lua.SetActionHandler(std::bind(&CreateCharacterScreen::DoAction, this));
 
    bool hasError = false;
 
@@ -330,8 +329,8 @@ void CreateCharacterScreen::InitLuaScript()
    if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/createchar"))
       hasError = true;
 
-   // Init script with seed value for random numbers
-   if (!m_lua.CallGlobal(gactInit, clock()))
+   // starts character creation
+   if (!m_lua.Start())
       hasError = true;
 
    if (hasError)

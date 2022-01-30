@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 //
 #include "pch.hpp"
 #include "CreateCharacterLuaScripting.hpp"
+#include <ctime>
 
 extern "C"
 {
@@ -37,7 +38,7 @@ CreateCharacterLuaScripting::~CreateCharacterLuaScripting()
    delete func;
 }
 
-void CreateCharacterLuaScripting::Init(T_actionFunc doActionFunc)
+void CreateCharacterLuaScripting::SetActionHandler(T_actionFunc doActionFunc)
 {
    lua_register(L, "cchar_do_action", cchar_do_action);
 
@@ -45,20 +46,17 @@ void CreateCharacterLuaScripting::Init(T_actionFunc doActionFunc)
    lua_setglobal(L, s_doActionFuncName);
 }
 
-bool CreateCharacterLuaScripting::CallGlobal(CreateCharGlobalAction globalAction, int seed)
+bool CreateCharacterLuaScripting::Start()
 {
-   lua_getglobal(L, "cchar_global");
-   lua_pushnumber(L, globalAction);
-   lua_pushnumber(L, seed);
-   int ret = lua_pcall(L, 2, 0, 0);
-   if (ret != 0)
-   {
-      const char* errorText = lua_tostring(L, -1);
-      UaTrace("Lua function call cchar_global ended with error code %u: %s\n", ret, errorText);
-      return false;
-   }
+   lua_getglobal(L, "cchar_start");
+   lua_pushnumber(L, clock());
+   return CheckedCall(1, 0);
+}
 
-   return true;
+void CreateCharacterLuaScripting::Cancel()
+{
+   lua_getglobal(L, "cchar_cancel");
+   CheckedCall(0, 0);
 }
 
 int CreateCharacterLuaScripting::cchar_do_action(lua_State* L)
