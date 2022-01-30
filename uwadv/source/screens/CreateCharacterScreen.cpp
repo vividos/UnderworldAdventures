@@ -50,18 +50,18 @@ const unsigned char c_maxNumButtons = 10;
 /// script actions
 enum CreateCharLuaAction
 {
-   actEnd = 0,            ///< ends the character creation screen (no params)
-   actSetInitVal = 1,     ///< sets init values (param1=stringblock, param2=buttongroup x-coord)
-   actSetUIBtnGroup = 2,  ///< sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
-   actSetUIText = 3,      ///< sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord)
-   actSetUICustText = 4,  ///< sets the specified custom text at the specified location (param1=text, param2=x-coord, param3=y-coord, param4=alignment)
-   actSetUINumber = 5,    ///< sets the specifed number at the specified location
-   actSetUIImg = 6,       ///< sets the specified image at the specified location
-   actUIClear = 7,        ///< clears all screen elements (not the background)
-   actUIUpdate = 8,       ///< updates the screen after a SetUIxxx/UIClear action (no params)
-   actSetPlayerName = 9,  ///< does what the name suggests (param1=name)
-   actSetPlayerAttr = 10, ///< does what the name suggests (param1=attribute, param2=value)
-   actSetPlayerSkill = 11 ///< does what the name suggests (param1=skill, param2=value)
+   actionEnd = 0,                ///< ends the character creation screen (no params)
+   actionSetInitValue = 1,       ///< sets init values (param1=stringblock, param2=buttongroup x-coord)
+   actionSetUIButtonGroup = 2,   ///< sets the specified button group (param1=heading, param2=buttontype, param3=buttontable)
+   actionSetUIText = 3,          ///< sets the specified text at the specified location (param1=stringno, param2=x-coord, param3=y-coord)
+   actionSetUICustomText = 4,    ///< sets the specified custom text at the specified location (param1=text, param2=x-coord, param3=y-coord, param4=alignment)
+   actionSetUINumber = 5,        ///< sets the specifed number at the specified location
+   actionSetUIImage = 6,         ///< sets the specified image at the specified location
+   actionUIClear = 7,            ///< clears all screen elements (not the background)
+   actionUIUpdate = 8,           ///< updates the screen after a SetUIxxx/UIClear action (no params)
+   actionSetPlayerName = 9,      ///< does what the name suggests (param1=name)
+   actionSetPlayerAttribute = 10, ///< does what the name suggests (param1=attribute, param2=value)
+   actionSetPlayerSkill = 11     ///< does what the name suggests (param1=skill, param2=value)
 };
 
 /// custom type for identifying buttons/text
@@ -77,6 +77,19 @@ enum CreateCharButtonType
    buttonImage = 1,  ///< square button with image
    buttonInput = 2,  ///< input area
    buttonTimer = 3,  ///< virtual button acting as a countdown timer
+};
+
+enum TextAlignTypes
+{
+   alignLeft = 0,
+   alignCenter = 1,
+   alignRight = 2,
+};
+
+enum EndActionType
+{
+   endActionCancel = 0,    ///< end screen and go back to start menu
+   endActionNewGame = 1,   ///< end screen and go to the in-game view with a new game
 };
 
 CreateCharacterScreen::CreateCharacterScreen(IGame& game)
@@ -353,7 +366,7 @@ void CreateCharacterScreen::DoAction()
 
    switch (static_cast<CreateCharLuaAction>(action))
    {
-   case actEnd:
+   case actionEnd:
       m_newGame = (n > 1) && (static_cast<unsigned int>(lua_tonumber(L, 2)) == 1);
 
       if (m_newGame)
@@ -367,7 +380,7 @@ void CreateCharacterScreen::DoAction()
       //UaTrace("end request by char. creation script\n");
       break;
 
-   case actSetInitVal:
+   case actionSetInitValue:
    {
       if (n < 5) break;
       m_stringBlock = static_cast<unsigned int>(lua_tonumber(L, 2));
@@ -391,7 +404,7 @@ void CreateCharacterScreen::DoAction()
       break;
    }
 
-   case actSetUIBtnGroup:
+   case actionSetUIButtonGroup:
    {
       if (n < 3) break;
       m_buttonGroupCaptionStringNumber = static_cast<unsigned int>(lua_tonumber(L, 2));
@@ -440,7 +453,7 @@ void CreateCharacterScreen::DoAction()
       break;
    }
 
-   case actSetUIText:
+   case actionSetUIText:
    {
       if (n < 5) break;
       DrawText(static_cast<unsigned int>(lua_tonumber(L, 2)),
@@ -452,7 +465,7 @@ void CreateCharacterScreen::DoAction()
       break;
    }
 
-   case actSetUICustText:
+   case actionSetUICustomText:
    {
       if (n < 5) break;
       DrawText(lua_tostring(L, 2),
@@ -462,7 +475,7 @@ void CreateCharacterScreen::DoAction()
       break;
    }
 
-   case actSetUINumber:
+   case actionSetUINumber:
    {
       if (n < 4) break;
       DrawNumber(static_cast<unsigned int>(lua_tonumber(L, 2)),
@@ -471,7 +484,7 @@ void CreateCharacterScreen::DoAction()
       break;
    }
 
-   case actSetUIImg:
+   case actionSetUIImage:
    {
       if (n < 4) break;
       IndexedImage& cimg = m_buttonImages[static_cast<unsigned int>(lua_tonumber(L, 2))];
@@ -482,30 +495,30 @@ void CreateCharacterScreen::DoAction()
       break;
    }
 
-   case actUIClear:
+   case actionUIClear:
       img.PasteImage(m_backgroundImage, 0, 0);
       //UaTrace("buffered screen cleared by char. creation script\n");
       break;
 
-   case actUIUpdate:
+   case actionUIUpdate:
       UpdateImage();
       //UaTrace("screen updated by char. creation script\n");
       break;
 
-   case actSetPlayerName:
+   case actionSetPlayerName:
       if (n < 2) break;
       m_player->SetName(lua_tostring(L, 2));
       //UaTrace("player name set to \"%s\" by char. creation script\n", lua_tostring(L,2));
       break;
 
-   case actSetPlayerAttr:
+   case actionSetPlayerAttribute:
       if (n < 3) break;
       m_player->SetAttribute(static_cast<Underworld::PlayerAttribute>(static_cast<unsigned int>(lua_tonumber(L, 2))),
          static_cast<unsigned int>(lua_tonumber(L, 3)));
       //UaTrace("player attribute set\n");
       break;
 
-   case actSetPlayerSkill:
+   case actionSetPlayerSkill:
       if (n < 3) break;
       m_player->SetSkill(static_cast<Underworld::PlayerSkill>(static_cast<unsigned int>(lua_tonumber(L, 2))),
          static_cast<unsigned int>(lua_tonumber(L, 3)));
