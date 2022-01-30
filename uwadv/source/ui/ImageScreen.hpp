@@ -25,6 +25,9 @@
 #include "ImageQuad.hpp"
 #include "FadingHelper.hpp"
 
+/// \brief screen with image
+/// screen that provides an IndexedImage to draw 2D user interface on; also
+/// handles fading in and out
 class ImageScreen : public Screen
 {
 public:

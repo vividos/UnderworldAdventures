@@ -93,6 +93,8 @@ void ImageScreen::Draw()
    glColor4ub(255, 255, 255, alpha);
    m_image.Draw();
 
+   Screen::Draw();
+
    if (alpha != 0)
       glDisable(GL_BLEND);
 }
