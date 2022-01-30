@@ -326,7 +326,7 @@ void ConversationDebugger::Start()
 
          // check if breakpoints are reached
          size_t max = m_allBreakpoints.size();
-         for (int i = 0; i < max; i++)
+         for (size_t i = 0; i < max; i++)
          {
             if (m_allBreakpoints[i] == m_instructionPointer)
             {
