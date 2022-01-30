@@ -88,13 +88,15 @@ int LuaCodeDebugger::LoadScript(Base::SDL_RWopsPtr rwops, const char* sourceFile
    return ret;
 }
 
-void LuaCodeDebugger::CheckedCall(int numArgs, int numResults)
+bool LuaCodeDebugger::CheckedCall(int numArgs, int numResults)
 {
    lua_sethook(L, DebugHook, LUA_MASKCALL | LUA_MASKRET | LUA_MASKLINE, 0);
 
-   LuaState::CheckedCall(numArgs, numResults);
+   bool result = LuaState::CheckedCall(numArgs, numResults);
 
    lua_sethook(L, NULL, 0, 0);
+
+   return result;
 }
 
 LuaCodeDebugger& LuaCodeDebugger::GetCodeDebuggerFromState(lua_State* L)

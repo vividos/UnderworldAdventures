@@ -120,14 +120,17 @@ int LuaState::LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname)
    return ret;
 }
 
-void LuaState::CheckedCall(int numArgs, int numResults)
+bool LuaState::CheckedCall(int numArgs, int numResults)
 {
    int ret = lua_pcall(L, numArgs, numResults, 0);
    if (ret != 0)
    {
       const char* errorText = lua_tostring(L, -1);
       UaTrace("Error in Lua function call; error code %u: %s\n", ret, errorText);
+      return false;
    }
+
+   return true;
 }
 
 bool LuaState::CheckSyntax(const std::string& luaSource, std::vector<std::string>& errorMessages)

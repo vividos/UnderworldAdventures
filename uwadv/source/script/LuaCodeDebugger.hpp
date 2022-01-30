@@ -45,7 +45,7 @@ public:
    virtual int LoadScript(Base::SDL_RWopsPtr rwops, const char* sourceFilename) override;
 
    /// lua function call, with debugging
-   virtual void CheckedCall(int numArgs, int numResults) override;
+   virtual bool CheckedCall(int numArgs, int numResults) override;
 
 private:
    /// returns code debugger class from Lua state

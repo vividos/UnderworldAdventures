@@ -40,7 +40,7 @@ public:
    virtual int LoadScript(Base::SDL_RWopsPtr rwops, const char* chunkname);
 
    /// lua function call
-   virtual void CheckedCall(int numArgs, int numResults);
+   virtual bool CheckedCall(int numArgs, int numResults);
 
    /// checks Lua code for syntax errors
    static bool CheckSyntax(const std::string& luaSource, std::vector<std::string>& errorMessages);
