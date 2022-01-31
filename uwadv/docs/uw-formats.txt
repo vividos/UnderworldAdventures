@@ -2330,35 +2330,70 @@ Table of Contents
    The first two bytes of the file contain unknown information (always 01 0E
    in both uw1 and uw2). Then entries for all items follow. Each entry has the
    following format:
-
    0000  Int8    height
+                 [observed in UW1] height seems to be about half the pixel
+                 height of the object. Double this to get the height in pixels.
+                 Seems that non-colliding objects have a height of 0.
    0001  Int16   mass/stuff:
                  bits 0-2: radius
+                 [observed in UW1] This is 4 for bridge and anvil, 3 on doors
+                 and a few other things, 2 for all critters. All other objects
+                 are 1 or 2. and some 0. Not sure how to get a width in pixels
+                 from this.
                  bit 3: 1 for npc's, 3d objects and misc. items (animated flg?)
+                 [observed in UW1] all NPCs, 3d models excepts doors, and a few
+                 animations: blood, mist, damage
                  bits 4-15: mass in 0.1 stones
-   0003  Int8    flags
-                 0/2: object in range [336, 368[ seem to be 3d objects
-                 1: TODO unknown
+   0003  Int8    flags TODO several unknown
+                 0: [observed in UW1] always 0
+                 1: [observed in UW1] is set to 1 for most 3d model objects.
+                 Exceptions are doors, missiles, pillar, gravestone.
+                 2: [observed in UW1] set to 1 for all switches, levers, etc
                  3: magic object (?)
+                 [observed in UW1] set to 1 on some projectiles and animations.
+                 This seems to set for items and effects that when spawned
+                 spontaneously are deleted when they are finished.
                  4: decal object (always 0 in uw1)
                  5: is set when object can be picked up
+                 [oserved in UW1] Almost but not exactly. Some items set to 1
+                 cannot be picked up: urn, orb, campfire, fountain, cauldron
                  6: TODO unknown
+                 [observed in UW1] this is set to 1 for weapons (not missiles),
+                 equipment (even shields), all critters, containers (except
+                 cauldron), and 3d models (except missiles) and all triggers
+                 and traps.
                  7: is set when object is a container
+                 [observed in UW1] except cauldron
    0004  Int16   monetary value
-   0006  Int8    bit 0-1: TODO unknown
-                 bits 2..3: quality class (this value*6+quality gives index
+   0006  Int8    bits 0-1: TODO unknown
+                 bit 0: [observed in UW1] set to 1 for almost every object.
+                 Exceptions: Void monsters, zanium, all triggers and traps,
+                 all animations except silver tree.
+                 bit 1: [observed in UW1] set to 1 for some switches and
+                 missiles.
+                 bits 2-3: quality class (this value*6+quality gives index
                             into string block 5
-                 bits 4..7: TODO unknown
+                 bits 4-7: TODO unknown
+                 bit 4: [observed in UW1] Set to 1 for all projectiles.
    0007  Int8    bit 0: TODO unknown
-                 bits 1..4: type? a=talisman, 9=magic, 3..5=ammunition
-                 but 5-6: TODO unknown
+                 bit 0: [observed in UW1] set to 1 mostly for stones:
+                   sling stone, stone, rings except iron, gems, amulet,
+                   resilient sphere, spike, glowing rock, small boulder
+                 bits 1-4: type? a=talisman, 9=magic, 3..5=ammunition
+                 bits 5-6: TODO unknown
+                 bit 6: [observed in UW1] similar to byte 3 bit 5, seems to
+                 tell if an object can be picked up. Only exception seems to be
+                 the missile 3d models and silver tree.
                  bit 7: if 1, item can have owner ("belongs to ...")
    0008  Int8    scale value (?) TODO
-   0009  Int8    unknown2
-                 bits 0-1: ?? TODO
+   0009  Int8    TODO unknown
+                 bit 0: [observed in UW1] set to 1 for NPCs and flat texture
+                 map objects
+                 bits 6-7: [observed in UW1] always 00
    000A  Int8    bits 0-3: quality type 0-f
                  bit 4: printable "look at" description when 1
-                 bit 5-7: TODO unknown
+                 bits 5-7: TODO unknown
+                 [observed in UW1] always 011, even for null objects
 
    Each possible value of "quality type" maps onto a group of 6 strings in
    block 4 from lowest to highest quality. Items which have a quality are
@@ -2433,7 +2468,7 @@ Table of Contents
                  bits 4-7: remains type; 0: nothing, 2: rotworm corpse,
                      4: rubble, 6: wood chips, 8: bones, 10: green blood pool,
                      12: red blood pool, 14: red blood pool giant spider
-   0009   Int8   generic name; index into game strings block 8, value + 370
+   0009   Int8   generic name; index into game strings block 1, value + 370
    000a   Int8   passiveness; 0xff: will never attack
    000b   Int8   magic related; extra/specific spells?
    000c   Int8   movement speed; 0: immobile, 12: maximum, e.g. vampire bat
