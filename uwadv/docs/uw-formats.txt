@@ -608,6 +608,15 @@ Table of Contents
    0003  Int32  offset to bitmap #0
    0007  Int32  offset to bitmap #1
    ...
+   
+   Entries in .gr files can contain null records. There will be a place-holder
+   entry in the offsets table, but it does not point to a valid graphics record
+   for that entry. A record should be considered null if:
+      The offset points past the end of file or
+      The offset is the same as the next offset in the list
+   If you are ripping graphics from .gr files and notice duplicate graphics,
+   such as blood splats and damage traps in objects.gr, then you have not
+   properly accounted for null records.
 
    Each bitmap has its own header:
 
@@ -627,20 +636,12 @@ Table of Contents
                 For bitmap types 04 & 0A, this is the actual byte count.
 
    The file "panels.gr" contains bitmaps that don't have a bitmap header, but
-   immediately starts with image data. The bitmaps are of type 04 and have
-   a width of 83 and a height of 114 pixels for UW1 and a width of 79 and
-   height of 112 for UW2.
-
-   Some .gr files, particularly genhead.gr and objects.gr, have a quirk. When
-   a graphic was not defined, the next defined graphic would be used in place.
-   This is obvious for example in objects.gr, there are many traps, triggers,
-   blood splats, and other repeated icons. This does not mean that these icons
-   accurately represent the objects. It means that these objects get their
-   appearance elsewhere, and not are accurately represented by their icon
-   index in this file. To know what an object is, look at the objects table
-   or in the string table block 4. Do not rely on these icons. The last few
-   objects do not have icons as there is no next valid icon to pull from.
-
+   immediately starts with image data. There are 4 bitmaps are of type 04 that
+   have a hard-coded height and width.
+   [UW1] The first three are 83 x 114 and the final one is 3 x 120
+   [UW2] The first three are 79 x 112 and the final one is 3 x 112
+   
+   
 3.2.1  Uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
 
    All palette indices are stored sequentially, first one line, then the
