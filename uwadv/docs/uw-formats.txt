@@ -566,7 +566,8 @@ Table of Contents
    that have to be rotated to produce the animations:
 
    - Palette #0: in game graphics
-
+    
+    [UW1]
     indices 16 through 23: lava fire effect
     These 8 indices are rotated for fire/lava effect, but are not all rotated
     together. The first 5 are rotated together, and the next 3 are rotated
@@ -574,10 +575,16 @@ Table of Contents
     palette from lower indices to higher.
 
     indices 48 through 63: water effect
-    indices 48 through 63 are rotated for water effects, however the group of
-    16 colors is not all rotated together. They are broken up into 4 groups of
-    4, and those groups are rotated. These rotations move colors "down" from
-    higher indices to lower ones.
+    These 16 indices are rotated for water effects, however the group of 16
+    colors are not all rotated together. They are broken up into 4 groups of 4,
+    and those groups are each rotated individually. These rotations move colors
+    "down" from higher indices to lower ones.
+    
+    [UW2]
+    Uses the same rules stated above, but palette indices are different:
+    indices 3 through 10: lava fire effect
+    indices 224 through 239: water effect
+    
 
    - Palette #2: game start screen
 
