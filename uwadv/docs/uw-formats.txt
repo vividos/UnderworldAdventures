@@ -615,7 +615,7 @@ Table of Contents
       The offset points past the end of file or
       The offset is the same as the next offset in the list
    If you are ripping graphics from .gr files and notice duplicate graphics,
-   such as blood splats and damage traps in objects.gr, then you have not
+   such as the blood splats and damage traps in objects.gr, then you have not
    properly accounted for null records.
 
    Each bitmap has its own header:
@@ -636,8 +636,8 @@ Table of Contents
                 For bitmap types 04 & 0A, this is the actual byte count.
 
    The file "panels.gr" contains bitmaps that don't have a bitmap header, but
-   immediately starts with image data. There are 4 bitmaps are of type 04 that
-   have a hard-coded height and width.
+   immediately start with image data. There are 4 bitmaps of type 04 that have
+   a hard-coded height and width.
    [UW1] The first three are 83 x 114 and the final one is 3 x 120
    [UW2] The first three are 79 x 112 and the final one is 3 x 112
    
