@@ -78,6 +78,32 @@ std::string GetColorName(size_t paletteIndex, Uint32 argb)
    return Base::String::Format("%s, similarity %i%%", c_colorMapping[foundColor].c_str(), similarity);
 }
 
+/// dumps all colors of a single palette containing 256 colors
+void DumpSinglePaletteColors(const Uint8* palette)
+{
+   for (size_t paletteIndex = 0; paletteIndex < 256; paletteIndex++)
+   {
+      const Uint8* paletteEntry = &palette[paletteIndex];
+      printf("0x%02zx: raw %02x %02x %02x, RGB #%02x%02x%02x",
+         paletteIndex,
+         paletteEntry[0],
+         paletteEntry[1],
+         paletteEntry[2],
+         paletteEntry[0] << 2,
+         paletteEntry[1] << 2,
+         paletteEntry[2] << 2);
+
+      Uint32 argb =
+         (((Uint32)paletteEntry[0] << 16) << 2) |
+         (((Uint32)paletteEntry[1] << 8) << 2) |
+         ((Uint32)paletteEntry[2] << 2);
+
+      std::string colorName = GetColorName(paletteIndex, argb);
+
+      printf(" (%s)\n", colorName.c_str());
+   }
+}
+
 void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, bool isUw2)
 {
    UNUSED(isUw2);
@@ -116,27 +142,7 @@ void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, b
             continue;
       }
 
-      for (size_t paletteIndex = 0; paletteIndex < 256; paletteIndex++)
-      {
-         Uint8* paletteEntry = pals[numPalette][paletteIndex];
-         printf("0x%02zx: raw %02x %02x %02x, RGB #%02x%02x%02x",
-            paletteIndex,
-            paletteEntry[0],
-            paletteEntry[1],
-            paletteEntry[2],
-            paletteEntry[0] << 2,
-            paletteEntry[1] << 2,
-            paletteEntry[2] << 2);
-
-         Uint32 argb =
-            (((Uint32)paletteEntry[0] << 16) << 2) |
-            (((Uint32)paletteEntry[1] << 8) << 2) |
-            ((Uint32)paletteEntry[2] << 2);
-
-         std::string colorName = GetColorName(paletteIndex, argb);
-
-         printf(" (%s)\n", colorName.c_str());
-      }
+      DumpSinglePaletteColors(pals[numPalette][0]);
 
       printf("\n");
    }
