@@ -36,6 +36,9 @@ namespace Base
       void FindFiles(const std::string& searchPath, std::vector<std::string>& fileList,
          bool recursive);
 
+      /// returns if the given path matches a wildcard pattern
+      bool PatternMatches(const std::string& path, const std::string& pattern);
+
       /// removes a file from disk
       void RemoveFile(const std::string& filename);
 
