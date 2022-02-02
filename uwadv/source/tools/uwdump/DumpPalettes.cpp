@@ -79,8 +79,10 @@ std::string GetColorName(size_t paletteIndex, Uint32 argb)
 }
 
 /// dumps all colors of a single palette containing 256 colors
-void DumpSinglePaletteColors(const Uint8* palette)
+void DumpSinglePaletteColors(const Uint8* palette, bool scaleUpValues)
 {
+   unsigned int shiftFactor = scaleUpValues ? 2 : 0;
+
    for (size_t paletteIndex = 0; paletteIndex < 256; paletteIndex++)
    {
       const Uint8* paletteEntry = &palette[paletteIndex];
@@ -89,14 +91,14 @@ void DumpSinglePaletteColors(const Uint8* palette)
          paletteEntry[0],
          paletteEntry[1],
          paletteEntry[2],
-         paletteEntry[0] << 2,
-         paletteEntry[1] << 2,
-         paletteEntry[2] << 2);
+         paletteEntry[0] << shiftFactor,
+         paletteEntry[1] << shiftFactor,
+         paletteEntry[2] << shiftFactor);
 
       Uint32 argb =
-         (((Uint32)paletteEntry[0] << 16) << 2) |
-         (((Uint32)paletteEntry[1] << 8) << 2) |
-         ((Uint32)paletteEntry[2] << 2);
+         (((Uint32)paletteEntry[0] << 16) << shiftFactor) |
+         (((Uint32)paletteEntry[1] << 8) << shiftFactor) |
+         ((Uint32)paletteEntry[2] << shiftFactor);
 
       std::string colorName = GetColorName(paletteIndex, argb);
 
@@ -142,7 +144,7 @@ void DumpPalettes(const std::string& filename, const GameStrings& gameStrings, b
             continue;
       }
 
-      DumpSinglePaletteColors(pals[numPalette][0]);
+      DumpSinglePaletteColors(pals[numPalette][0], true);
 
       printf("\n");
    }
