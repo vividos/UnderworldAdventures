@@ -206,6 +206,25 @@ void UnderworldDumper::DumpFile(const std::string& path)
       iter = g_dumpFileHandlerMap.find(extension);
    }
 
+   // check for wildcard entries in the map
+   if (iter == g_dumpFileHandlerMap.end())
+   {
+      for (auto pair : g_dumpFileHandlerMap)
+      {
+         std::string wildcardFilename = pair.first;
+         if (wildcardFilename.find_first_of('*') != std::string::npos)
+         {
+            Base::String::Replace(wildcardFilename, "/", Base::FileSystem::PathSeparator);
+
+            if (Base::FileSystem::PatternMatches(path, wildcardFilename))
+            {
+               iter = g_dumpFileHandlerMap.find(pair.first);
+               break;
+            }
+         }
+      }
+   }
+
    if (iter != g_dumpFileHandlerMap.end())
    {
       printf("dumping file %s\n", path.c_str());
