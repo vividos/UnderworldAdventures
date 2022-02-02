@@ -23,6 +23,7 @@
 #include "UnderworldDumper.hpp"
 #include "String.hpp"
 #include "FileSystem.hpp"
+#include "Path.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
 #include "GameStringsImporter.hpp"
@@ -193,8 +194,7 @@ void UnderworldDumper::DumpFile(const std::string& path)
       return;
    }
 
-   size_t pos = path.find_last_of(Base::FileSystem::PathSeparator[0]);
-   std::string filename = pos == std::string::npos ? path : path.substr(pos + 1);
+   std::string filename = Base::Path::FilenameAndExt(path);
    Base::String::Lowercase(filename);
 
    auto iter = g_dumpFileHandlerMap.find(filename);
@@ -202,9 +202,7 @@ void UnderworldDumper::DumpFile(const std::string& path)
    // check file extension
    if (iter == g_dumpFileHandlerMap.end())
    {
-      size_t posDot = filename.find_last_of('.');
-      std::string extension = pos == std::string::npos ? "" : filename.substr(posDot);
-
+      std::string extension = Base::Path::Extension(filename);
       iter = g_dumpFileHandlerMap.find(extension);
    }
 
