@@ -44,6 +44,7 @@ extern void DumpBytImage(const std::string& filename, const GameStrings& gameStr
 extern void DumpBytArkFile(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpGrImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpTextureImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpCutscene(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 
 typedef std::function<void(const std::string & filename, const GameStrings & gameStrings, bool isUw2)> T_fileHandler;
 
@@ -66,6 +67,8 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
    { ".byt", DumpBytImage },
    { ".gr", DumpGrImage },
    { ".tr", DumpTextureImage },
+   { ".anm", DumpCutscene }, // DeluxePaint Animation extension
+   { "cuts/cs*.n*", DumpCutscene },
 };
 
 bool UnderworldDumper::ParseArgs(unsigned int argc, const char** argv)

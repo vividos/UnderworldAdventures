@@ -65,6 +65,7 @@
     <ClCompile Include="DumpBytImage.cpp" />
     <ClCompile Include="DumpCombineData.cpp" />
     <ClCompile Include="DumpConversationArchive.cpp" />
+    <ClCompile Include="DumpCutscene.cpp" />
     <ClCompile Include="DumpExecutable.cpp" />
     <ClCompile Include="DumpGrImage.cpp" />
     <ClCompile Include="DumpLevelArchive.cpp" />
