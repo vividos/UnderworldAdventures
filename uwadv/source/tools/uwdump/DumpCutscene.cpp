@@ -165,19 +165,20 @@ void DumpLargePageFile(Base::File& file)
    for (size_t largePageIndex = 0; largePageIndex < maxLargePageIndex; largePageIndex++)
    {
       Uint16 baseRecord = file.Read16();
-      Uint16 numRecords = file.Read16();
+      Uint16 numRecordsInPage = file.Read16();
       Uint16 numBytesContent = file.Read16();
 
-      bool hasContinuationFromPreviousLargePage = (numRecords & (1 << 15)) != 0;
-      bool continuesInNextLargePage = (numRecords & (1 << 14)) != 0;
-      numRecords &= ~0xc000;
+      bool hasContinuationFromPreviousLargePage = (numRecordsInPage & (1 << 15)) != 0;
+      bool continuesInNextLargePage = (numRecordsInPage & (1 << 14)) != 0;
+      numRecordsInPage &= ~0xc000;
 
-      printf("large page #%u: records %u-%u, total %u records%s%s\n",
+      printf("large page #%u: records %u-%u, total %u records, %u bytes content%s%s\n",
          largePageIndex,
-         baseRecord, baseRecord + numRecords - 1,
-         numRecords,
+         baseRecord, baseRecord + numRecordsInPage - 1,
+         numRecordsInPage,
+         numBytesContent,
          hasContinuationFromPreviousLargePage ? ", with continuation from last lp" : "",
-         hasContinuationFromPreviousLargePage ? ", continues in next lp" : "");
+         continuesInNextLargePage ? ", continues in next lp" : "");
    }
 }
 
