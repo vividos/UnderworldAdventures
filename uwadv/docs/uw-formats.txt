@@ -5,7 +5,7 @@
                https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
-Document version: 1.80, as of 2022-01-29
+Document version: 1.81, as of 2022-02-04
 
 
 Table of Contents
@@ -140,6 +140,7 @@ Table of Contents
    Copyright (c) 2000,2001,2002,2003 Jim Cameron
    Copyright (c) 2002,2003,2004 Michael Fink
    Copyright (c) 2004 Kasper Fauerby
+   Copyright (c) 2022 Mike Ratzlaff
 
 
  +--------------------------------------------------------------------------+
@@ -566,7 +567,7 @@ Table of Contents
    that have to be rotated to produce the animations:
 
    - Palette #0: in game graphics
-    
+
     [UW1]
     indices 16 through 23: lava fire effect
     These 8 indices are rotated for fire/lava effect, but are not all rotated
@@ -579,12 +580,12 @@ Table of Contents
     colors are not all rotated together. They are broken up into 4 groups of 4,
     and those groups are each rotated individually. These rotations move colors
     "down" from higher indices to lower ones.
-    
+
     [UW2]
     Uses the same rules stated above, but palette indices are different:
     indices 3 through 10: lava fire effect
     indices 224 through 239: water effect
-    
+
 
    - Palette #2: game start screen
 
@@ -608,7 +609,7 @@ Table of Contents
    0003  Int32  offset to bitmap #0
    0007  Int32  offset to bitmap #1
    ...
-   
+
    Entries in .gr files can contain null records. There will be a place-holder
    entry in the offsets table, but it does not point to a valid graphics record
    for that entry. A record should be considered null if:
@@ -640,8 +641,8 @@ Table of Contents
    a hard-coded height and width.
    [UW1] The first three are 83 x 114 and the final one is 3 x 120
    [UW2] The first three are 79 x 112 and the final one is 3 x 112
-   
-   
+
+
 3.2.1  Uncompressed bitmaps (04: 8-bit, 0A: 4-bit)
 
    All palette indices are stored sequentially, first one line, then the
