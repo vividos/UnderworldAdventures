@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "Audio.hpp"
 #include "Playlist.hpp"
 #include "Base.hpp"
+#include "Path.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
 #include <SDL.h>
@@ -240,18 +241,12 @@ void AudioManager::StartMusicTrack(size_t musicTrack, bool repeat)
    m_data->SetCurrentMusicTrackNumber(musicTrack);
 
    // find extension
-   std::string extension;
-   std::string::size_type pos = trackName.find_last_of('.');
-
-   if (pos != std::string::npos)
-      extension.assign(trackName.substr(pos));
-
-   // make extension lowercase
+   std::string extension = Base::Path::Extension(trackName);
    Base::String::Lowercase(extension);
 
    // check for midi tracks
-   if (extension.find(".xmi") != std::string::npos ||
-      extension.find(".mid") != std::string::npos)
+   if (extension == ".xmi" ||
+      extension == ".mid")
    {
       try
       {
