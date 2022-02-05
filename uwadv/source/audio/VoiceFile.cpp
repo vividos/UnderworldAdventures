@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019 Underworld Adventures Team
+// Copyright (c) 2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@
 //
 #include "pch.hpp"
 #include "VoiceFile.hpp"
-#include <SDL_rwops.h>
-#include <SDL_endian.h>
+#include "File.hpp"
+//#include <SDL_rwops.h>
+//#include <SDL_endian.h>
 
 namespace Detail
 {
@@ -46,7 +47,8 @@ namespace Detail
    public:
       /// ctor
       VoiceFileLoader(Base::SDL_RWopsPtr rwops)
-         :m_rwops(rwops)
+         :m_file(rwops),
+         m_sampleRate(0)
       {
       }
 
@@ -61,7 +63,7 @@ namespace Detail
 
    private:
       /// ptr to read .voc file from
-      Base::SDL_RWopsPtr m_rwops;
+      Base::File m_file;
 
       /// samplerate of .voc file
       Uint32 m_sampleRate;
@@ -72,56 +74,51 @@ namespace Detail
 
    /// The .voc file format is documented in:
    /// http://icculus.org/SDL_sound/downloads/external_documentation/Voc.txt
-   /// \todo reimplement using Base::File
    void VoiceFileLoader::Load()
    {
       const char* c_headerString = "Creative Voice File\x1a";
+      const size_t c_headerLength = 0x13 + 1;
 
       // read in header
-      char headerString[0x13 + 1];
-      SDL_RWread(m_rwops.get(), headerString, 1, SDL_TABLESIZE(headerString));
-      UaAssert(0 == strncmp(headerString, c_headerString, SDL_TABLESIZE(headerString)));
+      char headerString[c_headerLength + 1] = {};
+      m_file.ReadBuffer(reinterpret_cast<Uint8*>(&headerString[0]), c_headerLength);
+      UaAssert(0 == strncmp(headerString, c_headerString, c_headerLength));
 
-      Uint16 offsetDataBlock = SDL_ReadLE16(m_rwops.get());
+      Uint16 offsetDataBlock = m_file.Read16();
       UaAssert(offsetDataBlock == 0x001a);
 
-      Uint16 versionNumber = SDL_ReadLE16(m_rwops.get());
+      Uint16 versionNumber = m_file.Read16();
       UaAssert(versionNumber == 0x010a); // assume version 1.10 always
 
-      Uint16 versionNumber1sComplement = SDL_ReadLE16(m_rwops.get());
+      Uint16 versionNumber1sComplement = m_file.Read16();
       UaAssert(versionNumber1sComplement == 0x1129);
 
       // read in first data block
-      Uint8 blockType = 0;
 
-      // read in block type; must be 1
-      SDL_RWread(m_rwops.get(), &blockType, 1, 1);
+      // block type; must be 1
+      Uint8 blockType = m_file.Read8();
       UaAssert(blockType == 1);
 
-      // read in size
-      Uint32 size = static_cast<Uint32>(SDL_ReadLE16(m_rwops.get()));
-
-      Uint8 sizeHigh;
-      SDL_RWread(m_rwops.get(), &sizeHigh, 1, 1);
+      // read in size, 24 bit
+      Uint32 size = m_file.Read16();
+      Uint8 sizeHigh = m_file.Read8();
       size |= static_cast<Uint32>(sizeHigh) << 16;
 
       // read samplerate
-      Uint8 codedSamplerate = 0;
-      SDL_RWread(m_rwops.get(), &codedSamplerate, 1, 1);
+      Uint8 codedSamplerate = m_file.Read8();
 
-      // note: this formula comes from the above URL, but it seems to be wrong
-      // for uw1 and uw2 files (or it's just flawed)
+      // Note: This formula comes from the above URL, but it seems to be wrong
+      // for uw1 and uw2 files (or it's just flawed).
       // uw1 .voc files give 0xAD as coded sample rate, which represents 12048 Hz
       // uw2 .voc files give 0xA5, which represents 11111 Hz
       m_sampleRate = 1000000 / (256 - codedSamplerate);
 
-      Uint8 compressionType = 0;
-      SDL_RWread(m_rwops.get(), &compressionType, 1, 1);
+      Uint8 compressionType = m_file.Read8();
       UaAssert(compressionType == 0); // 8-bit
 
       // read in 8-bit samples
       std::vector<Uint8> rawSamples(size);
-      SDL_RWread(m_rwops.get(), &rawSamples[0], 1, size);
+      m_file.ReadBuffer(rawSamples.data(), size);
 
       // convert to signed 16-bit
       m_audioSample.resize(size);
