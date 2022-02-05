@@ -74,7 +74,8 @@ bool ArchiveFile::IsAvailable(size_t index) const
 /// Returns file from archive; note that this function returns a SDL_RWops
 /// pointer that may depend on the archive file's internal SDL_RWops struct.
 /// Only use one archive file pointer at one time!
-/// \todo improve uw1 mode with finding out length using offsets
+/// \note In uw1 the caller must know how long the file block is in order to
+/// not read beyond the file; usually this is the case with all known formats.
 Base::File ArchiveFile::GetFile(size_t index)
 {
    UaAssert(index < GetNumFiles());
@@ -83,8 +84,6 @@ Base::File ArchiveFile::GetFile(size_t index)
    m_archiveFile.Seek(m_offsetList[index], Base::seekBegin);
 
    // in uw1 mode, just return file
-   // todo: caller must know how long the file block is in this case,
-   // or has to seek around
    if (!m_uw2Mode)
       return m_archiveFile;
 

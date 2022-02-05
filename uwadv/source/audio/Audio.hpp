@@ -179,7 +179,8 @@ namespace Audio
       /// checks if the given music track is already playing
       bool IsPlayingMusicTrack(size_t musicTrack) const;
 
-      /// starts music track playback
+      /// starts music track playback, using value from MusicTrackUw1 or
+      /// MusicTrackUw2
       void StartMusicTrack(size_t musicTrack, bool repeat);
 
       /// fades out currently playing music track; fadeout time in milliseconds

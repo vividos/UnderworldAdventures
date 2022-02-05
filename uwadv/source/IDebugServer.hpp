@@ -44,12 +44,6 @@ enum DebugServerMessageType
    /// messageArg1 contains the code debugger handle
    debugMessageCodeDebuggerStateUpdate,
 
-   /// a code debugger message
-   //debugMessageCodeDebugger,
-
-   /// miscellaneous message \todo needed?
-   debugMessageMisc,
-
    /// unknown message
    debugMessageUnknown,
 };

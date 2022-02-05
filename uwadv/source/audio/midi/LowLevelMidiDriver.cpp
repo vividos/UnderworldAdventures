@@ -1302,7 +1302,7 @@ void LowLevelMidiDriver::loadTimbreLibrary(IDataSource *ds, TimbreLibraryType ty
 		mt32_patch_banks[0][i]->timbre_num = i;
 	}
 
-	// TODO: This should not be hard-coded.
+	// Note: This should not be hard-coded.
 	// Setup default rhythm library (thanks to the munt folks for making it show
 	// data on the terminal).
 	// This data is the same for all of the originals.

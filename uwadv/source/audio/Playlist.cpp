@@ -28,11 +28,10 @@
 namespace Detail
 {
    /// \brief loads playlist
-   /// Loads the music soundtrack playlist. The file can
-   /// be stored in the uadata resource file or in the equivalent path. The file
-   /// can contain, among the placeholders recognized by
-   /// ResourceManager, the placeholder %uw-path%
-   /// that specifies the current uw path. \todo fix description
+   /// Loads the music soundtrack playlist. The file is normally stored in the
+   /// uadata resource zip file. The file can contain, among the placeholders
+   /// recognized by ResourceManager, the placeholder %uw-path% that specifies
+   /// the current uw path.
    class PlaylistLoader
    {
    public:

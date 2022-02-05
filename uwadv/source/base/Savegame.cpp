@@ -35,13 +35,13 @@ using Base::SavegamesManager;
 
 /// \brief current savegame version
 /// version history:
-/// - version 1: initial version; used from version 0.xx on
-/// - version 2: ???
-/// - version 3: Introduced with version 0.10; rewrite of most underworld
+/// - version 0: used during early development
+/// - version 1: initial version; used from version 0.9 on
+/// - version 2: addition of savegame date
+/// - version 3: introduced with version 0.10; rewrite of most underworld
 ///              classes required a new version.
 /// - version 4: version 0.11; objectlist has an extra Uint8 flags value to
 ///              recognize empty object lists for uw2
-///   \todo complete version history
 const Uint32 Savegame::s_currentVersion = 4;
 
 /// savegame error message

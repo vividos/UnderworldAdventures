@@ -49,7 +49,6 @@ public:
    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
    LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-   // TODO add specific name
    CString GetDockingCaption() const { return _T("Breakpoints"); }
 
    /// receives debug window notifications

@@ -30,8 +30,6 @@ namespace UnitTest
 {
 
    /// Tests reading .ark files in uw1 and uw2 using ArchiveFile.
-   /// \todo check file lengths in uw1 mode, once file length is known (see
-   ///       ArchiveFile todo's).
    /// \todo decode what scd.ark contains
    TEST_CLASS(ArchiveFileTest)
    {
@@ -49,7 +47,6 @@ namespace UnitTest
             Assert::IsTrue(true == file.IsAvailable(index));
 
          file.GetFile(1);
-         // TODO: check file lengths
       }
 
       /// load uw1 conversations
@@ -66,7 +63,6 @@ namespace UnitTest
          Assert::IsTrue(true == file.IsAvailable(1));
 
          file.GetFile(1);
-         // TODO: check file lengths
       }
 
       /// load uw2 bitmaps

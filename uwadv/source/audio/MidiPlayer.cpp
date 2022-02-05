@@ -30,8 +30,6 @@
 
 using Audio::MidiPlayer;
 
-/// \todo if necessary, provide support for midi drivers that are sample
-/// producers
 MidiPlayer::MidiPlayer(const Base::Settings& settings)
 {
    // prepare settings

@@ -114,7 +114,7 @@ bool uw2_uncompress(const unsigned char* compressedData, size_t compressedSize,
             if (up != NULL)
             {
                if (m1 > up - ubuf)
-                  return false; // TODO should not happen
+                  return false; // should not happen
 
                // adjust pos to current 4k segment
                while (m1 < (up - ubuf - 0x1000))
