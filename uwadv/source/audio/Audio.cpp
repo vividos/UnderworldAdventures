@@ -36,6 +36,13 @@
 #include "String.hpp"
 #include "File.hpp"
 
+/// mapping from sound effect to .voc filename
+static std::map<Audio::SoundEffectType, const char*> g_soundEffectToFilenameMap =
+{
+   { Audio::SoundEffectType::sfxStepsLeft, "sp01" },
+   { Audio::SoundEffectType::sfxStepsRight, "sp02" },
+};
+
 namespace Detail
 {
    /// \brief internal audio manager data
@@ -198,10 +205,16 @@ void AudioManager::StopSound()
 /// this method only plays back sound effects when uw2 path is configured
 /// properly.
 /// \param sfxType sound effect type to play back
-/// \todo implement
 void AudioManager::PlaySoundEffect(Audio::SoundEffectType sfxType)
 {
-   UNUSED(sfxType);
+   auto iter = g_soundEffectToFilenameMap.find(sfxType);
+   if (iter == g_soundEffectToFilenameMap.end())
+   {
+      UaTrace("couldn't find sound effect filename for sfxType %u", sfxType);
+      return;
+   }
+
+   PlaySound(iter->second);
 }
 
 bool AudioManager::IsPlayingMusicTrack(size_t musicTrack) const
