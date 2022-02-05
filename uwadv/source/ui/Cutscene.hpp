@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,30 +39,30 @@ struct LargePageDescriptor
 };
 
 /// \brief cutscene animation class
-/// \note initialize via ImageQuad::Init(); before or after loading
-class Cutscene : public ImageQuad
+class Cutscene
 {
 public:
    /// ctor
    Cutscene()
+      :m_numRecords(0),
+      m_currentFrame((unsigned int)-1)
    {
-      m_currentFrame = (unsigned int)-1;
    }
 
    /// loads a cutscene by relative filename
-   void Load(Base::ResourceManager& resourceManager, const char* relativeFilename);
+   void Load(Base::ResourceManager& resourceManager, const char* relativeFilename,
+      IndexedImage& image);
 
    /// returns maximum number of frames
-   unsigned int GetMaxFrames() { return m_numRecords; }
+   unsigned int GetMaxFrames() const { return m_numRecords; }
 
    /// extracts a new frame into the current image
-   void UpdateFrame(unsigned int frameNumber);
+   void GetFrame(IndexedImage& image, unsigned int frameNumber);
 
-protected:
+private:
    /// decodes one frame
-   void DecodeFrame(unsigned int frameNumber);
+   void DecodeFrame(IndexedImage& image, unsigned int frameNumber);
 
-protected:
    /// number of records in file
    unsigned int m_numRecords;
 

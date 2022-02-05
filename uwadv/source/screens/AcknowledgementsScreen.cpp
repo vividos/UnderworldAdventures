@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -50,9 +50,10 @@ void AcknowledgementsScreen::Init()
    m_currentFrame = 0;
 
    // init cutscene quad
-   m_ackCutscene.Load(m_game.GetResourceManager(), "cuts/cs012.n01");
-   m_ackCutscene.Init(m_game, 0, 0);
-   m_ackCutscene.UpdateFrame(m_currentFrame);
+   m_ackCutscene.Load(m_game.GetResourceManager(), "cuts/cs012.n01", m_image.GetImage());
+   m_image.Init(m_game, 0, 0);
+   m_ackCutscene.GetFrame(m_image.GetImage(), m_currentFrame);
+   m_image.Update();
 
    // init fadeout image
    m_fadeoutImage.Init(m_game, 0, 0);
@@ -74,7 +75,7 @@ void AcknowledgementsScreen::Destroy()
 {
    SDL_ShowCursor(0);
 
-   m_ackCutscene.Destroy();
+   m_image.Destroy();
    m_fadeoutImage.Destroy();
 
    UaTrace("acknowledgements screen ended\n\n");
@@ -89,7 +90,7 @@ void AcknowledgementsScreen::Draw()
    glColor3ub(255, 255, 255);
 
    // draw first quad
-   m_ackCutscene.Draw();
+   m_image.Draw();
 
    if (m_stage == 1)
    {
@@ -160,11 +161,12 @@ void AcknowledgementsScreen::Tick()
       m_fader.Init(false, m_game.GetTickRate(), s_crossfadeTime);
 
       // copy old frame to fadeout image
-      m_fadeoutImage.GetImage() = m_ackCutscene.GetImage();
+      m_fadeoutImage.GetImage() = m_image.GetImage();
       m_fadeoutImage.Update();
 
       // load new animation frame
-      m_ackCutscene.UpdateFrame(++m_currentFrame);
+      m_ackCutscene.GetFrame(m_image.GetImage(), ++m_currentFrame);
+      m_image.Update();
       m_fadeoutImage.Update();
 
       //UaTrace("crossfading to frame %u\n",m_currentFrame);
@@ -202,10 +204,10 @@ void AcknowledgementsScreen::FadeoutEnd()
    m_fader.Init(false, m_game.GetTickRate(), s_crossfadeTime, m_tickCount);
 
    // copy last frame to fadeout image
-   m_fadeoutImage.GetImage() = m_ackCutscene.GetImage();
+   m_fadeoutImage.GetImage() = m_image.GetImage();
    m_fadeoutImage.Update();
 
    // insert black frame as fadeout frame
-   m_ackCutscene.GetImage().Clear(1);
-   m_ackCutscene.Update();
+   m_image.GetImage().Clear(1);
+   m_image.Update();
 }

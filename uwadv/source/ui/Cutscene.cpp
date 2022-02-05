@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,16 +34,17 @@ void Cutscene::Load(Base::Settings& settings, unsigned int main,
 }
 */
 
-void Cutscene::Load(Base::ResourceManager& resourceManager, const char* relativeFilename)
+void Cutscene::Load(Base::ResourceManager& resourceManager, const char* relativeFilename,
+   IndexedImage& image)
 {
    Import::CutsceneLoader::LoadCutscene(
       resourceManager, relativeFilename,
-      m_image, m_largePageDescriptorList, m_largePages, m_numRecords);
+      image, m_largePageDescriptorList, m_largePages, m_numRecords);
 
    m_currentFrame = (unsigned int)-1;
 }
 
-void Cutscene::UpdateFrame(unsigned int frameNumber)
+void Cutscene::GetFrame(IndexedImage& image, unsigned int frameNumber)
 {
    if (m_currentFrame != frameNumber)
    {
@@ -51,22 +52,19 @@ void Cutscene::UpdateFrame(unsigned int frameNumber)
       if (m_currentFrame > frameNumber)
       {
          m_currentFrame = 0;
-         DecodeFrame(0);
+         DecodeFrame(image, 0);
       }
 
       // decode all frames between the current and the wanted frame
       while (m_currentFrame < frameNumber)
       {
          m_currentFrame++;
-         DecodeFrame(m_currentFrame);
+         DecodeFrame(image, m_currentFrame);
       }
    }
-
-   // update image quad
-   Update();
 }
 
-void Cutscene::DecodeFrame(unsigned int frameNumber)
+void Cutscene::DecodeFrame(IndexedImage& image, unsigned int frameNumber)
 {
    size_t largepages = m_largePageDescriptorList.size();
 
@@ -105,8 +103,8 @@ void Cutscene::DecodeFrame(unsigned int frameNumber)
       src += (src16[1] + (src16[1] & 1));
 
    // extract the pixel data
-   Import::CutsceneLoader::ExtractCutsceneData(&src[4], &m_image.GetPixels()[0],
-      m_image.GetXRes() * m_image.GetYRes());
+   Import::CutsceneLoader::ExtractCutsceneData(&src[4], &image.GetPixels()[0],
+      image.GetXRes() * image.GetYRes());
 }
 
 

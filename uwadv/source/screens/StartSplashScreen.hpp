@@ -81,6 +81,9 @@ private:
    /// current cutscene
    Cutscene m_currentCutscene;
 
+   /// cutscene image
+   ImageQuad m_cutsceneImage;
+
    /// current animation frame
    unsigned int m_currentFrame;
 

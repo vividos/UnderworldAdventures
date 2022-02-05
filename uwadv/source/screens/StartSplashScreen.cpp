@@ -128,7 +128,7 @@ void StartSplashScreen::Destroy()
    Screen::Destroy();
 
    m_currentImage.Destroy();
-   m_currentCutscene.Destroy();
+   m_cutsceneImage.Destroy();
 
    SDL_ShowCursor(0);
 
@@ -161,10 +161,11 @@ void StartSplashScreen::Draw()
    if (m_stage >= 2)
    {
       // prepare and convert animation frame
-      m_currentCutscene.UpdateFrame(m_currentFrame);
+      m_currentCutscene.GetFrame(m_cutsceneImage.GetImage(), m_currentFrame);
+      m_cutsceneImage.Update();
 
       // render quad
-      m_currentCutscene.Draw();
+      m_cutsceneImage.Draw();
    }
    else
    {
@@ -234,8 +235,8 @@ void StartSplashScreen::Tick()
       UaTrace("loading animation\n");
 
       // load animation
-      m_currentCutscene.Load(m_game.GetResourceManager(), "cuts/cs011.n01");
-      m_currentCutscene.Init(m_game, 0, 0);
+      m_currentCutscene.Load(m_game.GetResourceManager(), "cuts/cs011.n01", m_cutsceneImage.GetImage());
+      m_cutsceneImage.Init(m_game, 0, 0);
 
       m_currentFrame = 0;
       m_animationCount = 0.0;
@@ -338,12 +339,12 @@ void StartSplashScreen::Tick()
       {
          m_shiftCount -= 1.0 / c_paletteShiftsPerSecond;
 
-         IndexedImage& cutsceneImage = m_currentCutscene.GetImage();
+         IndexedImage& cutsceneImage = m_cutsceneImage.GetImage();
          cutsceneImage.GetPalette()->Rotate(43, 6, false);
          cutsceneImage.GetPalette()->Rotate(49, 3, false);
          cutsceneImage.GetPalette()->Rotate(57, 9, false);
 
-         m_currentCutscene.Update();
+         m_cutsceneImage.Update();
       }
    }
 }

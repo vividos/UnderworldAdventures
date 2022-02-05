@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ void CutsceneViewScreen::Destroy()
    m_game.GetAudioManager().StopSound();
 
    m_textImage.Destroy();
-   m_cutsceneAnimation.Destroy();
+   m_image.Destroy();
 
    m_lua.Done();
 }
@@ -151,7 +151,8 @@ void CutsceneViewScreen::Draw()
       // render animation frame
 
       // prepare image texture
-      m_cutsceneAnimation.UpdateFrame(m_currentFrame);
+      m_cutsceneAnimation.GetFrame(m_image.GetImage(), m_currentFrame);
+      m_image.Update();
 
       // set text color
       Uint8 light = 255;
@@ -173,7 +174,7 @@ void CutsceneViewScreen::Draw()
       }
       glColor3ub(light, light, light);
 
-      m_cutsceneAnimation.Draw();
+      m_image.Draw();
    }
 
    if (m_isShowingText)
@@ -490,8 +491,8 @@ void CutsceneViewScreen::DoAction()
       animname.append(lua_tostring(L, -1));
 
       // load animation
-      m_cutsceneAnimation.Load(m_game.GetResourceManager(), animname.c_str());
-      m_cutsceneAnimation.Init(m_game, 0, 0);
+      m_cutsceneAnimation.Load(m_game.GetResourceManager(), animname.c_str(), m_image.GetImage());
+      m_image.Init(m_game, 0, 0);
       m_showAnimation = true;
       m_loopAnimation = true;
       m_currentFrame = 0;
