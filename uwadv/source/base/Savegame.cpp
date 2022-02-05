@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -270,24 +270,21 @@ void SavegamesManager::SetNewGamePrefix(const std::string& newGamePrefix)
    m_gamePrefix = newGamePrefix;
 }
 
-/// \todo filter out savegames that don't have the same prefix
 void SavegamesManager::Rescan()
 {
    UaAssert(!m_savegameFolder.empty());
 
    m_savegamesList.clear();
 
-   std::string strSearchPath = m_savegameFolder + "/uasave*.uas";
-   Base::FileSystem::FindFiles(strSearchPath, m_savegamesList, false);
+   std::string searchPath = m_savegameFolder + "/uasave*_" + m_gamePrefix +".uas";
+   Base::FileSystem::FindFiles(searchPath, m_savegamesList, false);
 
    // add quicksave savegame name
    if (!m_gamePrefix.empty() && IsQuicksaveAvail())
    {
-      std::string strQuicksaveName = GetQuicksaveFilename();
-      m_savegamesList.push_back(strQuicksaveName);
+      std::string quicksaveName = GetQuicksaveFilename();
+      m_savegamesList.push_back(quicksaveName);
    }
-
-   // todo filter out other prefixes
 
    std::sort(m_savegamesList.begin(), m_savegamesList.end());
 }
@@ -309,9 +306,9 @@ Savegame SavegamesManager::LoadSavegame(size_t index, bool storeImage)
 {
    UaAssert(index < m_savegamesList.size());
 
-   std::string savegameFilename(GetSavegameFilename(index));
+   std::string savegameFilename{ GetSavegameFilename(index) };
 
-   Savegame sg(savegameFilename);
+   Savegame sg{ savegameFilename };
 
    if (storeImage)
    {
@@ -345,6 +342,7 @@ Savegame SavegamesManager::SaveSavegame(SavegameInfo info, size_t index)
          // create savegame name
          buffer << m_savegameFolder << "/uasave"
             << std::setfill('0') << std::setw(5) << index
+            << "_" << m_gamePrefix
             << ".uas";
 
          savegameFilename = buffer.str();

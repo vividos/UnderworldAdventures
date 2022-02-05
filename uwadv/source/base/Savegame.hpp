@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -163,8 +163,9 @@ namespace Base
    /// there are savegames available, and if there's a quicksave savegame for
    /// this prefix. If no prefix is set, all savegames are listed.
    ///
-   /// The savegame naming scheme is "uasaveXXXXX.uas", where XXXXX is a decimal
-   /// number. Quicksave savegames get the name "quicksave_{prefix}.uas"
+   /// The savegame naming scheme is "uasaveXXXXX_{prefix}.uas", where XXXXX
+   /// is a decimal number and the prefix is the game prefix. Quicksave
+   ///  savegames get the name "quicksave_{prefix}.uas"
    class SavegamesManager
    {
    public:
