@@ -23,6 +23,8 @@
 #include "PlayerPhysicsObject.hpp"
 #include "Player.hpp"
 
+using Physics::PlayerPhysicsObject;
+
 /// max speed a player can walk, in tiles / second
 const double c_playerMaxWalkSpeed = 2.4;
 

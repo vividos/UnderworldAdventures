@@ -23,46 +23,50 @@
 
 #include "Math.hpp"
 
-/// \brief a body in the world that can be applied to physics
-class PhysicsBody
+namespace Physics
 {
-public:
-   /// dtor
-   virtual ~PhysicsBody() {}
+   /// \brief a body in the world that can be applied to physics
+   class PhysicsBody
+   {
+   public:
+      /// dtor
+      virtual ~PhysicsBody() {}
 
-   /// sets new elapsed time; used at the begin of tracking this object
-   virtual void SetNewElapsedTime(double elapsedTime) { UNUSED(elapsedTime); }
+      /// sets new elapsed time; used at the begin of tracking this object
+      virtual void SetNewElapsedTime(double elapsedTime) { UNUSED(elapsedTime); }
 
-   /// returns body position of the center
-   virtual Vector3d GetPosition() const = 0;
+      /// returns body position of the center
+      virtual Vector3d GetPosition() const = 0;
 
-   /// sets body position
-   virtual void SetPosition(const Vector3d& pos) = 0;
+      /// sets body position
+      virtual void SetPosition(const Vector3d& pos) = 0;
 
-   /// returns body direction
-   virtual Vector3d GetDirection() const { return Vector3d(0, 0, 0); }
+      /// returns body direction
+      virtual Vector3d GetDirection() const { return Vector3d(0, 0, 0); }
 
-   /// returns ellipsoid of body
-   const Vector3d& GetEllipsoid() const { return m_ellipsoid; }
+      /// returns ellipsoid of body
+      const Vector3d& GetEllipsoid() const { return m_ellipsoid; }
 
-   // gravity related
+      // gravity related
 
-   /// returns if gravity should be checked for this body
-   virtual bool IsGravityActive() const { return true; }
+      /// returns if gravity should be checked for this body
+      virtual bool IsGravityActive() const { return true; }
 
-   /// resets gravity when hitting floor
-   virtual void ResetGravity() {}
+      /// resets gravity when hitting floor
+      virtual void ResetGravity() {}
 
-   /// returns gravity vector for object
-   virtual Vector3d GetGravityForce() const { return Vector3d(0, 0, 0); }
+      /// returns gravity vector for object
+      virtual Vector3d GetGravityForce() const { return Vector3d(0, 0, 0); }
 
-   /// item hits the floor
-   virtual void HitFloor() {}
+      /// item hits the floor
+      virtual void HitFloor() {}
 
-protected:
-   /// body ellipsoid
-   Vector3d m_ellipsoid;
+   protected:
+      /// body ellipsoid
+      Vector3d m_ellipsoid;
 
-   /// indicates if body can move by itself
-   bool m_canMove;
-};
+      /// indicates if body can move by itself
+      bool m_canMove;
+   };
+
+} // namespace Physics

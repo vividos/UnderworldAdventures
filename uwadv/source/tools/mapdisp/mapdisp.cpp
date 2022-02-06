@@ -246,7 +246,7 @@ private:
       throw std::runtime_error("object not available");
    }
 
-   virtual PhysicsModel& GetPhysicsModel() override
+   virtual Physics::PhysicsModel& GetPhysicsModel() override
    {
       throw std::runtime_error("object not available");
    }

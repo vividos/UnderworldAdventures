@@ -49,5 +49,5 @@ private:
    TextureManager& m_textureManager;
 
    /// geometry provider for level
-   GeometryProvider m_geometryProvider;
+   Physics::GeometryProvider m_geometryProvider;
 };

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,63 +29,67 @@ namespace Underworld
    class Level;
 }
 
-enum PathfindFlags
+namespace Physics
 {
-   pathfindFlagCanFly = 0,
-   pathfindFlagCanSwim,
-   pathfindFlagCanWalkLava,
-
-   pathfindFlagMax // must be the last element
-};
-
-typedef std::vector<std::pair<unsigned int, unsigned int> > PathList;
-
-/// pathfinder base class
-class Pathfinder
-{
-public:
-   /// ctor
-   Pathfinder(Underworld::Level& level)
-      :m_level(level)
+   enum PathfindFlags
    {
-   }
+      pathfindFlagCanFly = 0,
+      pathfindFlagCanSwim,
+      pathfindFlagCanWalkLava,
 
-   /// sets pathfind flag
-   void SetFlag(PathfindFlags flagType, bool value)
+      pathfindFlagMax // must be the last element
+   };
+
+   typedef std::vector<std::pair<unsigned int, unsigned int> > PathList;
+
+   /// pathfinder base class
+   class Pathfinder
    {
-      m_pathFlags[flagType] = value;
-   }
+   public:
+      /// ctor
+      Pathfinder(Underworld::Level& level)
+         :m_level(level)
+      {
+      }
 
-   /// finds path
-   virtual bool FindPath(unsigned int fromx, unsigned int fromy,
-      unsigned int tox, unsigned int toy, PathList& pathlist) = 0;
+      /// sets pathfind flag
+      void SetFlag(PathfindFlags flagType, bool value)
+      {
+         m_pathFlags[flagType] = value;
+      }
 
-private:
-   /// checks if object can pass from xpos/ypos in specified direction
-   bool CanPass(unsigned int xpos, unsigned int ypos, unsigned int dir);
+      /// finds path
+      virtual bool FindPath(unsigned int fromx, unsigned int fromy,
+         unsigned int tox, unsigned int toy, PathList& pathlist) = 0;
 
-private:
-   /// path flag array
-   bool m_pathFlags[pathfindFlagMax];
+   private:
+      /// checks if object can pass from xpos/ypos in specified direction
+      bool CanPass(unsigned int xpos, unsigned int ypos, unsigned int dir);
 
-   /// current level to use for pathfinding
-   Underworld::Level& m_level;
-};
+   private:
+      /// path flag array
+      bool m_pathFlags[pathfindFlagMax];
+
+      /// current level to use for pathfinding
+      Underworld::Level& m_level;
+   };
 
 
-/// A* pathfinding algorithm
-class PathfinderAStar : public Pathfinder
-{
-public:
-   /// ctor
-   PathfinderAStar(Underworld::Level& level)
-      :Pathfinder(level)
+   /// A* pathfinding algorithm
+   class PathfinderAStar : public Pathfinder
    {
-   }
+   public:
+      /// ctor
+      PathfinderAStar(Underworld::Level& level)
+         :Pathfinder(level)
+      {
+      }
 
-   /// finds path using A* algorithm
-   virtual bool FindPath(unsigned int fromx, unsigned int fromy,
-      unsigned int tox, unsigned int toy, PathList& pathlist) override;
+      /// finds path using A* algorithm
+      virtual bool FindPath(unsigned int fromx, unsigned int fromy,
+         unsigned int tox, unsigned int toy, PathList& pathlist) override;
 
-private:
-};
+   private:
+   };
+
+} // namespace Physics

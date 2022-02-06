@@ -31,6 +31,10 @@ namespace Audio
 {
    class AudioManager;
 }
+namespace Physics
+{
+   class PhysicsModel;
+}
 namespace Underworld
 {
    class Underworld;
@@ -46,7 +50,6 @@ class IDebugServer;
 class Screen;
 class GameStrings;
 class IUserInterface;
-class PhysicsModel;
 
 /// game events that can be sent to the event queue via SDL_PushEvent using SDL_USEREVENT
 enum GameEvents
@@ -133,7 +136,7 @@ public:
    virtual Viewport& GetViewport() = 0;
 
    /// returns physics model
-   virtual PhysicsModel& GetPhysicsModel() = 0;
+   virtual Physics::PhysicsModel& GetPhysicsModel() = 0;
 
    /// replaces current screen with new one; saves current on a screen stack when selected
    virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) = 0;

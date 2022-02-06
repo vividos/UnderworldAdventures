@@ -143,7 +143,7 @@ public:
       return *m_viewport.get();
    }
 
-   virtual PhysicsModel& GetPhysicsModel() override
+   virtual Physics::PhysicsModel& GetPhysicsModel() override
    {
       return m_physicsModel;
    }
@@ -243,7 +243,7 @@ private:
    std::unique_ptr<Underworld::GameLogic> m_gameLogic;
 
    /// Physics model for the game
-   PhysicsModel m_physicsModel;
+   Physics::PhysicsModel m_physicsModel;
 
    /// user interface; the ingame screen
    IUserInterface* m_userInterface;

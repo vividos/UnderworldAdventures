@@ -24,6 +24,8 @@
 #include "PhysicsBody.hpp"
 #include "CollisionDetection.hpp"
 
+using Physics::PhysicsModel;
+
 PhysicsModel::PhysicsModel()
 {
    std::uninitialized_fill(std::begin(m_params), std::end(m_params), false);

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2003,2019 Underworld Adventures Team
+// Copyright (c) 2003,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 //
 #include "pch.hpp"
 #include "Pathfinder.hpp"
+
+using Physics::PathfinderAStar;
 
 bool PathfinderAStar::FindPath(unsigned int fromx, unsigned int fromy,
    unsigned int tox, unsigned int toy, PathList& pathlist)

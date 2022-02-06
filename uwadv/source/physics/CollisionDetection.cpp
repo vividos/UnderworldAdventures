@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 #include "PhysicsBody.hpp"
 #include "Plane3d.hpp"
 #include <algorithm>
+
+using Physics::CollisionDetection;
+using Physics::CollisionData;
 
 // define this to get verbose debug output for collision detection
 #undef DEBUG_OUTPUT
@@ -501,7 +504,7 @@ bool CollisionDetection::GetLowestRoot(double a, double b, double c,
       return false;
 
    // calculate the two roots: (if determinant == 0 then
-   // x1==x2 but let’s disregard that slight optimization)
+   // x1==x2 but letâ€™s disregard that slight optimization)
    double sqrtD = sqrt(determinant);
    double r1 = (-b - sqrtD) / (2 * a);
    double r2 = (-b + sqrtD) / (2 * a);
@@ -558,18 +561,18 @@ bool CheckPointInTriangleFast(const Vector3d& point,
    a = e10.Dot(e10);
    b = e10.Dot(e20);
    c = e20.Dot(e20);
-   ac_bb = (a*c) - (b*b);
+   ac_bb = (a * c) - (b * b);
 
    Vector3d vp = Vector3d(point.x - pa.x, point.y - pa.y, point.z - pa.z);
 
    float d = vp.Dot(e10);
    float e = vp.Dot(e20);
 
-   float x = (d*c) - (e*b);
-   float y = (e*a) - (d*b);
+   float x = (d * c) - (e * b);
+   float y = (e * a) - (d * b);
    float z = x + y - ac_bb;
 
 #define in(a) ((Uint32&) a)
 
-   return ((in(z)& ~(in(x) | in(y))) & 0x80000000) != 0;
+   return ((in(z) & ~(in(x) | in(y))) & 0x80000000) != 0;
 }

@@ -25,72 +25,76 @@
 #include <vector>
 #include <functional>
 
-class PhysicsBody;
-
-/// physics parameter
-enum PhysicsParam
+namespace Physics
 {
-   /// controls if gravity is active in the physics model
-   physicsGravity = 0,
+   class PhysicsBody;
 
-   /// last param; not used
-   physicsParamMax
-};
-
-/// function type that returns surrounding triangles on given position
-typedef std::function<
-   void (unsigned int xpos, unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles)>
-   T_fnGetSurroundingTriangles;
-
-/// physics model class
-class PhysicsModel
-{
-public:
-   /// ctor
-   PhysicsModel();
-
-   /// inits the physics model
-   void Init(T_fnGetSurroundingTriangles fnGetSurroundingTriangles);
-
-   bool GetPhysicsParam(PhysicsParam param) const
+   /// physics parameter
+   enum PhysicsParam
    {
-      return m_params[param];
-   }
+      /// controls if gravity is active in the physics model
+      physicsGravity = 0,
 
-   void SetPhysicsParam(PhysicsParam param, bool value)
+      /// last param; not used
+      physicsParamMax
+   };
+
+   /// function type that returns surrounding triangles on given position
+   typedef std::function<
+      void(unsigned int xpos, unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles)>
+      T_fnGetSurroundingTriangles;
+
+   /// physics model class
+   class PhysicsModel
    {
-      m_params[param] = value;
-   }
+   public:
+      /// ctor
+      PhysicsModel();
 
-   /// evaluate physics on objects
-   void EvaluatePhysics(double elapsedTime);
+      /// inits the physics model
+      void Init(T_fnGetSurroundingTriangles fnGetSurroundingTriangles);
 
-   /// tracks object movement for given body
-   void TrackObject(PhysicsBody& body);
+      bool GetPhysicsParam(PhysicsParam param) const
+      {
+         return m_params[param];
+      }
 
-   /// add physics body to track to model
-   void AddTrackBody(PhysicsBody* body)
-   {
-      m_trackedBodies.push_back(body);
-   }
+      void SetPhysicsParam(PhysicsParam param, bool value)
+      {
+         m_params[param] = value;
+      }
 
-   /// removes physics body
-   void RemoveTrackBody(PhysicsBody* body)
-   {
-      auto iter = std::find(m_trackedBodies.begin(), m_trackedBodies.end(), body);
-      UaAssert(iter != m_trackedBodies.end());
+      /// evaluate physics on objects
+      void EvaluatePhysics(double elapsedTime);
 
-      if (iter != m_trackedBodies.end())
-         m_trackedBodies.erase(iter);
-   }
+      /// tracks object movement for given body
+      void TrackObject(PhysicsBody& body);
 
-private:
-   /// model parameters
-   bool m_params[physicsParamMax];
+      /// add physics body to track to model
+      void AddTrackBody(PhysicsBody* body)
+      {
+         m_trackedBodies.push_back(body);
+      }
 
-   /// function to get surrounding triangles
-   T_fnGetSurroundingTriangles m_fnGetSurroundingTriangles;
+      /// removes physics body
+      void RemoveTrackBody(PhysicsBody* body)
+      {
+         auto iter = std::find(m_trackedBodies.begin(), m_trackedBodies.end(), body);
+         UaAssert(iter != m_trackedBodies.end());
 
-   /// list of pointer to bodies tracked by physics model
-   std::vector<PhysicsBody*> m_trackedBodies;
-};
+         if (iter != m_trackedBodies.end())
+            m_trackedBodies.erase(iter);
+      }
+
+   private:
+      /// model parameters
+      bool m_params[physicsParamMax];
+
+      /// function to get surrounding triangles
+      T_fnGetSurroundingTriangles m_fnGetSurroundingTriangles;
+
+      /// list of pointer to bodies tracked by physics model
+      std::vector<PhysicsBody*> m_trackedBodies;
+   };
+
+} // namespace Physics

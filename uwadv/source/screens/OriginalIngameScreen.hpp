@@ -106,7 +106,7 @@ public:
    bool GetMoveState(IngameMoveState state);
 
    /// returns player physics tracking object
-   PlayerPhysicsObject& GetPlayerPhysicsObject()
+   Physics::PlayerPhysicsObject& GetPlayerPhysicsObject()
    {
       return m_playerPhysics;
    }
@@ -246,5 +246,5 @@ protected:
    friend class IngameCommandButtons;
 
    /// player physics tracking object
-   PlayerPhysicsObject m_playerPhysics;
+   Physics::PlayerPhysicsObject m_playerPhysics;
 };

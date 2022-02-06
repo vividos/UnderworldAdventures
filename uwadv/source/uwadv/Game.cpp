@@ -596,7 +596,7 @@ void Game::GetSurroundingTriangles(unsigned int xpos,
    ymax = static_cast<Uint8>(ypos < 64 ? ypos + 1 : 64);
 
    // tile triangles
-   GeometryProvider provider(GetGameLogic().GetCurrentLevel());
+   Physics::GeometryProvider provider(GetGameLogic().GetCurrentLevel());
 
    for (unsigned int x = xmin; x < xmax; x++)
       for (unsigned int y = ymin; y < ymax; y++)

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,63 +25,67 @@
 #include "Triangle3d.hpp"
 #include <vector>
 
-struct CollisionData;
-class PhysicsBody;
-
 namespace UnitTest
 {
    class CollisionDetectionTest;
 }
 
-/// \brief Collision detection algorithm that implements "collide and slide" along triangles of
-/// the level geometry.
-class CollisionDetection
+namespace Physics
 {
-public:
-   /// ctor
-   CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles,
-      const PhysicsBody& body);
+   struct CollisionData;
+   class PhysicsBody;
 
-   /// tracks object movement of given physics body
-   void TrackObject(PhysicsBody& body);
+   /// \brief Collision detection algorithm that implements "collide and slide" along triangles of
+   /// the level geometry.
+   class CollisionDetection
+   {
+   public:
+      /// ctor
+      CollisionDetection(const std::vector<Triangle3dTextured>& allTriangles,
+         const PhysicsBody& body);
 
-private:
-   /// collides physics body with world and slides it along sliding plane
-   bool CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity);
+      /// tracks object movement of given physics body
+      void TrackObject(PhysicsBody& body);
 
-   /// recursive collision response calculation
-   bool CollideWithWorld(CollisionData& data, Vector3d& pos,
-      const Vector3d& velocity);
+   private:
+      /// collides physics body with world and slides it along sliding plane
+      bool CollideAndSlide(PhysicsBody& body, Vector3d& pos, Vector3d velocity);
 
-   /// checks mesh for collision
-   void CheckCollision(CollisionData& data);
+      /// recursive collision response calculation
+      bool CollideWithWorld(CollisionData& data, Vector3d& pos,
+         const Vector3d& velocity);
 
-   /// checks single triangle for collision
-   void CheckTriangle(CollisionData& data, const Vector3d& p1,
-      const Vector3d& p2, const Vector3d& p3);
+      /// checks mesh for collision
+      void CheckCollision(CollisionData& data);
 
-   /// checks collision with single triangle point
-   static bool CheckCollisionWithPoint(CollisionData& data,
-      const Vector3d& point, double& t, Vector3d& collisionPoint);
+      /// checks single triangle for collision
+      void CheckTriangle(CollisionData& data, const Vector3d& p1,
+         const Vector3d& p2, const Vector3d& p3);
 
-   /// checks collision with triangle edge
-   static bool CheckCollisionWithEdge(CollisionData& data,
-      const Vector3d& p1, const Vector3d& p2, double& t, Vector3d& collisionPoint);
+      /// checks collision with single triangle point
+      static bool CheckCollisionWithPoint(CollisionData& data,
+         const Vector3d& point, double& t, Vector3d& collisionPoint);
 
-   /// solves quadratic equation and returns solution < t
-   static bool GetLowestRoot(double a, double b, double c, double t,
-      double& newT);
+      /// checks collision with triangle edge
+      static bool CheckCollisionWithEdge(CollisionData& data,
+         const Vector3d& p1, const Vector3d& p2, double& t, Vector3d& collisionPoint);
 
-   /// checks if a given point is inside of a triangle given by 3 points
-   static bool CheckPointInTriangle(const Vector3d& point,
-      const Vector3d& pa, const Vector3d& pb, const Vector3d& pc);
+      /// solves quadratic equation and returns solution < t
+      static bool GetLowestRoot(double a, double b, double c, double t,
+         double& newT);
 
-private:
-   friend class UnitTest::CollisionDetectionTest;
+      /// checks if a given point is inside of a triangle given by 3 points
+      static bool CheckPointInTriangle(const Vector3d& point,
+         const Vector3d& pa, const Vector3d& pb, const Vector3d& pc);
 
-   /// all triangles, in ellipsoid space
-   std::vector<Triangle3dTextured> m_allTriangles;
+   private:
+      friend class UnitTest::CollisionDetectionTest;
 
-   /// recursion depth for CollideWithWorld()
-   int m_collisionRecursionDepth;
-};
+      /// all triangles, in ellipsoid space
+      std::vector<Triangle3dTextured> m_allTriangles;
+
+      /// recursion depth for CollideWithWorld()
+      int m_collisionRecursionDepth;
+   };
+
+} // namespace Physics

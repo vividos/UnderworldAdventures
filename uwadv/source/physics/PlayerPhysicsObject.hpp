@@ -29,67 +29,71 @@ namespace Underworld
    class Player;
 }
 
-/// player movement enum
-enum PlayerMovementMode
+namespace Physics
 {
-   moveWalk = 1,     ///< walks forward (or backwards, when factor is negative)
-   moveRotate = 2,   ///< rotates player left (or right)
-   moveLookUpDown = 4, ///< moves player look angle up (or down)
-   moveJump = 8,     ///< jumps forward (or factor 0.0 for standing jump)
-   moveSlide = 16,   ///< slides right (or left)
-   moveFloat = 32,   ///< floats player up (or down)
-};
-
-class PlayerPhysicsObject : public PhysicsBody
-{
-public:
-   /// ctor
-   PlayerPhysicsObject(Underworld::Player& player, bool enhancedFeatures);
-
-   /// sets and delete movement mode values
-   void SetMovementMode(unsigned int set, unsigned int del = 0);
-
-   /// sets movement factor for a given movement type; range is [-1.0; 1.0]
-   void SetMovementFactor(PlayerMovementMode mode, double factor);
-
-   /// returns movement mode
-   unsigned int GetMovementMode() const
+   /// player movement enum
+   enum PlayerMovementMode
    {
-      return m_movementMode;
-   }
+      moveWalk = 1,     ///< walks forward (or backwards, when factor is negative)
+      moveRotate = 2,   ///< rotates player left (or right)
+      moveLookUpDown = 4, ///< moves player look angle up (or down)
+      moveJump = 8,     ///< jumps forward (or factor 0.0 for standing jump)
+      moveSlide = 16,   ///< slides right (or left)
+      moveFloat = 32,   ///< floats player up (or down)
+   };
 
-   /// returns movement factor for given movement mode
-   double GetMovementFactor(PlayerMovementMode mode) const;
+   class PlayerPhysicsObject : public PhysicsBody
+   {
+   public:
+      /// ctor
+      PlayerPhysicsObject(Underworld::Player& player, bool enhancedFeatures);
 
-   /// does rotation moves
-   void RotateMove(double time_elapsed);
+      /// sets and delete movement mode values
+      void SetMovementMode(unsigned int set, unsigned int del = 0);
 
-   // virtual methods from PhysicsBody
-   virtual void SetNewElapsedTime(double timeElapsed) override;
-   virtual Vector3d GetPosition() const override;
-   virtual void SetPosition(const Vector3d& pos) override;
-   virtual Vector3d GetDirection() const override;
+      /// sets movement factor for a given movement type; range is [-1.0; 1.0]
+      void SetMovementFactor(PlayerMovementMode mode, double factor);
 
-   virtual void ResetGravity() override;
-   virtual Vector3d GetGravityForce() const override;
-   virtual void HitFloor() override;
+      /// returns movement mode
+      unsigned int GetMovementMode() const
+      {
+         return m_movementMode;
+      }
 
-private:
-   /// ref to player
-   Underworld::Player& m_player;
+      /// returns movement factor for given movement mode
+      double GetMovementFactor(PlayerMovementMode mode) const;
 
-   /// current movement mode
-   unsigned int m_movementMode;
+      /// does rotation moves
+      void RotateMove(double time_elapsed);
 
-   /// movement factors map
-   std::map<PlayerMovementMode, double> m_moveFactors;
+      // virtual methods from PhysicsBody
+      virtual void SetNewElapsedTime(double timeElapsed) override;
+      virtual Vector3d GetPosition() const override;
+      virtual void SetPosition(const Vector3d& pos) override;
+      virtual Vector3d GetDirection() const override;
 
-   /// current fall time
-   double m_fallTime;
+      virtual void ResetGravity() override;
+      virtual Vector3d GetGravityForce() const override;
+      virtual void HitFloor() override;
 
-   /// player height at fall start
-   double m_fallHeightStart;
+   private:
+      /// ref to player
+      Underworld::Player& m_player;
 
-   /// maximum pan angle
-   double m_maxPanAngle;
-};
+      /// current movement mode
+      unsigned int m_movementMode;
+
+      /// movement factors map
+      std::map<PlayerMovementMode, double> m_moveFactors;
+
+      /// current fall time
+      double m_fallTime;
+
+      /// player height at fall start
+      double m_fallHeightStart;
+
+      /// maximum pan angle
+      double m_maxPanAngle;
+   };
+
+} // namespace Physics

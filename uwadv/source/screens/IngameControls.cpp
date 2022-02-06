@@ -28,7 +28,7 @@
 #include "ImageManager.hpp"
 #include "physics/PhysicsModel.hpp"
 
-PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()
+Physics::PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()
 {
    UaAssert(m_parent != nullptr);
    if (m_parent == nullptr)
@@ -421,7 +421,7 @@ void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
    double relx = double(mouseX - m_windowXPos) / m_windowWidth;
    double rely = double(mouseY - m_windowYPos) / m_windowHeight;
 
-   PlayerPhysicsObject& playerPhysics = GetPlayerPhysicsObject();
+   Physics::PlayerPhysicsObject& playerPhysics = GetPlayerPhysicsObject();
 
    // when pressing left mouse button, start mouse move mode
    if (buttonClicked && leftButton)
@@ -435,13 +435,13 @@ void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          if (!m_parent->GetMoveState(ingameMoveWalkForward) &&
             !m_parent->GetMoveState(ingameMoveRunForward) &&
             !m_parent->GetMoveState(ingameMoveWalkBackwards))
-            playerPhysics.SetMovementMode(0, moveWalk);
+            playerPhysics.SetMovementMode(0, Physics::moveWalk);
 
          if (!m_parent->GetMoveState(ingameMoveTurnLeft) &&
             !m_parent->GetMoveState(ingameMoveTurnRight))
-            playerPhysics.SetMovementMode(0, moveRotate);
+            playerPhysics.SetMovementMode(0, Physics::moveRotate);
 
-         playerPhysics.SetMovementMode(0, moveSlide);
+         playerPhysics.SetMovementMode(0, Physics::moveSlide);
       }
    }
 
@@ -500,34 +500,34 @@ void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          !m_parent->GetMoveState(ingameMoveRunForward) &&
          !m_parent->GetMoveState(ingameMoveWalkBackwards))
       {
-         playerPhysics.SetMovementMode(0, moveWalk);
+         playerPhysics.SetMovementMode(0, Physics::moveWalk);
 
          if (walk < 10.0)
          {
-            playerPhysics.SetMovementMode(moveWalk);
-            playerPhysics.SetMovementFactor(moveWalk, walk);
+            playerPhysics.SetMovementMode(Physics::moveWalk);
+            playerPhysics.SetMovementFactor(Physics::moveWalk, walk);
          }
       }
 
       if (!m_parent->GetMoveState(ingameMoveTurnLeft) &&
          !m_parent->GetMoveState(ingameMoveTurnRight))
       {
-         playerPhysics.SetMovementMode(0, moveRotate);
+         playerPhysics.SetMovementMode(0, Physics::moveRotate);
 
          if (rotate < 10.0)
          {
-            playerPhysics.SetMovementMode(moveRotate);
-            playerPhysics.SetMovementFactor(moveRotate, rotate);
+            playerPhysics.SetMovementMode(Physics::moveRotate);
+            playerPhysics.SetMovementFactor(Physics::moveRotate, rotate);
          }
       }
 
       {
-         playerPhysics.SetMovementMode(0, moveSlide);
+         playerPhysics.SetMovementMode(0, Physics::moveSlide);
 
          if (slide < 10.0)
          {
-            playerPhysics.SetMovementMode(moveSlide);
-            playerPhysics.SetMovementFactor(moveSlide, slide);
+            playerPhysics.SetMovementMode(Physics::moveSlide);
+            playerPhysics.SetMovementFactor(Physics::moveSlide, slide);
          }
       }
    }

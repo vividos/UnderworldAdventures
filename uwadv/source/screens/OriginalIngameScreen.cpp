@@ -338,19 +338,19 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       m_moveRunForward = keyDown;
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveWalk, 1.0);
-         m_playerPhysics.SetMovementMode(moveWalk);
+         m_playerPhysics.SetMovementFactor(Physics::moveWalk, 1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveWalk);
       }
       else
       {
          if (m_moveWalkBackwards)
-            m_playerPhysics.SetMovementFactor(moveWalk, -0.4);
+            m_playerPhysics.SetMovementFactor(Physics::moveWalk, -0.4);
          else
             if (m_moveWalkForward)
-               m_playerPhysics.SetMovementFactor(moveWalk, 0.6);
+               m_playerPhysics.SetMovementFactor(Physics::moveWalk, 0.6);
             else
                if (!m_view3d.GetMouseMove())
-                  m_playerPhysics.SetMovementMode(0, moveWalk);
+                  m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
       }
 
       break;
@@ -361,19 +361,19 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       m_moveWalkForward = keyDown;
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveWalk, 0.6);
-         m_playerPhysics.SetMovementMode(moveWalk);
+         m_playerPhysics.SetMovementFactor(Physics::moveWalk, 0.6);
+         m_playerPhysics.SetMovementMode(Physics::moveWalk);
       }
       else
       {
          if (m_moveWalkBackwards)
-            m_playerPhysics.SetMovementFactor(moveWalk, -0.4);
+            m_playerPhysics.SetMovementFactor(Physics::moveWalk, -0.4);
          else
             if (m_moveRunForward)
-               m_playerPhysics.SetMovementFactor(moveWalk, 1.0);
+               m_playerPhysics.SetMovementFactor(Physics::moveWalk, 1.0);
             else
                if (!m_view3d.GetMouseMove())
-                  m_playerPhysics.SetMovementMode(0, moveWalk);
+                  m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
       }
       break;
 
@@ -383,16 +383,16 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       m_moveTurnLeft = keyDown;
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveRotate, 1.0);
-         m_playerPhysics.SetMovementMode(moveRotate);
+         m_playerPhysics.SetMovementFactor(Physics::moveRotate, 1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveRotate);
       }
       else
       {
          if (m_moveTurnRight)
-            m_playerPhysics.SetMovementFactor(moveRotate, -1.0);
+            m_playerPhysics.SetMovementFactor(Physics::moveRotate, -1.0);
          else
             if (!m_view3d.GetMouseMove())
-               m_playerPhysics.SetMovementMode(0, moveRotate);
+               m_playerPhysics.SetMovementMode(0, Physics::moveRotate);
       }
       break;
 
@@ -402,16 +402,16 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       m_moveTurnRight = keyDown;
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveRotate, -1.0);
-         m_playerPhysics.SetMovementMode(moveRotate);
+         m_playerPhysics.SetMovementFactor(Physics::moveRotate, -1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveRotate);
       }
       else
       {
          if (m_moveTurnLeft)
-            m_playerPhysics.SetMovementFactor(moveRotate, 1.0);
+            m_playerPhysics.SetMovementFactor(Physics::moveRotate, 1.0);
          else
             if (!m_view3d.GetMouseMove())
-               m_playerPhysics.SetMovementMode(0, moveRotate);
+               m_playerPhysics.SetMovementMode(0, Physics::moveRotate);
       }
       break;
 
@@ -419,24 +419,24 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
    case Base::keySlideLeft:
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveSlide, -1.0);
-         m_playerPhysics.SetMovementMode(moveSlide);
+         m_playerPhysics.SetMovementFactor(Physics::moveSlide, -1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveSlide);
       }
       else
          if (!m_view3d.GetMouseMove())
-            m_playerPhysics.SetMovementMode(0, moveSlide);
+            m_playerPhysics.SetMovementMode(0, Physics::moveSlide);
       break;
 
       // slide right key
    case Base::keySlideRight:
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveSlide, 1.0);
-         m_playerPhysics.SetMovementMode(moveSlide);
+         m_playerPhysics.SetMovementFactor(Physics::moveSlide, 1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveSlide);
       }
       else
          if (!m_view3d.GetMouseMove())
-            m_playerPhysics.SetMovementMode(0, moveSlide);
+            m_playerPhysics.SetMovementMode(0, Physics::moveSlide);
       break;
 
       // walk backwards keys
@@ -446,16 +446,16 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
 
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveWalk, -0.4);
-         m_playerPhysics.SetMovementMode(moveWalk);
+         m_playerPhysics.SetMovementFactor(Physics::moveWalk, -0.4);
+         m_playerPhysics.SetMovementMode(Physics::moveWalk);
       }
       else
       {
          if (m_moveWalkForward || m_moveRunForward)
-            m_playerPhysics.SetMovementFactor(moveWalk, m_moveRunForward ? 1.0 : 0.6);
+            m_playerPhysics.SetMovementFactor(Physics::moveWalk, m_moveRunForward ? 1.0 : 0.6);
          else
             if (!m_view3d.GetMouseMove())
-               m_playerPhysics.SetMovementMode(0, moveWalk);
+               m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
       }
       break;
 
@@ -463,30 +463,30 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
    case Base::keyLookUp:
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveLookUpDown, 1.0);
-         m_playerPhysics.SetMovementMode(moveLookUpDown);
+         m_playerPhysics.SetMovementFactor(Physics::moveLookUpDown, 1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveLookUpDown);
       }
       else
-         m_playerPhysics.SetMovementMode(0, moveLookUpDown);
+         m_playerPhysics.SetMovementMode(0, Physics::moveLookUpDown);
       break;
 
       // look down key
    case Base::keyLookDown:
       if (keyDown)
       {
-         m_playerPhysics.SetMovementFactor(moveLookUpDown, -1.0);
-         m_playerPhysics.SetMovementMode(moveLookUpDown);
+         m_playerPhysics.SetMovementFactor(Physics::moveLookUpDown, -1.0);
+         m_playerPhysics.SetMovementMode(Physics::moveLookUpDown);
       }
       else
-         m_playerPhysics.SetMovementMode(0, moveLookUpDown);
+         m_playerPhysics.SetMovementMode(0, Physics::moveLookUpDown);
       break;
 
       // center look key
    case Base::keyCenterView:
       if (keyDown)
       {
-         m_playerPhysics.SetMovementMode(0, moveLookUpDown);
-         m_playerPhysics.SetMovementFactor(moveLookUpDown, 0.0);
+         m_playerPhysics.SetMovementMode(0, Physics::moveLookUpDown);
+         m_playerPhysics.SetMovementFactor(Physics::moveLookUpDown, 0.0);
          pl.SetPanAngle(0.0);
       }
       break;
