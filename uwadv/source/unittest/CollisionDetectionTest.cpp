@@ -47,19 +47,19 @@ namespace UnitTest
       // virtual methods from PhysicsBody
 
       /// returns position of body
-      virtual Vector3d GetPosition() override
+      virtual Vector3d GetPosition() const override
       {
          return m_pos;
       }
 
       /// sets new position of body
-      virtual void SetPosition(Vector3d& pos) override
+      virtual void SetPosition(const Vector3d& pos) override
       {
          m_pos = pos;
       }
 
       /// returns current direction vector of body
-      virtual Vector3d GetDirection() override
+      virtual Vector3d GetDirection() const override
       {
          return m_dir;
       }

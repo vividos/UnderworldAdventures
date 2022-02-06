@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -34,13 +34,13 @@ public:
    virtual void SetNewElapsedTime(double elapsedTime) { UNUSED(elapsedTime); }
 
    /// returns body position of the center
-   virtual Vector3d GetPosition() = 0;
+   virtual Vector3d GetPosition() const = 0;
 
    /// sets body position
-   virtual void SetPosition(Vector3d& pos) = 0;
+   virtual void SetPosition(const Vector3d& pos) = 0;
 
    /// returns body direction
-   virtual Vector3d GetDirection() { return Vector3d(0, 0, 0); }
+   virtual Vector3d GetDirection() const { return Vector3d(0, 0, 0); }
 
    /// returns ellipsoid of body
    const Vector3d& GetEllipsoid() const { return m_ellipsoid; }
@@ -54,7 +54,7 @@ public:
    virtual void ResetGravity() {}
 
    /// returns gravity vector for object
-   virtual Vector3d GetGravityForce() { return Vector3d(0, 0, 0); }
+   virtual Vector3d GetGravityForce() const { return Vector3d(0, 0, 0); }
 
    /// item hits the floor
    virtual void HitFloor() {}
@@ -66,8 +66,3 @@ protected:
    /// indicates if body can move by itself
    bool m_canMove;
 };
-
-///// a body that can move around by itself \todo
-//class PhysicsBodyMoving: public PhysicsBody
-//{
-//};

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -59,19 +59,19 @@ public:
    }
 
    /// returns movement factor for given movement mode
-   double GetMovementFactor(PlayerMovementMode mode);
+   double GetMovementFactor(PlayerMovementMode mode) const;
 
    /// does rotation moves
    void RotateMove(double time_elapsed);
 
    // virtual methods from PhysicsBody
    virtual void SetNewElapsedTime(double timeElapsed) override;
-   virtual Vector3d GetPosition() override;
-   virtual void SetPosition(Vector3d& pos) override;
-   virtual Vector3d GetDirection() override;
+   virtual Vector3d GetPosition() const override;
+   virtual void SetPosition(const Vector3d& pos) override;
+   virtual Vector3d GetDirection() const override;
 
    virtual void ResetGravity() override;
-   virtual Vector3d GetGravityForce() override;
+   virtual Vector3d GetGravityForce() const override;
    virtual void HitFloor() override;
 
 private:

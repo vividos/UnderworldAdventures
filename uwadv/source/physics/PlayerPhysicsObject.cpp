@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -71,9 +71,12 @@ void PlayerPhysicsObject::SetMovementFactor(PlayerMovementMode mode, double fact
    m_moveFactors[mode] = factor;
 }
 
-double PlayerPhysicsObject::GetMovementFactor(PlayerMovementMode mode)
+double PlayerPhysicsObject::GetMovementFactor(PlayerMovementMode mode) const
 {
-   return m_moveFactors[mode];
+   auto iter = m_moveFactors.find(mode);
+   return iter != m_moveFactors.end()
+      ? iter->second
+      : 0.0;
 }
 
 void PlayerPhysicsObject::RotateMove(double elapsedTime)
@@ -114,7 +117,7 @@ void PlayerPhysicsObject::SetNewElapsedTime(double elapsedTime)
    m_fallTime += elapsedTime;
 }
 
-Vector3d PlayerPhysicsObject::GetPosition()
+Vector3d PlayerPhysicsObject::GetPosition() const
 {
    return Vector3d{
       m_player.GetXPos(),
@@ -122,7 +125,7 @@ Vector3d PlayerPhysicsObject::GetPosition()
       m_player.GetHeight() + c_playerEllipsoidZ + 0.05 };
 }
 
-void PlayerPhysicsObject::SetPosition(Vector3d& pos)
+void PlayerPhysicsObject::SetPosition(const Vector3d& pos)
 {
    m_player.SetPos(pos.x, pos.y);
    m_player.SetHeight(pos.z - c_playerEllipsoidZ);
@@ -130,7 +133,7 @@ void PlayerPhysicsObject::SetPosition(Vector3d& pos)
 
 bool my_movement;
 
-Vector3d PlayerPhysicsObject::GetDirection()
+Vector3d PlayerPhysicsObject::GetDirection() const
 {
    double elapsedTime = 0.05;
 
@@ -170,7 +173,7 @@ void PlayerPhysicsObject::ResetGravity()
    m_fallHeightStart = m_player.GetHeight();
 }
 
-Vector3d PlayerPhysicsObject::GetGravityForce()
+Vector3d PlayerPhysicsObject::GetGravityForce() const
 {
    double gravity = 15.0 * m_fallTime * m_fallTime;
 
