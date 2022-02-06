@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 #include "pch.hpp"
 #include "Math.hpp"
 #include "Triangle3d.hpp"
-#include "physics/PhysicsBody.hpp"
-#include "physics/CollisionDetection.hpp"
+#include "PhysicsBody.hpp"
+#include "CollisionDetection.hpp"
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -906,6 +906,34 @@ namespace UnitTest
 
          Assert::IsTrue(body.GetPosition().x >= 2.5, L"stair must have been climbed down successfully");
          Assert::IsTrue(body.GetPosition().y <= -stepHeight + 0.05, L"sphere must have reached step level");
+      }
+
+      /// tests GetLowestRoot() method
+      TEST_METHOD(Test_GetLowestRoot)
+      {
+         double new_t = 0.0;
+
+         // equation with no solutions: x^2 + 2x + 2 = 0
+         Assert::IsFalse(CollisionDetection::GetLowestRoot(1.0, 2.0, 2.0, 0.0, new_t));
+
+         // equation with 2 double solutions: x^2 - 2x + 1 = 0
+         // x1/2 = 1; limit is above, 1 is returned
+         Assert::IsTrue(CollisionDetection::GetLowestRoot(1.0, -2.0, 1.0, 1.5, new_t));
+         Assert::AreEqual(1.0, new_t, 1e-6);
+
+         // equation with 2 solutions: 2x^2 + 2x - 4 = 0
+         // x1 = -2, x2 = 1, limit is above, 1 is returned
+         Assert::IsTrue(CollisionDetection::GetLowestRoot(2.0, 2.0, -4.0, 10.0, new_t));
+         Assert::AreEqual(1.0, new_t, 1e-6);
+
+         // equation with 2 solutions: -2x^2 - 4x - 1.5 = 0
+         // x1 = -1.5, x2 = -0.5, all two are disregarded
+         Assert::IsFalse(CollisionDetection::GetLowestRoot(-2.0, -4.0, -1.5, 0.5, new_t));
+
+         // equation with 2 solutions: x^2 - 2.5x + 1 = 0
+         // x1 = 0.5, x2 = 2.0, the lower value is taken
+         Assert::IsTrue(CollisionDetection::GetLowestRoot(1.0, -2.5, 1.0, 1.9, new_t));
+         Assert::AreEqual(0.5, new_t, 1e-6);
       }
    };
 } // namespace UnitTest

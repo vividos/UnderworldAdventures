@@ -28,6 +28,11 @@
 struct CollisionData;
 class PhysicsBody;
 
+namespace UnitTest
+{
+   class CollisionDetectionTest;
+}
+
 /// \brief Collision detection algorithm that implements "collide and slide" along triangles of
 /// the level geometry.
 class CollisionDetection
@@ -72,6 +77,8 @@ private:
       const Vector3d& pa, const Vector3d& pb, const Vector3d& pc);
 
 private:
+   friend class UnitTest::CollisionDetectionTest;
+
    /// all triangles, in ellipsoid space
    std::vector<Triangle3dTextured> m_allTriangles;
 
