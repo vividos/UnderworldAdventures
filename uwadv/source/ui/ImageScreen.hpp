@@ -59,6 +59,9 @@ protected:
    /// starts fading out the screen
    void StartFadeout();
 
+   /// returns if the screen is currently fading in or out
+   bool IsFadeInProgress() const;
+
 private:
    /// the actual 320x200 image quad to display
    ImageQuad m_image;

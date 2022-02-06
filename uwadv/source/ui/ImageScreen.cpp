@@ -57,6 +57,11 @@ void ImageScreen::StartFadeout()
    OnFadeOutStarted();
 }
 
+bool ImageScreen::IsFadeInProgress() const
+{
+   return m_fadeState != 1;
+}
+
 void ImageScreen::OnFadeOutStarted()
 {
    // empty
