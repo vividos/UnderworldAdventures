@@ -131,8 +131,6 @@ void PlayerPhysicsObject::SetPosition(const Vector3d& pos)
    m_player.SetHeight(pos.z - c_playerEllipsoidZ);
 }
 
-bool my_movement;
-
 Vector3d PlayerPhysicsObject::GetDirection() const
 {
    double elapsedTime = 0.05;
@@ -145,8 +143,6 @@ Vector3d PlayerPhysicsObject::GetDirection() const
    {
       double speed = c_playerMaxWalkSpeed * elapsedTime;
       double angle = m_player.GetRotateAngle();
-
-      my_movement = true;
 
       // adjust angle for sliding
       if (mode & moveSlide)
