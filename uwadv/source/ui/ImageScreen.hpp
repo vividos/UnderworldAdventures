@@ -48,6 +48,8 @@ public:
    virtual void Tick() override;
 
 protected:
+   friend class ImageWindow;
+
    // methods usable to ImageScreen derived classes
 
    /// returns the indexed image that is used in the screen

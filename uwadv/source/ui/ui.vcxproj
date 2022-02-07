@@ -51,6 +51,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="ImageScreen.cpp" />
+    <ClCompile Include="ImageWindow.cpp" />
     <ClCompile Include="IndexedImage.cpp" />
     <ClCompile Include="ImageQuad.cpp" />
     <ClCompile Include="AutomapGenerator.cpp" />
@@ -71,6 +72,7 @@
     <ClInclude Include="Font.hpp" />
     <ClInclude Include="ImageManager.hpp" />
     <ClInclude Include="ImageScreen.hpp" />
+    <ClInclude Include="ImageWindow.hpp" />
     <ClInclude Include="IndexedImage.hpp" />
     <ClInclude Include="ImageQuad.hpp" />
     <ClInclude Include="AutomapGenerator.hpp" />
