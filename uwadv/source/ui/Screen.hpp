@@ -57,6 +57,9 @@ public:
    /// registers a window as subwindow
    void RegisterWindow(Window* window);
 
+   /// unregisters a subwindow
+   void UnregisterWindow(Window* window);
+
    /// registers a keymap
    void RegisterKeymap(Base::Keymap* keymap);
 

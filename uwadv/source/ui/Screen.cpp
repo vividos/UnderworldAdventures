@@ -151,6 +151,14 @@ void Screen::RegisterWindow(Window* window)
    window->SetScreen(this);
 }
 
+void Screen::UnregisterWindow(Window* window)
+{
+   window->SetScreen(nullptr);
+   auto iter = std::find(m_subWindows.begin(), m_subWindows.end(), window);
+   if (iter != m_subWindows.end())
+      m_subWindows.erase(iter);
+}
+
 void Screen::RegisterKeymap(Base::Keymap* keymap)
 {
    m_screenKeymap = keymap;
