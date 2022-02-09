@@ -66,8 +66,18 @@ namespace Underworld
          return m_mapNotesList[mapNoteIndex];
       }
 
+      /// returns a single note; const version
+      const MapNote& GetNote(size_t mapNoteIndex) const
+      {
+         UaAssert(mapNoteIndex < GetMapNoteCount());
+         return m_mapNotesList[mapNoteIndex];
+      }
+
       /// returns list of notes
       std::vector<MapNote>& GetMapNotesList() { return m_mapNotesList; }
+
+      /// returns list of notes; const version
+      const std::vector<MapNote>& GetMapNotesList() const { return m_mapNotesList; }
 
       // loading / saving
 
