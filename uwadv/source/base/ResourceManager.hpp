@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019,2021 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -74,6 +74,9 @@ namespace Base
 
       /// checks if uw2 game files are available
       bool CheckUw2GameFilesAvailable() const;
+
+      /// returns if the path to uw game currently selected is an uw2 path
+      bool IsUnderworldPathUw2() const;
 
    private:
       /// re-scans all underworld data filenames in the given path

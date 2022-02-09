@@ -360,7 +360,7 @@ void ImageLoader::LoadImageGrList(std::vector<IndexedImage>& imageList,
       offsets[i] = file.Read32();
 
    bool isSpecialPanelsGr = (strstr(imageName, "panels.gr") != NULL);
-   bool isUw2 = m_resourceManager.IsUnderworldFileAvailable("data/scd.ark");
+   bool isUw2 = m_resourceManager.IsUnderworldPathUw2();
 
    for (unsigned int j = imageFrom; j < imageTo; j++)
    {

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2006,2019,2021 Underworld Adventures Team
+// Copyright (c) 2006,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -382,6 +382,12 @@ bool ResourceManager::IsUnderworldFileAvailable(const char* relativeFilename) co
    MapUnderworldFilename(absoluteFilename);
 
    return Base::FileSystem::FileExists(absoluteFilename.c_str());
+}
+
+bool ResourceManager::IsUnderworldPathUw2() const
+{
+   return !m_uw2Path.empty() &&
+      m_uw2Path == m_uwPath;
 }
 
 void ResourceManager::MapUnderworldFilename(std::string& filenameToMap) const
