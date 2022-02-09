@@ -80,7 +80,7 @@ void TextEditWindow::UpdateText()
    IndexedImage tempImage;
    if (!m_prefix.empty())
    {
-      m_font.CreateString(tempImage, m_prefix.c_str(), m_prefixColor);
+      m_font.CreateString(tempImage, m_prefix, m_prefixColor);
 
       image.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(),
          m_border ? 2 : 1, m_border ? 2 : 1, true);
@@ -91,7 +91,7 @@ void TextEditWindow::UpdateText()
    // main text
    if (!m_text.empty())
    {
-      m_font.CreateString(tempImage, m_text.c_str(), m_textColor);
+      m_font.CreateString(tempImage, m_text, m_textColor);
 
       image.PasteImage(tempImage, prefix_xpos + (m_border ? 2 : 1), m_border ? 2 : 1, true);
    }
