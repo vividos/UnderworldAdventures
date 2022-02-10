@@ -106,6 +106,23 @@ void AutomapGenerator::DrawTiles(IndexedImage& image) const
    }
 }
 
+void AutomapGenerator::DrawUpDownArrows(IndexedImage& image, bool upArrow, bool downArrow)
+{
+   // per default, the blank map image has arrows, so just hide them when
+   // invisible by cloning some other background parts of the image
+   if (!upArrow)
+   {
+      image.PasteRect(image, 303, 18, 1, 9, 303, 5);
+      image.PasteRect(image, 301, 19, 5, 3, 301, 7);
+   }
+
+   if (!downArrow)
+   {
+      image.PasteRect(image, 285, 182, 1, 9, 303, 185);
+      image.PasteRect(image, 285, 187, 5, 3, 301, 189);
+   }
+}
+
 void AutomapGenerator::DrawMapNotes(IndexedImage& image, const Underworld::MapNotes& mapNotes) const
 {
    // TODO

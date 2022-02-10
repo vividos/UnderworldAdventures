@@ -58,6 +58,9 @@ namespace UI
       /// generates the automap image
       void DrawTiles(IndexedImage& image) const;
 
+      /// draws up/down arrows
+      void DrawUpDownArrows(IndexedImage& image, bool upArrow, bool downArrow);
+
       /// draws all map notes
       void DrawMapNotes(IndexedImage& image, const Underworld::MapNotes& mapNotes) const;
 
