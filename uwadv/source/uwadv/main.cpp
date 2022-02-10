@@ -59,6 +59,8 @@ int main(int argc, char* argv[])
    }
    catch (const Base::Exception& ex)
    {
+      UaTrace("caught Base::Exception: %s\n", ex.what());
+
       std::string text("An unhandled exception was encountered:\n\r");
       text.append(ex.what());
 

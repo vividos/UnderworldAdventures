@@ -54,7 +54,7 @@ namespace Base
    public:
       /// ctor
       FileSystemException(const std::string& description, const std::string& filename, unsigned int osErrorCode)
-         : Exception(description),
+         : Exception(description + ": " + filename + " (error " + std::to_string(osErrorCode) + ")"),
          m_filename(filename),
          m_osErrorCode(osErrorCode)
       {
