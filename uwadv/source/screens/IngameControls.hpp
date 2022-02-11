@@ -54,7 +54,7 @@ public:
    virtual void Draw() override;
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -78,7 +78,7 @@ public:
    void UpdateRuneshelf();
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -102,7 +102,7 @@ public:
    void UpdateSpellArea();
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -135,7 +135,7 @@ public:
    void UpdateFlask();
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -165,7 +165,7 @@ public:
    void UpdateEyes();
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -198,7 +198,7 @@ public:
    void UpdateDragon();
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -224,7 +224,7 @@ public:
    // virtual methods from Window
    virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -251,7 +251,7 @@ public:
    void UpdateGem();
 
    // virtual methods from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
    virtual void Tick() override;
 
@@ -278,7 +278,7 @@ public:
    // virtual methods from Window
    virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -348,7 +348,7 @@ public:
       unsigned int ypos) override;
 
    // virtual functions from Window
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
    /// selects (but doesn't press) specified button

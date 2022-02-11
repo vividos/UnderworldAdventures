@@ -157,7 +157,7 @@ bool SaveGameButton::ProcessEvent(SDL_Event& event)
    return Window::ProcessEvent(event);
 }
 
-void SaveGameButton::MouseEvent(bool buttonClicked, bool leftButton,
+bool SaveGameButton::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    // update button states
@@ -174,6 +174,8 @@ void SaveGameButton::MouseEvent(bool buttonClicked, bool leftButton,
    // send "press button" event
    if (buttonClicked && !buttonDown)
       m_screen->PressButton(m_buttonId);
+
+   return true;
 }
 
 void SaveGameButton::UpdateButton(bool buttonStatePressed)
@@ -283,7 +285,7 @@ void SaveGamesList::UpdateList()
    m_screen->UpdateInfo();
 }
 
-void SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
+bool SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && buttonDown)
@@ -309,7 +311,11 @@ void SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
       // update when needed
       if (lastSelectedIndex != m_selectedSavegameItemIndex)
          UpdateList();
+
+      return true;
    }
+
+   return false;
 }
 
 SaveGameScreen::SaveGameScreen(IGame& game,

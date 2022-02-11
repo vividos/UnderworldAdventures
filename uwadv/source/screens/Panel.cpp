@@ -234,7 +234,7 @@ bool Panel::ProcessEvent(SDL_Event& event)
    return ImageQuad::ProcessEvent(event);
 }
 
-void Panel::MouseEvent(bool buttonClicked, bool leftButton,
+bool Panel::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (m_panelType == panelInventory)
@@ -337,6 +337,8 @@ void Panel::MouseEvent(bool buttonClicked, bool leftButton,
             UaTrace("runebag: mouse hit outside\n");
       }
    }
+
+   return true;
 }
 
 void Panel::Tick()

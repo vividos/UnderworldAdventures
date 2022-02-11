@@ -57,9 +57,10 @@ bool Window::ProcessEvent(SDL_Event& event)
 /// note: mouseX and mouseY parameters are in virtual screen coordinates,
 /// where the screen is a 320x200 pixel screen, with the origin in the upper
 /// left.
-void Window::MouseEvent(bool buttonClicked, bool leftButton,
+bool Window::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
+   return false;
 }
 
 void Window::Tick()

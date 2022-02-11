@@ -58,7 +58,7 @@ public:
 
    virtual bool ProcessEvent(SDL_Event& event) override;
 
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:
@@ -106,7 +106,7 @@ public:
 
    // virtual methods from Window
 
-   virtual void MouseEvent(bool buttonClicked, bool leftButton,
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
 protected:

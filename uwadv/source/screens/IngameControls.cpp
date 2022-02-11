@@ -106,11 +106,16 @@ void IngameCompass::Draw()
    ImageQuad::Draw();
 }
 
-void IngameCompass::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameCompass::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && !buttonDown)
+   {
       m_parent->GetGameInterface().GetGameLogic().UserAction(userActionClickedCompass);
+      return true;
+   }
+
+   return false;
 }
 
 void IngameRuneshelf::Init(IGame& game, unsigned int xpos,
@@ -149,11 +154,16 @@ void IngameRuneshelf::UpdateRuneshelf()
    Update();
 }
 
-void IngameRuneshelf::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameRuneshelf::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && !buttonDown)
+   {
       m_parent->GetGameInterface().GetGameLogic().UserAction(userActionClickedRuneshelf);
+      return true;
+   }
+
+   return false;
 }
 
 void IngameSpellArea::Init(IGame& game, unsigned int xpos,
@@ -192,11 +202,16 @@ void IngameSpellArea::UpdateSpellArea()
    Update();
 }
 
-void IngameSpellArea::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameSpellArea::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && !buttonDown)
+   {
       m_parent->GetGameInterface().GetGameLogic().UserAction(userActionClickedActiveSpell);
+      return true;
+   }
+
+   return false;
 }
 
 void IngameFlask::Init(IGame& game, unsigned int xpos,
@@ -271,12 +286,18 @@ void IngameFlask::UpdateFlask()
    Update();
 }
 
-void IngameFlask::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameFlask::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && !buttonDown)
+   {
       m_parent->GetGameInterface().GetGameLogic().UserAction(
          m_isVitalityFlask ? userActionClickedVitalityFlash : userActionClickedManaFlask);
+
+      return true;
+   }
+
+   return false;
 }
 
 void IngameGargoyleEyes::Init(IGame& game, unsigned int xpos,
@@ -299,11 +320,16 @@ void IngameGargoyleEyes::UpdateEyes()
    Update();
 }
 
-void IngameGargoyleEyes::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameGargoyleEyes::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && !buttonDown)
+   {
       m_parent->GetGameInterface().GetGameLogic().UserAction(userActionClickedGargoyle);
+      return true;
+   }
+
+   return false;
 }
 
 IngameDragon::IngameDragon(bool drg_left)
@@ -348,11 +374,16 @@ void IngameDragon::UpdateDragon()
    Update();
 }
 
-void IngameDragon::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameDragon::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    if (buttonClicked && !buttonDown)
+   {
       m_parent->GetGameInterface().GetGameLogic().UserAction(userActionClickedDragons);
+      return true;
+   }
+
+   return false;
 }
 
 void Ingame3DView::Init(IGame& game, unsigned int xpos,
@@ -411,7 +442,7 @@ bool Ingame3DView::ProcessEvent(SDL_Event& event)
    return ImageQuad::ProcessEvent(event);
 }
 
-void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
+bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    // we only get this call when we're inside the window
@@ -562,7 +593,7 @@ void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       Renderer& renderer = m_parent->GetGameInterface().GetRenderer();
       if (!renderer.SelectPick(m_parent->GetGameInterface().GetUnderworld(),
          x, y, tilex, tiley, is_object, id))
-         return;
+         return true;
 
       switch (m_parent->GetGameMode())
       {
@@ -622,6 +653,8 @@ void Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          break;
       }
    }
+
+   return true;
 }
 
 void IngamePowerGem::Init(IGame& game, unsigned int xpos,
@@ -661,9 +694,10 @@ void IngamePowerGem::UpdateGem()
    Update();
 }
 
-void IngamePowerGem::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngamePowerGem::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
+   return false;
 }
 
 void IngamePowerGem::Tick()
@@ -718,7 +752,7 @@ bool IngameMoveArrows::ProcessEvent(SDL_Event& event)
    return ret;
 }
 
-void IngameMoveArrows::MouseEvent(bool buttonClicked, bool leftButton,
+bool IngameMoveArrows::MouseEvent(bool buttonClicked, bool leftButton,
    bool buttonDown, unsigned int mouseX, unsigned int mouseY)
 {
    mouseX -= m_windowXPos;
@@ -760,6 +794,8 @@ void IngameMoveArrows::MouseEvent(bool buttonClicked, bool leftButton,
          }
       }
    }
+
+   return true;
 }
 
 /// menu info table struct for command panels
@@ -986,19 +1022,19 @@ void IngameCommandButtons::UpdateMenu()
    Update();
 }
 
-void IngameCommandButtons::MouseEvent(bool buttonClicked,
+bool IngameCommandButtons::MouseEvent(bool buttonClicked,
    bool leftButton, bool buttonDown, unsigned int mouseX,
    unsigned int mouseY)
 {
    // check if a mouse button is down
    if (!buttonClicked && (SDL_GetMouseState(NULL, NULL) & (SDL_BUTTON_LMASK | SDL_BUTTON_RMASK)) == 0)
-      return; // no button was pressed
+      return false; // no button was pressed
 
    // check if user is currently toggling off a button
    if (m_toggleOff && buttonClicked && !buttonDown)
    {
       m_toggleOff = false;
-      return;
+      return true;
    }
 
    unsigned int ypos = mouseY - m_windowYPos;
@@ -1045,6 +1081,8 @@ void IngameCommandButtons::MouseEvent(bool buttonClicked,
       // press key
       DoButtonAction();
    }
+
+   return true;
 }
 
 void IngameCommandButtons::DoButtonAction()

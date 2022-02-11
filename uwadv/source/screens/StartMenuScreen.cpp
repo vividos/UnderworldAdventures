@@ -272,7 +272,7 @@ void StartMenuScreen::PressButton()
    }
 }
 
-void StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool buttonDown,
+bool StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool buttonDown,
    unsigned int mouseX, unsigned int mouseY)
 {
    // check over which area we are
@@ -287,7 +287,7 @@ void StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool butto
    }
 
    if (area == 3 && !m_isJourneyOnwardAvailable)
-      return;
+      return false;
 
    // a button click action?
    if (buttonClicked)
@@ -326,4 +326,6 @@ void StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool butto
          area != -1)
          m_selectedArea = area;
    }
+
+   return true;
 }

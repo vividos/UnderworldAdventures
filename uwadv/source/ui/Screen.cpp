@@ -80,10 +80,13 @@ bool Screen::ProcessEvent(SDL_Event& event)
       bool leftButton = event.type != SDL_MOUSEMOTION &&
          event.button.button == SDL_BUTTON_LEFT;
 
-      MouseEvent(event.type != SDL_MOUSEMOTION,
+      bool handled = MouseEvent(event.type != SDL_MOUSEMOTION,
          leftButton,
          event.type == SDL_MOUSEBUTTONDOWN,
          xpos, ypos);
+
+      if (handled)
+         return true;
 
       // send event to subwindows that are in that area
       size_t max = m_subWindows.size();
@@ -94,10 +97,13 @@ bool Screen::ProcessEvent(SDL_Event& event)
          // mouse in area?
          if (wnd.IsInWindow(xpos, ypos))
          {
-            wnd.MouseEvent(event.type != SDL_MOUSEMOTION,
+            bool handled = wnd.MouseEvent(event.type != SDL_MOUSEMOTION,
                leftButton,
                event.type == SDL_MOUSEBUTTONDOWN,
                xpos, ypos);
+
+            if (handled)
+               return true;
          }
       }
    }
