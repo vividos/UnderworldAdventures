@@ -1,0 +1,59 @@
+//
+// Underworld Adventures - an Ultima Underworld remake project
+// Copyright (c) 2022 Underworld Adventures Team
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+/// \file ClickArea.hpp
+/// \brief window area that can be clicked
+//
+#pragma once
+
+#include "Window.hpp"
+#include <functional>
+
+/// \brief area that the user can click on, but has no drawable image
+/// to use, just call Create() with the coordinates of the area and register
+/// it with RegisterWindow().
+class ClickArea : public Window
+{
+public:
+   /// ctor
+   ClickArea(Screen& screen, std::function<void()> onButtonPressed)
+      :Window(screen),
+      m_onButtonPressed(onButtonPressed)
+   {
+   }
+
+   /// called when mouse event is received
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
+      bool buttonDown, unsigned int mouseX, unsigned int mouseY)
+   {
+      if (buttonClicked &&
+         leftButton &&
+         !buttonDown &&
+         m_onButtonPressed != nullptr)
+      {
+         m_onButtonPressed();
+         return true;
+      }
+
+      return false;
+   }
+
+private:
+   /// click handler
+   std::function<void()> m_onButtonPressed;
+};

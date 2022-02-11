@@ -67,6 +67,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClickArea.hpp" />
     <ClInclude Include="Cutscene.hpp" />
     <ClInclude Include="FadingHelper.hpp" />
     <ClInclude Include="Font.hpp" />
