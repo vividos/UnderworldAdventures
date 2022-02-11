@@ -90,6 +90,9 @@ namespace UI
          std::array<Uint8, 9>& tilePixels) const;
 
    private:
+      /// indicates if an uw2 automap is drawn
+      bool m_isUw2;
+
       /// tilemap to use for generating automap
       const Underworld::Tilemap& m_tilemap;
 

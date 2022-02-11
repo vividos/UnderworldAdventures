@@ -74,7 +74,8 @@ Uint8 GetRandomPaletteIndex(const std::vector<Uint8>& paletteIndices)
 
 AutomapGenerator::AutomapGenerator(Base::ResourceManager& resourceManager,
    ImageManager& imageManager, const Underworld::Tilemap& tilemap)
-   :m_tilemap(tilemap)
+   :m_isUw2(resourceManager.IsUnderworldPathUw2()),
+   m_tilemap(tilemap)
 {
    m_bigFont.Load(resourceManager, fontBig);
    imageManager.Load(m_playerPinImage, "buttons", 63, 1);
@@ -86,9 +87,12 @@ void AutomapGenerator::DrawLevelNumber(IndexedImage& image, size_t levelIndex,
    std::string numberText = std::to_string(levelIndex + 1);
 
    IndexedImage numberImage;
-   m_bigFont.CreateString(numberImage, numberText, 0x2d);
+   m_bigFont.CreateString(numberImage, numberText, !m_isUw2 ? 45 : 78);
 
-   image.PasteImage(numberImage, 286, 5, true);
+   if (!m_isUw2)
+      image.PasteImage(numberImage, 286, 5, true);
+   else
+      image.PasteImage(numberImage, 277, 8, true);
 }
 
 void AutomapGenerator::DrawTiles(IndexedImage& image) const
@@ -112,14 +116,32 @@ void AutomapGenerator::DrawUpDownArrows(IndexedImage& image, bool upArrow, bool 
    // invisible by cloning some other background parts of the image
    if (!upArrow)
    {
-      image.PasteRect(image, 303, 18, 1, 9, 303, 5);
-      image.PasteRect(image, 301, 19, 5, 3, 301, 7);
+      if (!m_isUw2)
+      {
+         image.PasteRect(image, 303, 18, 1, 9, 303, 5);
+         image.PasteRect(image, 301, 19, 5, 3, 301, 7);
+      }
+      else
+      {
+         image.PasteRect(image, 284, 10, 1, 12, 299, 10);
+         image.PasteRect(image, 283, 12, 3, 3, 298, 12);
+         image.PasteRect(image, 281, 15, 7, 2, 296, 15);
+      }
    }
 
    if (!downArrow)
    {
-      image.PasteRect(image, 285, 182, 1, 9, 303, 185);
-      image.PasteRect(image, 285, 187, 5, 3, 301, 189);
+      if (!m_isUw2)
+      {
+         image.PasteRect(image, 285, 182, 1, 9, 303, 185);
+         image.PasteRect(image, 285, 187, 5, 3, 301, 189);
+      }
+      else
+      {
+         image.PasteRect(image, 284, 179, 1, 12, 299, 179);
+         image.PasteRect(image, 283, 186, 3, 3, 298, 186);
+         image.PasteRect(image, 281, 184, 7, 2, 296, 184);
+      }
    }
 }
 
