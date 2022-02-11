@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -77,17 +77,17 @@ void LevelImporter::LoadUwDemoLevel(Underworld::LevelList& levelList)
 
 void LevelImporter::LoadUw1Levels(Underworld::LevelList& levelList)
 {
-   LoadUwLevels(levelList, false, 9, 18, 27);
+   LoadUwLevels(levelList, false, 9, 18, 27, 36);
    levelList.GetLevel(8).GetTilemap().SetAutomapDisabled(true);
 }
 
 void LevelImporter::LoadUw2Levels(Underworld::LevelList& levelList)
 {
-   LoadUwLevels(levelList, true, 80, 80, 160);
+   LoadUwLevels(levelList, true, 80, 80, 160, 240);
 }
 
 void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode, unsigned int numLevels,
-   unsigned int textureMapOffset, unsigned int automapOffset)
+   unsigned int textureMapOffset, unsigned int automapOffset, unsigned int mapNotesOffset)
 {
    std::vector<Underworld::Level>& allLevels = levelList.GetVectorLevels();
 
@@ -124,6 +124,13 @@ void LevelImporter::LoadUwLevels(Underworld::LevelList& levelList, bool uw2Mode,
       {
          m_file = levArkFile.GetFile(levelIndex + automapOffset);
          LoadAutomap(level.GetTilemap());
+      }
+
+      // load map notes
+      if (levArkFile.IsAvailable(levelIndex + mapNotesOffset))
+      {
+         m_file = levArkFile.GetFile(levelIndex + mapNotesOffset);
+         LoadMapNotes(level.GetMapNotes());
       }
    }
 }
@@ -180,4 +187,33 @@ void Import::LevelImporter::LoadAutomap(Underworld::Tilemap& tilemap)
          Uint8 automapFlag = m_file.Read8();
          tileInfo.m_automapFlag = static_cast<Underworld::AutomapFlag>(automapFlag >> 4);
       }
+}
+
+void Import::LevelImporter::LoadMapNotes(Underworld::MapNotes& mapNotes)
+{
+   long fileLength = m_file.FileLength();
+   size_t numEntries = fileLength / 54;
+
+   for (size_t index = 0; index < numEntries; index++)
+   {
+      char text[0x0032 + 1] = {};
+      size_t bytesRead = m_file.ReadBuffer(reinterpret_cast<Uint8*>(&text[0]), 0x0032);
+      if (bytesRead == 0)
+         break;
+
+      Uint16 xpos = m_file.Read16();
+      Uint16 ypos = m_file.Read16();
+
+      if (text[0] == 0 ||
+         xpos == 0 ||
+         ypos == 0)
+         continue;
+
+      Underworld::MapNote mapNote;
+      mapNote.m_text = text;
+      mapNote.m_xpos = xpos;
+      mapNote.m_ypos = 200 - ypos;
+
+      mapNotes.GetMapNotesList().push_back(mapNote);
+   }
 }

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,15 +35,15 @@ namespace Underworld
    {
       /// ctor
       MapNote()
-         :m_xpos(0.0),
-         m_ypos(0.0)
+         :m_xpos(0),
+         m_ypos(0)
       {}
 
-      /// relative x position on map
-      double m_xpos;
+      /// x position on map, from left
+      Uint16 m_xpos;
 
-      /// relative x position on map
-      double m_ypos;
+      /// x position on map, from top
+      Uint16 m_ypos;
 
       /// note text
       std::string m_text;
