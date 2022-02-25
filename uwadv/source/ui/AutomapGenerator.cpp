@@ -97,6 +97,9 @@ void AutomapGenerator::DrawLevelNumber(IndexedImage& image, size_t levelIndex,
 
 void AutomapGenerator::DrawTiles(IndexedImage& image) const
 {
+   if (!m_tilemap.IsUsed())
+      return;
+
    for (unsigned int tileX = 0; tileX < 64; tileX++)
    {
       for (unsigned int tileY = 0; tileY < 64; tileY++)
