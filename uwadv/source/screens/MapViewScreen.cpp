@@ -82,7 +82,13 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
    IndexedImage& image = GetImage();
 
    ImageManager& imageManager = m_game.GetImageManager();
-   imageManager.Load(image, "data/blnkmap.byt", 0, 1, imageByt);
+
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
+   if (!isUw2)
+      imageManager.Load(image, "data/blnkmap.byt", 0, 1, imageByt);
+   else
+      m_game.GetImageManager().LoadFromArk(image, "data/byt.ark", 0, 1);
 
    const Underworld::Level& level = m_game.GetUnderworld().GetLevelList().GetLevel(levelIndex);
    const Underworld::Tilemap& tilemap = level.GetTilemap();
