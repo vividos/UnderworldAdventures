@@ -26,6 +26,7 @@
 #include "IndexedImage.hpp"
 #include "Tilemap.hpp"
 #include "Player.hpp"
+#include "MapNotes.hpp"
 #include <random>
 
 using UI::AutomapGenerator;
@@ -78,6 +79,8 @@ AutomapGenerator::AutomapGenerator(Base::ResourceManager& resourceManager,
    m_tilemap(tilemap)
 {
    m_bigFont.Load(resourceManager, fontBig);
+   m_fontNotes.Load(resourceManager, fontSmall);
+
    imageManager.Load(m_playerPinImage, "buttons", 63, 1);
 }
 
@@ -150,7 +153,16 @@ void AutomapGenerator::DrawUpDownArrows(IndexedImage& image, bool upArrow, bool 
 
 void AutomapGenerator::DrawMapNotes(IndexedImage& image, const Underworld::MapNotes& mapNotes) const
 {
-   // TODO
+   size_t maxIndex = mapNotes.GetMapNoteCount();
+   for (size_t noteIndex = 0; noteIndex < maxIndex; noteIndex++)
+   {
+      const Underworld::MapNote& mapNote = mapNotes.GetNote(noteIndex);
+
+      IndexedImage tempImage;
+      m_fontNotes.CreateString(tempImage, mapNote.m_text, !m_isUw2 ? 45 : 78);
+
+      image.PasteImage(tempImage, mapNote.m_xpos + 1, mapNote.m_ypos + 1, true);
+   }
 }
 
 void AutomapGenerator::DrawPlayerPin(IndexedImage& image, const Underworld::Player& player) const

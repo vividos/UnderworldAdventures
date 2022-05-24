@@ -99,6 +99,9 @@ namespace UI
       /// big font for level number
       Font m_bigFont;
 
+      /// font for map notes
+      Font m_fontNotes;
+
       /// player pin image
       IndexedImage m_playerPinImage;
    };
