@@ -347,3 +347,4 @@ uwadv/bw-output/
 /uwadv/win32/setup/install-log.txt
 CoverageReport*.xml
 /uwadv/out/
+/uwadv/build/
