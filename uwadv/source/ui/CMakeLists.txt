@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for ui.
 #
@@ -10,11 +10,15 @@ project(ui)
 
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
+	"AutomapGenerator.cpp" "AutomapGenerator.hpp"
+	"ClickArea.hpp"
 	"Cutscene.cpp" "Cutscene.hpp"
 	"FadingHelper.hpp"
 	"Font.cpp" "Font.hpp"
 	"ImageManager.cpp" "ImageManager.hpp"
 	"ImageQuad.cpp" "ImageQuad.hpp"
+	"ImageScreen.cpp" "ImageScreen.hpp"
+	"ImageWindow.cpp" "ImageWindow.hpp"
 	"IndexedImage.cpp" "IndexedImage.hpp"
 	"MouseCursor.cpp" "MouseCursor.hpp"
 	"Palette256.cpp" "Palette256.hpp"
