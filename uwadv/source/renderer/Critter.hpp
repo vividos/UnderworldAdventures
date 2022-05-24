@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -120,7 +120,10 @@ class CritterFramesManager
 {
 public:
    /// ctor
-   CritterFramesManager() {}
+   CritterFramesManager()
+      :m_mapObjects(nullptr)
+   {
+   }
 
    /// initialize frames manager
    void Init(Base::Settings& settings, Base::ResourceManager& resourceManager, ImageManager& imageManager);
@@ -137,11 +140,10 @@ public:
       return m_allCritters[index];
    }
 
-protected:
+private:
    /// frames per second for critter animations
    static const double s_critterFramesPerSecond;
 
-protected:
    /// vector with critter animations
    std::vector<Critter> m_allCritters;
 
