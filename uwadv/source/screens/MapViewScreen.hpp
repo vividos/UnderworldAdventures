@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #pragma once
 
 #include "ImageScreen.hpp"
+#include "MouseCursor.hpp"
+#include "ClickArea.hpp"
 
 /// level map view screen class
 class MapViewScreen : public ImageScreen
@@ -37,9 +39,21 @@ public:
    virtual bool ProcessEvent(SDL_Event& event) override;
 
 private:
+   /// changes the displayed level up or down
+   void UpDownLevel(bool up);
+
    /// displays level map with given index
    void DisplayLevelMap(size_t levelIndex);
 
    /// currently displayed level
    size_t m_displayedLevel;
+
+   /// mouse cursor
+   MouseCursor m_mouseCursor;
+
+   /// up button click area
+   ClickArea m_upButton;
+
+   /// down button click area
+   ClickArea m_downButton;
 };

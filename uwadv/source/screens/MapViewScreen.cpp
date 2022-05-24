@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,16 +26,42 @@
 #include "Player.hpp"
 #include "Audio.hpp"
 #include "AutomapGenerator.hpp"
+#include <functional>
 
 MapViewScreen::MapViewScreen(IGame& gameInterface)
    :ImageScreen(gameInterface, 0, 0.5),
-   m_displayedLevel((size_t)-1)
+   m_displayedLevel((size_t)-1),
+   m_upButton(*this,
+      std::bind(&MapViewScreen::UpDownLevel, this, true)),
+   m_downButton(*this,
+      std::bind(&MapViewScreen::UpDownLevel, this, false))
 {
 }
 
 void MapViewScreen::Init()
 {
    ImageScreen::Init();
+
+   // init mouse cursor
+   m_mouseCursor.Init(m_game, 0);
+   m_mouseCursor.Show(true);
+   RegisterWindow(&m_mouseCursor);
+
+   // init click areas
+   RegisterWindow(&m_upButton);
+   RegisterWindow(&m_downButton);
+
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   if (!isUw2)
+   {
+      m_upButton.Create(290, 0, 30, 22);
+      m_downButton.Create(290, 178, 30, 22);
+   }
+   else
+   {
+      m_upButton.Create(284, 0, 36, 32);
+      m_downButton.Create(284, 168, 36, 32);
+   }
 
    m_displayedLevel = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
    DisplayLevelMap(m_displayedLevel);
@@ -47,6 +73,9 @@ void MapViewScreen::Init()
 
 bool MapViewScreen::ProcessEvent(SDL_Event& event)
 {
+   if (ImageScreen::ProcessEvent(event))
+      return true;
+
    switch (event.type)
    {
    case SDL_MOUSEBUTTONDOWN:
@@ -77,6 +106,26 @@ bool MapViewScreen::ProcessEvent(SDL_Event& event)
    return true;
 }
 
+void MapViewScreen::UpDownLevel(bool up)
+{
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
+   if (!isUw2)
+   {
+      if (up && m_displayedLevel > 0)
+         DisplayLevelMap(--m_displayedLevel);
+      else if (!up && m_displayedLevel < 8)
+         DisplayLevelMap(++m_displayedLevel);
+   }
+   else
+   {
+      if (up && (m_displayedLevel % 8) > 0)
+         DisplayLevelMap(--m_displayedLevel);
+      else if (!up && (m_displayedLevel % 8) < 7)
+         DisplayLevelMap(++m_displayedLevel);
+   }
+}
+
 void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 {
    IndexedImage& image = GetImage();
@@ -97,6 +146,17 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 
    generator.DrawLevelNumber(image, levelIndex, level.GetLevelName());
    generator.DrawTiles(image);
+
+   bool upArrow = levelIndex > 0;
+   bool downArrow = levelIndex < 8;
+   if (isUw2)
+   {
+      upArrow = (levelIndex % 8) > 0;
+      downArrow = (levelIndex % 8) < 7;
+   }
+
+   generator.DrawUpDownArrows(image, upArrow, downArrow);
+
    generator.DrawMapNotes(image, level.GetMapNotes());
 
    const Underworld::Player& player = m_game.GetUnderworld().GetPlayer();
