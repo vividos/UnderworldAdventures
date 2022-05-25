@@ -348,3 +348,4 @@ uwadv/bw-output/
 CoverageReport*.xml
 /uwadv/out/
 /uwadv/build/
+/uwadv/vcpkg_installed/
