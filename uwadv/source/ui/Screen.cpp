@@ -97,12 +97,12 @@ bool Screen::ProcessEvent(SDL_Event& event)
          // mouse in area?
          if (wnd.IsInWindow(xpos, ypos))
          {
-            bool handled = wnd.MouseEvent(event.type != SDL_MOUSEMOTION,
+            bool handled2 = wnd.MouseEvent(event.type != SDL_MOUSEMOTION,
                leftButton,
                event.type == SDL_MOUSEBUTTONDOWN,
                xpos, ypos);
 
-            if (handled)
+            if (handled2)
                return true;
          }
       }
