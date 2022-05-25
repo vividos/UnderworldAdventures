@@ -1,0 +1,7 @@
+{
+  "name": "underworld-adventures",
+  "version-string": "0.11.0",
+  "dependencies": [
+    "zlib"
+  ]
+}

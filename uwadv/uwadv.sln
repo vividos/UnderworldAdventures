@@ -110,6 +110,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_pnglite", "source\third
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hqx", "source\thirdparty\hqx\hqx.vcxproj", "{E1AF378E-282D-4355-AAFB-DA1FE36A5623}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2DEA23C9-C7F0-4F5B-B9B7-7DE236117CBC}"
+	ProjectSection(SolutionItems) = preProject
+		vcpkg.json = vcpkg.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppVeyor|Win32 = AppVeyor|Win32
