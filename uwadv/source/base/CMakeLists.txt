@@ -33,6 +33,7 @@ add_library(${PROJECT_NAME} STATIC
 	"ResourceManager.cpp" "ResourceManager.hpp"
 	"Savegame.cpp" "Savegame.hpp"
 	"SDL_rwops_gzfile.c" "SDL_rwops_gzfile.h"
+	"SDL_rwops_zzip.c" "SDL_rwops_zzip.h"
 	"Settings.cpp" "Settings.hpp"
 	"SettingsLoader.cpp"
 	"String.cpp" "String.hpp"

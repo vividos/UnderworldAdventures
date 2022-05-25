@@ -26,7 +26,7 @@
 #include <SDL_rwops.h>
 #include <algorithm>
 #include <zzip/zzip.h>
-#include <SDL/SDL_rwops_zzip.h>
+#include "SDL_rwops_zzip.h"
 #include <cerrno>
 #include <deque>
 

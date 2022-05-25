@@ -68,6 +68,9 @@
     <ClCompile Include="Path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SDL_rwops_zzip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SDL_rwops_gzfile.h">
@@ -158,6 +161,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Path.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL_rwops_zzip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
