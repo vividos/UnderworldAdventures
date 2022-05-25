@@ -12,6 +12,8 @@ project(base)
 add_compile_definitions(Z_LARGE64)
 find_package(ZLIB REQUIRED)
 
+find_package(ZZIPLIB REQUIRED)
+
 # ignore the compiler's warning about deprecated codecvt classes
 add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 
@@ -46,6 +48,7 @@ add_library(${PROJECT_NAME} STATIC
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE
-		"${ZLIB_INCLUDE_DIRS}")
+		"${ZLIB_INCLUDE_DIRS}"
+		"${ZZIPLIB_INCLUDE_DIRS}")
 
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} zziplib)
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${ZZIPLIB_LIBRARIES})
