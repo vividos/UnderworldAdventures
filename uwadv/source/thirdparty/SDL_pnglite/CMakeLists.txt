@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for SDL_pnglite.
 #
@@ -11,9 +11,7 @@ project(SDL_pnglite)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../SDL2-2.0.18)
 find_package(SDL2 REQUIRED)
 
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../zlib1211)
-find_package(zlib REQUIRED)
-add_compile_definitions(ZLIB_WINAPI Z_LARGE64)
+find_package(ZLIB REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
 	"pnglite.c" "pnglite.h"

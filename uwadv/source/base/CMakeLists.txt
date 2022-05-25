@@ -9,9 +9,8 @@ cmake_minimum_required(VERSION 3.12)
 project(base)
 
 # Configure zlib
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../thirdparty/zlib1211)
-find_package(zlib REQUIRED)
-add_compile_definitions(ZLIB_WINAPI Z_LARGE64)
+add_compile_definitions(Z_LARGE64)
+find_package(ZLIB REQUIRED)
 
 # ignore the compiler's warning about deprecated codecvt classes
 add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
