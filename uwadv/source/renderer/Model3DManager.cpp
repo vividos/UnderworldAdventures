@@ -16,11 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file Model3D.cpp
-/// \brief 3D models handling
+/// \file Model3DManager.cpp
+/// \brief 3D model manager
 //
 #include "pch.hpp"
-#include "Model3D.hpp"
+#include "Model3DManager.hpp"
 #include "Model3DBuiltIn.hpp"
 #include "GameInterface.hpp"
 #include "ResourceManager.hpp"

@@ -23,13 +23,11 @@
 
 #include "Math.hpp"
 #include "Triangle3d.hpp"
-#include "Texture.hpp"
+#include "TextureManager.hpp"
 #include "Object.hpp"
-#include <map>
 #include <vector>
 #include <memory>
 
-class IBasicGame;
 struct RenderOptions;
 
 /// \brief 3d model base class
@@ -69,40 +67,3 @@ public:
 
 /// smart pointer to model object
 typedef std::shared_ptr<Model3D> Model3DPtr;
-
-/// 3d model manager
-class Model3DManager
-{
-public:
-   /// ctor
-   Model3DManager() {}
-
-   /// init manager
-   void Init(IBasicGame& game);
-
-   /// returns if a 3d model for a certain item_id is available
-   bool IsModelAvailable(Uint16 itemId) const;
-
-   /// renders a model
-   void Render(const RenderOptions& renderOptions,
-      const Vector3d& viewerPos, const Underworld::Object& object,
-      TextureManager& textureManager, Vector3d& base);
-
-   /// returns bounding triangles for collision detection with given item_id
-   void GetBoundingTriangles(const Underworld::Object& obj, Vector3d& base,
-      std::vector<Triangle3dTextured>& allTriangles);
-
-private:
-   /// loads model3d.cfg file
-   void LoadModelConfigFile(const Base::Settings& settings, const Base::ResourceManager& resourceManager);
-
-   /// adds a new model
-   void AddModel(const std::string& name, const std::string& value, const Base::ResourceManager& resourceManager);
-
-private:
-   /// map with all 3d model objects
-   std::map<Uint16, Model3DPtr> m_allModels;
-
-   /// all builtin models from the exe
-   std::vector<Model3DPtr> m_allBuiltInModels;
-};

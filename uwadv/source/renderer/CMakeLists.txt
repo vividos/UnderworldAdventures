@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for renderer.
 #
@@ -13,8 +13,9 @@ add_library(${PROJECT_NAME} STATIC
 	"Critter.cpp" "Critter.hpp"
 	"LevelTilemapRenderer.cpp" "LevelTilemapRenderer.hpp"
 	"MainGameLoop.cpp" "MainGameLoop.hpp"
-	"Model3D.cpp" "Model3D.hpp"
+	"Model3D.hpp"
 	"Model3DBuiltin.cpp" "Model3DBuiltin.hpp"
+	"Model3DManager.cpp" "Model3DManager.hpp"
 	"Model3DVrml.cpp" "Model3DVrml.hpp"
 	"PolygonTessellator.cpp" "PolygonTessellator.hpp"
 	"Quadtree.cpp" "Quadtree.hpp"

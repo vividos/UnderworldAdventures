@@ -23,7 +23,7 @@
 
 #include "TextureManager.hpp"
 #include "Critter.hpp"
-#include "Model3D.hpp"
+#include "Model3DManager.hpp"
 
 namespace Underworld
 {

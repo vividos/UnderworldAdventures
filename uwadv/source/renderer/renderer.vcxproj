@@ -50,8 +50,8 @@
     <ClCompile Include="Critter.cpp" />
     <ClCompile Include="LevelTilemapRenderer.cpp" />
     <ClCompile Include="MainGameLoop.cpp" />
-    <ClCompile Include="Model3D.cpp" />
     <ClCompile Include="Model3DBuiltIn.cpp" />
+    <ClCompile Include="Model3DManager.cpp" />
     <ClCompile Include="Model3DVrml.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -73,6 +73,7 @@
     <ClInclude Include="MainGameLoop.hpp" />
     <ClInclude Include="Model3D.hpp" />
     <ClInclude Include="Model3DBuiltIn.hpp" />
+    <ClInclude Include="Model3DManager.hpp" />
     <ClInclude Include="Model3DVrml.hpp" />
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="Quadtree.hpp" />
