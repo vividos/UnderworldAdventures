@@ -30,7 +30,7 @@ namespace Underworld
    class Level;
 }
 
-class IGame;
+class IBasicGame;
 struct RenderOptions;
 
 /// \brief height scale factor
@@ -44,7 +44,7 @@ class UnderworldRenderer
 {
 public:
    /// ctor
-   UnderworldRenderer(IGame& game);
+   UnderworldRenderer(IBasicGame& game);
 
    /// prepares renderer for rendering a new level
    void PrepareLevel(Underworld::Level& level);

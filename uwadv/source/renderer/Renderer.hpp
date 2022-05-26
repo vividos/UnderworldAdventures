@@ -60,7 +60,7 @@ public:
    }
 
    /// initializes renderer
-   void InitGame(IGame& game);
+   void InitGame(IBasicGame& game);
 
    /// output some OpenGL diagnostics
    static void PrintOpenGLDiagnostics();

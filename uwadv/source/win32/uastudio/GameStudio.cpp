@@ -31,6 +31,7 @@
 #include "GameStrings.hpp"
 #include "uwadv/DebugServer.hpp"
 #include "uwadv/GameConfigLoader.hpp"
+#include "ui/ImageManager.hpp"
 #include "physics/PhysicsModel.hpp"
 #include <ctime>
 
@@ -56,11 +57,13 @@ public:
    virtual Base::Settings& GetSettings() override { return m_settings; }
    virtual Base::ResourceManager& GetResourceManager() override { return *m_resourceManager.get(); }
    virtual Base::SavegamesManager& GetSavegamesManager() override { return *m_savegamesManager.get(); };
+   virtual ImageManager& GetImageManager() override { return *m_imageManager.get(); };
    virtual IScripting& GetScripting() override { return *m_scripting; }
    virtual IDebugServer& GetDebugger() override { return m_debugServer; }
    virtual GameStrings& GetGameStrings() override { return m_gameStrings; };
    virtual Underworld::Underworld& GetUnderworld() override { return m_gameLogic->GetUnderworld(); }
    virtual Underworld::GameLogic& GetGameLogic() override { return *m_gameLogic.get(); }
+   virtual Physics::PhysicsModel& GetPhysicsModel() override { return m_physicsModel; }
    virtual IUserInterface* GetUserInterface() override { return this; }
 
    // virtual IGame methods
@@ -110,8 +113,14 @@ private:
    /// savegames manager
    std::unique_ptr<Base::SavegamesManager> m_savegamesManager;
 
+   /// image manager
+   std::unique_ptr<ImageManager> m_imageManager;
+
    /// game logic object
    std::unique_ptr<Underworld::GameLogic> m_gameLogic;
+
+   /// physics model for the game
+   Physics::PhysicsModel m_physicsModel;
 
    /// scripting class
    IScripting* m_scripting;

@@ -44,7 +44,7 @@ Renderer::~Renderer()
 /// Initializes the renderer, the texture manager, critter frames manager and
 /// OpenGL flags common to 2d and 3d rendering.
 /// \param game game interface
-void Renderer::InitGame(IGame& game)
+void Renderer::InitGame(IBasicGame& game)
 {
    m_rendererImpl = new UnderworldRenderer(game);
    if (m_rendererImpl == NULL)

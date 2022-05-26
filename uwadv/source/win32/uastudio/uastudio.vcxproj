@@ -97,6 +97,9 @@
     <ProjectReference Include="..\..\import\import.vcxproj">
       <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\physics\physics.vcxproj">
+      <Project>{6917cdd3-2eef-4b6d-9256-ed5b64391341}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\script\script.vcxproj">
       <Project>{4548e978-a076-4ba2-88b3-a41f46e53b16}</Project>
     </ProjectReference>

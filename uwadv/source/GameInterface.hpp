@@ -90,6 +90,9 @@ public:
    /// returns savegames manager object
    virtual Base::SavegamesManager& GetSavegamesManager() = 0;
 
+   /// returns image manager object
+   virtual ImageManager& GetImageManager() = 0;
+
    /// returns scripting object
    virtual IScripting& GetScripting() = 0;
 
@@ -104,6 +107,9 @@ public:
 
    /// returns game logic object
    virtual Underworld::GameLogic& GetGameLogic() = 0;
+
+   /// returns physics model
+   virtual Physics::PhysicsModel& GetPhysicsModel() = 0;
 
    /// returns user interface instance; may be null
    virtual IUserInterface* GetUserInterface() = 0;
@@ -123,9 +129,6 @@ public:
    /// returns audio manager
    virtual Audio::AudioManager& GetAudioManager() = 0;
 
-   /// returns image manager object
-   virtual ImageManager& GetImageManager() = 0;
-
    /// returns renderer object
    virtual Renderer& GetRenderer() = 0;
 
@@ -134,9 +137,6 @@ public:
 
    /// returns renderer viewport
    virtual Viewport& GetViewport() = 0;
-
-   /// returns physics model
-   virtual Physics::PhysicsModel& GetPhysicsModel() = 0;
 
    /// replaces current screen with new one; saves current on a screen stack when selected
    virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) = 0;

@@ -29,7 +29,7 @@
 #include <vector>
 #include <memory>
 
-class IGame;
+class IBasicGame;
 struct RenderOptions;
 
 /// \brief 3d model base class
@@ -78,7 +78,7 @@ public:
    Model3DManager() {}
 
    /// init manager
-   void Init(IGame& game);
+   void Init(IBasicGame& game);
 
    /// returns if a 3d model for a certain item_id is available
    bool IsModelAvailable(Uint16 itemId) const;

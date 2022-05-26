@@ -31,7 +31,7 @@
 bool DecodeBuiltInModels(const char* filename,
    std::vector<Model3DPtr>& allModels, bool dump, bool isUw2);
 
-void Model3DManager::Init(IGame& game)
+void Model3DManager::Init(IBasicGame& game)
 {
    UaTrace("initializing Model3DManager\n");
 
