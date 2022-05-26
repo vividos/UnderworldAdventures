@@ -12,7 +12,7 @@ project(base)
 add_compile_definitions(Z_LARGE64)
 find_package(ZLIB REQUIRED)
 
-find_package(ZZIPLIB REQUIRED)
+find_package(zziplib REQUIRED)
 
 # ignore the compiler's warning about deprecated codecvt classes
 add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
@@ -46,9 +46,7 @@ add_library(${PROJECT_NAME} STATIC
 	"Vector3d.hpp")
 
 target_include_directories(${PROJECT_NAME}
-	PUBLIC "${PROJECT_SOURCE_DIR}"
-	PRIVATE
-		"${ZLIB_INCLUDE_DIRS}"
-		"${ZZIPLIB_INCLUDE_DIRS}")
+	PUBLIC "${PROJECT_SOURCE_DIR}")
 
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${ZZIPLIB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE ZLIB::ZLIB zziplib::zziplib)
