@@ -99,6 +99,9 @@
     <ProjectReference Include="..\thirdparty\hqx\hqx.vcxproj">
       <Project>{e1af378e-282d-4355-aafb-da1fe36a5623}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\ui\ui.vcxproj">
+      <Project>{d3b6f1de-d52f-4e99-b6e7-7d5f255721f2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\underworld\underworld.vcxproj">
       <Project>{4cc50617-2229-460e-9a80-3c517a2d9090}</Project>
     </ProjectReference>
