@@ -75,6 +75,9 @@
     <ClCompile Include="LuaSourceWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tilemap3DEditorView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.hpp">
@@ -153,6 +156,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LuaSourceWindow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tilemap3DEditorView.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

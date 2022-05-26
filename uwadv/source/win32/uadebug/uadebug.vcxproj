@@ -95,6 +95,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TileInfoWindow.cpp" />
+    <ClCompile Include="Tilemap3DEditorView.cpp" />
     <ClCompile Include="TileMapViewCtrl.cpp" />
     <ClCompile Include="uadebug.cpp" />
     <ClCompile Include="WatchesListWindow.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="pch.hpp" />
     <ClInclude Include="res\Ribbon.h" />
     <ClInclude Include="TileInfoWindow.hpp" />
+    <ClInclude Include="Tilemap3DEditorView.hpp" />
     <ClInclude Include="TileMapViewChildFrame.hpp" />
     <ClInclude Include="TileMapViewCtrl.hpp" />
     <ClInclude Include="WatchesListWindow.hpp" />

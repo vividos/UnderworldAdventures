@@ -29,6 +29,7 @@
     <Command Name="uadebug_VIEW_PROJECT" Symbol="ID_VIEW_PROJECT" Id="32768" LabelTitle="Project" />
     <Command Name="uadebug_VIEW_PLAYERINFO" Symbol="ID_VIEW_PLAYERINFO" Id="32769" LabelTitle="Player info" />
     <Command Name="uadebug_VIEW_TILEMAP" Symbol="ID_VIEW_TILEMAP" Id="32770" LabelTitle="Tilemap" />
+    <Command Name="uadebug_VIEW_TILEMAP_EDITOR" Symbol="ID_VIEW_TILEMAP_EDITOR" Id="32776" LabelTitle="Tilemap Editor" />
     <Command Name="uadebug_VIEW_OBJECTLIST" Symbol="ID_VIEW_OBJECTLIST" Id="32771" LabelTitle="Object List" />
     <Command Name="uadebug_VIEW_GAMESTRINGS" Symbol="ID_VIEW_GAMESTRINGS" Id="32772" LabelTitle="Game Strings" />
     <Command Name="uadebug_VIEW_HOTSPOT" Symbol="ID_VIEW_HOTSPOT" Id="32773" LabelTitle="Hotspot List" />
@@ -211,6 +212,7 @@
                 <ControlSizeDefinition ControlName="uadebug_VIEW_PROJECT" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_PLAYERINFO" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP_EDITOR" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_OBJECTLIST" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_GAMESTRINGS" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_HOTSPOT" ImageSize="Small" IsLabelVisible="true" />
@@ -221,6 +223,7 @@
                 <ControlSizeDefinition ControlName="uadebug_VIEW_PROJECT" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_PLAYERINFO" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP" ImageSize="Large" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP_EDITOR" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_OBJECTLIST" ImageSize="Large" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_GAMESTRINGS" ImageSize="Small" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_HOTSPOT" ImageSize="Small" IsLabelVisible="true" />
@@ -231,6 +234,7 @@
                 <ControlSizeDefinition ControlName="uadebug_VIEW_PROJECT" ImageSize="Small" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_PLAYERINFO" ImageSize="Small" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP" ImageSize="Small" IsLabelVisible="true" />
+                <ControlSizeDefinition ControlName="uadebug_VIEW_TILEMAP_EDITOR" ImageSize="Small" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_OBJECTLIST" ImageSize="Small" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_GAMESTRINGS" ImageSize="Small" IsLabelVisible="true" />
                 <ControlSizeDefinition ControlName="uadebug_VIEW_HOTSPOT" ImageSize="Small" IsLabelVisible="true" />
@@ -241,6 +245,7 @@
             <Button CommandName="uadebug_VIEW_PROJECT" />
             <Button CommandName="uadebug_VIEW_PLAYERINFO" />
             <Button CommandName="uadebug_VIEW_TILEMAP" />
+            <Button CommandName="uadebug_VIEW_TILEMAP_EDITOR" />
             <Button CommandName="uadebug_VIEW_OBJECTLIST" />
             <Button CommandName="uadebug_VIEW_GAMESTRINGS" />
             <Button CommandName="uadebug_VIEW_HOTSPOT" />

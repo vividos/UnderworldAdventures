@@ -481,6 +481,37 @@ LRESULT MainFrame::OnViewTilemap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
    return 0;
 }
 
+LRESULT MainFrame::OnViewTilemapEditor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   BOOL isVisible = ::IsWindowVisible(m_tilemapEditorChildFrame);
+
+   if (!isVisible)
+   {
+      m_tilemapEditorChildFrame.CreateEx(m_hWndClient);
+      AddDebugWindow(&m_tilemapEditorChildFrame);
+      MDIMaximize(m_tilemapEditorChildFrame.m_hWnd);
+
+      // send notifications
+      DebugWindowNotification notify;
+      notify.m_notifyCode = m_isStopped ? notifyCodeSetReadonly : notifyCodeSetReadWrite;
+      notify.m_relayToDescendants = true;
+
+      SendNotification(notify, &m_tilemapEditorChildFrame);
+
+      notify.m_notifyCode = notifyCodeUpdateData;
+      SendNotification(notify, &m_tilemapEditorChildFrame);
+   }
+   else
+   {
+      RemoveDebugWindow(&m_tilemapEditorChildFrame);
+      MDIDestroy(m_tilemapEditorChildFrame.m_hWnd);
+   }
+
+   UISetCheck(ID_VIEW_TILEMAP_EDITOR, !isVisible);
+   UpdateLayout();
+   return 0;
+}
+
 LRESULT MainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    GameStringsViewChildFrame* child = new GameStringsViewChildFrame;

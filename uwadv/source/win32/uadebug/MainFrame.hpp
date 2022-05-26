@@ -28,6 +28,7 @@
 #include "ObjectListWindow.hpp"
 #include "HotspotListWindow.hpp"
 #include "TileMapViewChildFrame.hpp"
+#include "TileMap3DEditorView.hpp"
 #include "TileInfoWindow.hpp"
 #include "resource.h"
 
@@ -109,6 +110,7 @@ private:
       COMMAND_ID_HANDLER(ID_VIEW_TILEINFO, OnViewTileInfo)
       COMMAND_ID_HANDLER(ID_VIEW_PROJECT, OnViewProjectInfo)
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP, OnViewTilemap)
+      COMMAND_ID_HANDLER(ID_VIEW_TILEMAP_EDITOR, OnViewTilemapEditor)
       COMMAND_ID_HANDLER(ID_VIEW_GAMESTRINGS, OnViewGameStrings)
       COMMAND_ID_HANDLER(ID_DEBUG_PAUSE, OnDebugPause)
       COMMAND_ID_HANDLER(ID_DEBUG_RUN, OnDebugRun)
@@ -133,6 +135,7 @@ private:
       UPDATE_ELEMENT(ID_VIEW_PROJECT, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_PLAYERINFO, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_TILEMAP, UPDUI_RIBBON)
+      UPDATE_ELEMENT(ID_VIEW_TILEMAP_EDITOR, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_OBJECTLIST, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_GAMESTRINGS, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_HOTSPOT, UPDUI_RIBBON)
@@ -164,6 +167,7 @@ private:
    LRESULT OnViewTileInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewProjectInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewTilemap(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewTilemapEditor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewGameStrings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnDebugBreak(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnDebugPause(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -246,7 +250,11 @@ private:
 
    // statically allocated child windows
 
+   /// 2D tilemap view
    TileMapViewChildFrame m_tilemapChildFrame;
+
+   /// 3D tilemap editor
+   Tilemap3DEditorView m_tilemapEditorChildFrame;
 
    /// debug client interface
    DebugClient m_debugClient;

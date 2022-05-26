@@ -9,6 +9,7 @@
 #define IDR_LUA_SOURCE_FRAME            129
 #define IDR_GAMESTRINGS_VIEW            130
 #define IDR_TILEMAP_VIEW                131
+#define IDR_TILEMAP_EDITOR_VIEW         132
 #define IDC_CURSOR_TILEMAP              200
 #define IDC_EDIT_TILEPOS                1000
 #define IDC_LIST_STRINGS                1001
@@ -25,6 +26,7 @@
 #define ID_VIEW_HOTSPOT                 32773
 #define ID_VIEW_TILEINFO                32774
 #define ID_VIEW_OUTPUT                  32775
+#define ID_VIEW_TILEMAP_EDITOR          32776
 #define ID_FILE_NEW_PROJECT             32800
 #define ID_FILE_OPEN_PROJECT            32801
 #define ID_FILE_SAVE_ALL                32802

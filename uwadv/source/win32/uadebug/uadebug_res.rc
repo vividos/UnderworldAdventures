@@ -83,6 +83,8 @@ ID_VIEW_PLAYERINFO      BITMAP                  "res\\view_playerinfo.bmp"
 
 ID_VIEW_TILEMAP         BITMAP                  "res\\view_tilemap.bmp"
 
+ID_VIEW_TILEMAP_EDITOR  BITMAP                  "res\\view_tilemap_editor.bmp"
+
 ID_VIEW_OBJECTLIST      BITMAP                  "res\\view_objectlist.bmp"
 
 ID_VIEW_GAMESTRINGS     BITMAP                  "res\\view_gamestrings.bmp"
@@ -137,6 +139,7 @@ BEGIN
         MENUITEM "&Object List",                ID_VIEW_OBJECTLIST
         MENUITEM "&Hotspot List",               ID_VIEW_HOTSPOT
         MENUITEM "Tile&map View",               ID_VIEW_TILEMAP
+        MENUITEM "Tilemap &Editor",             ID_VIEW_TILEMAP_EDITOR
         MENUITEM "&Game Strings",               ID_VIEW_GAMESTRINGS
     END
     POPUP "&Help"
@@ -160,6 +163,8 @@ IDR_LUA_SOURCE_FRAME    ICON                    "res\\Lua.ico"
 IDR_GAMESTRINGS_VIEW    ICON                    "res\\gamestrings.ico"
 
 IDR_TILEMAP_VIEW        ICON                    "res\\tilemap.ico"
+
+IDR_TILEMAP_EDITOR_VIEW ICON                    "res\\tilemap.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -280,6 +285,7 @@ BEGIN
     IDR_LUA_SOURCE_FRAME    "Lua Source File"
     IDR_GAMESTRINGS_VIEW    "Game Strings"
     IDR_TILEMAP_VIEW        "Tilemap View"
+    IDR_TILEMAP_EDITOR_VIEW "Tilemap 3D Editor"
 END
 
 STRINGTABLE
@@ -357,6 +363,7 @@ BEGIN
     ID_VIEW_PROJECT         "Show or hide Project Info Window\nProject Info"
     ID_VIEW_PLAYERINFO      "Show or hide Player Info window\nPlayer Info"
     ID_VIEW_TILEMAP         "Show tilemap view window\nTilemap View"
+    ID_VIEW_TILEMAP_EDITOR  "Show tilemap editor window\nTilemap Editor"
     ID_VIEW_OBJECTLIST      "Show or hide Object List\nObject List"
     ID_VIEW_GAMESTRINGS     "Show a window with all game strings\nGame Strings"
     ID_VIEW_HOTSPOT         "Show or hide list with all hotspots in the game\nHotspot List"
