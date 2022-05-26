@@ -49,6 +49,9 @@ public:
       m_isFinished = false;
    }
 
+   /// indicates if a fade-in is done
+   bool IsFadeIn() const { return m_fadeIn; }
+
    /// does a tick and returns true if the fading action is finished
    bool Tick()
    {
@@ -68,7 +71,7 @@ public:
          Uint8(255 - 255 * (double(m_tickCount) / (m_fadeTime * m_tickRate)));
    }
 
-protected:
+private:
    /// indicates if a fade-in is done
    bool m_fadeIn;
    /// indicates if fading is finished

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2021 Underworld Adventures Team
+// Copyright (c) 2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,10 +46,20 @@ void ImageScreen::UpdateImage()
    return m_image.Update();
 }
 
+void ImageScreen::StartFadein()
+{
+   if (IsFadeInProgress())
+      return;
+
+   m_fader.Init(true, m_game.GetTickRate(), m_fadeInOutTime);
+
+   m_fadeState = 0;
+}
+
 void ImageScreen::StartFadeout()
 {
-   if (m_fadeState != 1)
-      return; // currently in fadein/fadeout
+   if (IsFadeInProgress())
+      return;
 
    m_fader.Init(false, m_game.GetTickRate(), m_fadeInOutTime);
 
@@ -59,7 +69,12 @@ void ImageScreen::StartFadeout()
 
 bool ImageScreen::IsFadeInProgress() const
 {
-   return m_fadeState != 1;
+   return m_fadeState != 1 && m_fadeState != 3;
+}
+
+void ImageScreen::OnFadeInEnded()
+{
+   // empty
 }
 
 void ImageScreen::OnFadeOutStarted()
@@ -111,8 +126,8 @@ void ImageScreen::Tick()
       m_fadeState++;
 
       if (m_fadeState == 3)
-      {
          OnFadeOutEnded();
-      }
+      else if (m_fadeState == 1)
+         OnFadeInEnded();
    }
 }

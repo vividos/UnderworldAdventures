@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2021 Underworld Adventures Team
+// Copyright (c) 2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,6 +36,9 @@ public:
    /// dtor
    virtual ~ImageScreen() noexcept {}
 
+   /// called when image screen has been faded in
+   virtual void OnFadeInEnded();
+
    /// called when image screen started fade out
    virtual void OnFadeOutStarted();
 
@@ -57,6 +60,9 @@ protected:
 
    /// updates image on display, when indexed image was modified
    void UpdateImage();
+
+   /// starts fade in, e.g. after the screen reappears
+   void StartFadein();
 
    /// starts fading out the screen
    void StartFadeout();
