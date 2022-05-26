@@ -49,7 +49,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\include\wtl;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\include\wtl;$(SolutionDir)source\win32\uadebug\thirdparty;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -63,7 +63,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\include\wtl;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\include\wtl;$(SolutionDir)source\win32\uadebug\thirdparty;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

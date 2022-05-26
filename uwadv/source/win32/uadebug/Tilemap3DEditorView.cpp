@@ -21,3 +21,18 @@
 //
 #include "pch.hpp"
 #include "Tilemap3DEditorView.hpp"
+
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "glu32.lib")
+
+void Tilemap3DEditorView::OnInit()
+{
+}
+
+void Tilemap3DEditorView::OnRender()
+{
+}
+
+void Tilemap3DEditorView::OnResize(int cx, int cy)
+{
+}

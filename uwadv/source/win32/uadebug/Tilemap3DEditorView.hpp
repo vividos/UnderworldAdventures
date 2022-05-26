@@ -22,20 +22,33 @@
 #pragma once
 
 #include "resource.h"
+#include <AtlOpengl.h>
 
 /// 3D editor view for tilemap
-class Tilemap3DEditorView : public ChildWindowBase<IDR_TILEMAP_EDITOR_VIEW>
+class Tilemap3DEditorView :
+   public ChildWindowBase<IDR_TILEMAP_EDITOR_VIEW>,
+   private COpenGL<Tilemap3DEditorView>
 {
    typedef Tilemap3DEditorView thisClass;
    typedef ChildWindowBase<IDR_TILEMAP_EDITOR_VIEW> baseClass;
 
-public:
+private:
    BEGIN_MSG_MAP(thisClass)
       ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
+      CHAIN_MSG_MAP(COpenGL<Tilemap3DEditorView>)
       CHAIN_MSG_MAP(baseClass)
       DEFAULT_REFLECTION_HANDLER()
    END_MSG_MAP()
 
 private:
+   friend COpenGL<Tilemap3DEditorView>;
 
+   /// initializes render window
+   void OnInit();
+
+   /// renders a new frame
+   void OnRender();
+
+   /// called when the reder window is resized
+   void OnResize(int cx, int cy);
 };
