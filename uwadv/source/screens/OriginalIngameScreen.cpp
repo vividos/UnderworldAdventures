@@ -322,6 +322,10 @@ void OriginalIngameScreen::Draw()
 
 bool OriginalIngameScreen::ProcessEvent(SDL_Event& event)
 {
+   // user event?
+   if (event.type == SDL_USEREVENT && event.user.code == gameEventResumeScreen)
+      Resume();
+
    return Screen::ProcessEvent(event);
 }
 
@@ -759,12 +763,9 @@ void OriginalIngameScreen::Tick()
       // now it's time
       DoAction(m_fadeoutAction);
 
+      m_fadeState = 0;
       m_fadeoutAction = ingameActionNone;
    }
-
-   // resume when reentering the screen
-   //if (m_fadeState == 3)
-   //   Resume();
 }
 
 void OriginalIngameScreen::ScheduleAction(IngameAction action, bool fadeoutBefore)
