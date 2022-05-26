@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "Screen.hpp"
+#include "ImageScreen.hpp"
 #include "Savegame.hpp"
 #include "ImageQuad.hpp"
 #include "FadingHelper.hpp"
@@ -130,7 +130,7 @@ protected:
 };
 
 /// save game screen class
-class SaveGameScreen : public Screen
+class SaveGameScreen : public ImageScreen
 {
 public:
    /// ctor
@@ -150,7 +150,9 @@ public:
    virtual void Destroy() override;
    virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
-   virtual void Tick() override;
+
+   // virtual functions from ImageScreen
+   virtual void OnFadeOutEnded() override;
 
 private:
    /// starts asking for a savegame name
@@ -160,12 +162,6 @@ private:
    void SaveGameToDisk();
 
 private:
-   // constants
-
-   /// time to fade in/out
-   static const double s_fadeTime;
-
-
    // buttons
 
    /// save button
@@ -188,9 +184,6 @@ private:
 
    /// indicates if save button should be invisible
    bool m_disableSaveButton;
-
-   /// background image
-   ImageQuad m_backgroundImage;
 
    /// savegame info area
    ImageQuad m_infoAreaImage;
@@ -215,10 +208,4 @@ private:
 
    /// mouse cursor
    MouseCursor m_mouseCursor;
-
-   /// fading helper
-   FadingHelper m_fader;
-
-   /// fade in/out state
-   unsigned int m_fadeState;
 };

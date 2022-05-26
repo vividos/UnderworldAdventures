@@ -34,7 +34,7 @@
 const unsigned int SaveGameButton::c_buttonWidth = 55;
 
 /// fadein/out time
-const double SaveGameScreen::s_fadeTime = 0.5;
+const double c_fadeTime = 0.5;
 
 /// Draws edges into an image.
 /// \param img image to draw to
@@ -321,7 +321,7 @@ bool SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
 
 SaveGameScreen::SaveGameScreen(IGame& game,
    bool calledFromStartMenu, bool disableSaveButton)
-   :Screen(game),
+   :ImageScreen(game, 0, c_fadeTime),
    m_calledFromStartMenu(calledFromStartMenu),
    m_disableSaveButton(disableSaveButton)
 {
@@ -329,14 +329,11 @@ SaveGameScreen::SaveGameScreen(IGame& game,
 
 void SaveGameScreen::Init()
 {
-   Screen::Init();
+   ImageScreen::Init();
 
    UaTrace("save game screen started\n");
 
    m_game.GetRenderer().SetupForUserInterface();
-
-   glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    m_showPreview = false;
    m_isEditingDescription = false;
@@ -350,7 +347,7 @@ void SaveGameScreen::Init()
       m_game.GetImageManager().LoadList(m_facesImages, "bodies", 0, 0);
 
       // init background image
-      IndexedImage& img = m_backgroundImage.GetImage();
+      IndexedImage& img = GetImage();
       img.Create(320, 200);
       img.SetPalette(m_game.GetImageManager().GetPalette(3));
 
@@ -368,11 +365,6 @@ void SaveGameScreen::Init()
 
       // preview image
       DrawImageEdges(img, 172, 127, 134, 63, true);
-
-      m_backgroundImage.Init(m_game, 0, 0);
-      m_backgroundImage.Update();
-
-      RegisterWindow(&m_backgroundImage);
    }
    else
    {
@@ -399,7 +391,7 @@ void SaveGameScreen::Init()
       }
 
       // prepare background image
-      IndexedImage& img = m_backgroundImage.GetImage();
+      IndexedImage& img = GetImage();
 
       img.Create(320, 200);
       img.SetPalette(m_game.GetImageManager().GetPalette(3));
@@ -418,12 +410,9 @@ void SaveGameScreen::Init()
       img.PasteRect(temp_back, 10, 186, 140, 6, 9, 141);
 
       img.PasteRect(temp_back, 0, 0, 160, 200, 159, 0);
-
-      m_backgroundImage.Init(m_game, 0, 0);
-      m_backgroundImage.Update();
-
-      RegisterWindow(&m_backgroundImage);
    }
+
+   UpdateImage();
 
    // init buttons
    m_loadButton.Init(this, m_game, 17, 155, "Load", saveGameButtonLoad);
@@ -439,7 +428,7 @@ void SaveGameScreen::Init()
 
    // init info area
    m_infoAreaImage.GetImage().Create(128, 105);
-   m_infoAreaImage.GetImage().SetPalette(m_backgroundImage.GetImage().GetPalette());
+   m_infoAreaImage.GetImage().SetPalette(GetImage().GetPalette());
    m_infoAreaImage.Init(m_game, 160 + 16, 8);
 
    // init savegames list
@@ -453,17 +442,13 @@ void SaveGameScreen::Init()
 
    RegisterWindow(&m_mouseCursor);
 
-   // init fadein
-   m_fader.Init(true, m_game.GetTickRate(), s_fadeTime);
-   m_fadeState = 0;
-
    // update info area
    UpdateInfo();
 }
 
 void SaveGameScreen::Destroy()
 {
-   Screen::Destroy();
+   ImageScreen::Destroy();
 
    m_previewImageTexture.Done();
 
@@ -472,7 +457,7 @@ void SaveGameScreen::Destroy()
 
 bool SaveGameScreen::ProcessEvent(SDL_Event& event)
 {
-   if (Screen::ProcessEvent(event))
+   if (ImageScreen::ProcessEvent(event))
       return true;
 
    if (m_isEditingDescription)
@@ -503,7 +488,7 @@ bool SaveGameScreen::ProcessEvent(SDL_Event& event)
       {
       case SDLK_ESCAPE:
          // simulate press on exit button
-         if (m_fadeState == 1)
+         if (!IsFadeInProgress())
          {
             PressButton(saveGameButtonExit);
          }
@@ -523,16 +508,7 @@ bool SaveGameScreen::ProcessEvent(SDL_Event& event)
 
 void SaveGameScreen::Draw()
 {
-   glClear(GL_COLOR_BUFFER_BIT);
-
-   // determine brightness of images
-   {
-      Uint8 light = m_fader.GetFadeValue();
-      glColor3ub(light, light, light);
-   }
-
-   // draw registered windows
-   Screen::Draw();
+   ImageScreen::Draw();
 
    // render edit field when needed
    if (m_isEditingDescription)
@@ -566,56 +542,47 @@ void SaveGameScreen::Draw()
    }
 }
 
-void SaveGameScreen::Tick()
+void SaveGameScreen::OnFadeOutEnded()
 {
-   if ((m_fadeState == 0 || m_fadeState == 2) && m_fader.Tick())
+   switch (m_pressedButton)
    {
-      m_fadeState++;
+   case saveGameButtonLoad:
+   {
+      UaTrace("loading saved game, filename %s\n",
+         m_game.GetSavegamesManager().GetSavegameFilename(
+            m_savegamesList.GetSelectedSavegame()).c_str());
 
-      if (m_fadeState == 3)
-      {
-         // faded out, do some action
-         switch (m_pressedButton)
-         {
-         case saveGameButtonLoad:
-         {
-            UaTrace("loading saved game, filename %s\n",
-               m_game.GetSavegamesManager().GetSavegameFilename(
-                  m_savegamesList.GetSelectedSavegame()).c_str());
+      // clear screen; loading takes a while
+      m_game.GetRenderWindow().Clear();
+      m_game.GetRenderWindow().SwapBuffers();
 
-            // clear screen; loading takes a while
-            m_game.GetRenderWindow().Clear();
-            m_game.GetRenderWindow().SwapBuffers();
+      // load savegame
+      Base::Savegame sg = m_game.GetSavegamesManager().GetSavegameFromFile(
+         m_game.GetSavegamesManager().GetSavegameFilename(
+            m_savegamesList.GetSelectedSavegame()).c_str());
+      m_game.GetUnderworld().Load(sg);
 
-            // load savegame
-            Base::Savegame sg = m_game.GetSavegamesManager().GetSavegameFromFile(
-               m_game.GetSavegamesManager().GetSavegameFilename(
-                  m_savegamesList.GetSelectedSavegame()).c_str());
-            m_game.GetUnderworld().Load(sg);
+      // next screen
+      if (m_calledFromStartMenu)
+         m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
+      else
+         m_game.RemoveScreen();
+      break;
+   }
 
-            // next screen
-            if (m_calledFromStartMenu)
-               m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
-            else
-               m_game.RemoveScreen();
-            break;
-         }
+   case saveGameButtonExit:
+      m_game.RemoveScreen();
+      break;
 
-         case saveGameButtonExit:
-            m_game.RemoveScreen();
-            break;
-
-         default:
-            UaAssertMsg(false, "invalid save game button");
-            break;
-         }
-      }
+   default:
+      UaAssertMsg(false, "invalid save game button");
+      break;
    }
 }
 
 void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
 {
-   if (m_fadeState != 1)
+   if (IsFadeInProgress())
       return; // don't allow button presses in fadein/fadeout
 
    m_pressedButton = buttonId;
@@ -632,9 +599,8 @@ void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
          break;
 
       // fade out and do action
-      m_fadeState = 2;
-      m_fader.Init(false, m_game.GetTickRate(), s_fadeTime);
-      m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
+      StartFadeout();
+      m_game.GetAudioManager().FadeoutMusic(static_cast<int>(c_fadeTime * 1000));
    }
    break;
 
@@ -655,8 +621,7 @@ void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
 
       // exit button
    case saveGameButtonExit:
-      m_fadeState = 2;
-      m_fader.Init(false, m_game.GetTickRate(), s_fadeTime);
+      StartFadeout();
       break;
    }
 }
