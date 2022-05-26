@@ -37,7 +37,7 @@ class IngameDragon : public OriginalIngameControl
 {
 public:
    /// ctor
-   IngameDragon(bool leftDragon);
+   IngameDragon(OriginalIngameScreen& screen, bool leftDragon);
 
    /// initializes dragon
    virtual void Init(IGame& game, unsigned int xpos,

@@ -27,6 +27,12 @@
 class IngameGargoyleEyes : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngameGargoyleEyes(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes flask
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

@@ -27,6 +27,12 @@
 class Ingame3DView : public OriginalIngameControl
 {
 public:
+   /// ctor
+   Ingame3DView(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes 3d view window
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

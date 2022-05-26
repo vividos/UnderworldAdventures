@@ -60,8 +60,8 @@ bool Ingame3DView::ProcessEvent(SDL_Event& event)
             if (ypos >= m_windowYPos + m_windowHeight) ypos = m_windowYPos + m_windowHeight - 1;
 
             // calculate real screen coordinates and set new pos
-            m_screen->UnmapWindowPosition(xpos, ypos);
-            m_screen->SetMousePos(xpos, ypos);
+            m_parent.UnmapWindowPosition(xpos, ypos);
+            m_parent.SetMousePos(xpos, ypos);
 
             // update event mouse pos values
             event.motion.xrel += Sint16(xpos) - event.motion.x;
@@ -73,7 +73,7 @@ bool Ingame3DView::ProcessEvent(SDL_Event& event)
          {
             // user left the window
             m_in3dView = false;
-            m_parent->SetCursor(0, false);
+            m_parent.SetCursor(0, false);
          }
       }
    }
@@ -102,13 +102,13 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       if (!m_mouseMove)
       {
          // disable all modes (when possible)
-         if (!m_parent->GetMoveState(ingameMoveWalkForward) &&
-            !m_parent->GetMoveState(ingameMoveRunForward) &&
-            !m_parent->GetMoveState(ingameMoveWalkBackwards))
+         if (!m_parent.GetMoveState(ingameMoveWalkForward) &&
+            !m_parent.GetMoveState(ingameMoveRunForward) &&
+            !m_parent.GetMoveState(ingameMoveWalkBackwards))
             playerPhysics.SetMovementMode(0, Physics::moveWalk);
 
-         if (!m_parent->GetMoveState(ingameMoveTurnLeft) &&
-            !m_parent->GetMoveState(ingameMoveTurnRight))
+         if (!m_parent.GetMoveState(ingameMoveTurnLeft) &&
+            !m_parent.GetMoveState(ingameMoveTurnRight))
             playerPhysics.SetMovementMode(0, Physics::moveRotate);
 
          playerPhysics.SetMovementMode(0, Physics::moveSlide);
@@ -158,7 +158,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          }
 
       if (new_cursor_image != -1)
-         m_parent->SetCursor(new_cursor_image, false);
+         m_parent.SetCursor(new_cursor_image, false);
    }
 
    // mouse move mode?
@@ -166,9 +166,9 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
    {
       // disable all modes (when not active through keyboard movement)
       // and update movement modes and factors
-      if (!m_parent->GetMoveState(ingameMoveWalkForward) &&
-         !m_parent->GetMoveState(ingameMoveRunForward) &&
-         !m_parent->GetMoveState(ingameMoveWalkBackwards))
+      if (!m_parent.GetMoveState(ingameMoveWalkForward) &&
+         !m_parent.GetMoveState(ingameMoveRunForward) &&
+         !m_parent.GetMoveState(ingameMoveWalkBackwards))
       {
          playerPhysics.SetMovementMode(0, Physics::moveWalk);
 
@@ -179,8 +179,8 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          }
       }
 
-      if (!m_parent->GetMoveState(ingameMoveTurnLeft) &&
-         !m_parent->GetMoveState(ingameMoveTurnRight))
+      if (!m_parent.GetMoveState(ingameMoveTurnLeft) &&
+         !m_parent.GetMoveState(ingameMoveTurnRight))
       {
          playerPhysics.SetMovementMode(0, Physics::moveRotate);
 
@@ -203,19 +203,19 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
    }
 
    // check combat start
-   if (m_parent->GetGameMode() == ingameModeFight && buttonClicked && !leftButton)
+   if (m_parent.GetGameMode() == ingameModeFight && buttonClicked && !leftButton)
    {
       if (buttonDown)
       {
          // start combat weapon drawback
-         m_parent->GetGameInterface().GetGameLogic().
+         m_parent.GetGameInterface().GetGameLogic().
             UserAction(userActionCombatDrawBack,
                rely < 0.33 ? 0 : rely < 0.67 ? 1 : 2);
       }
       else
       {
          // end combat weapon drawback
-         m_parent->GetGameInterface().GetGameLogic().
+         m_parent.GetGameInterface().GetGameLogic().
             UserAction(userActionCombatRelease, 0);
       }
    }
@@ -229,12 +229,12 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       unsigned int tilex = 0, tiley = 0, id = 0;
       bool is_object = true;
 
-      Renderer& renderer = m_parent->GetGameInterface().GetRenderer();
-      if (!renderer.SelectPick(m_parent->GetGameInterface().GetUnderworld(),
+      Renderer& renderer = m_parent.GetGameInterface().GetRenderer();
+      if (!renderer.SelectPick(m_parent.GetGameInterface().GetUnderworld(),
          x, y, tilex, tiley, is_object, id))
          return true;
 
-      switch (m_parent->GetGameMode())
+      switch (m_parent.GetGameMode())
       {
          // "look" or default action
       case ingameModeDefault:
@@ -242,7 +242,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          if (is_object)
          {
             if (id != 0)
-               m_parent->GetGameInterface().GetGameLogic().
+               m_parent.GetGameInterface().GetGameLogic().
                UserAction(userActionLookObject, id);
          }
          else
@@ -251,7 +251,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
             UaTrace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
                tilex, tiley, id);
 
-            m_parent->GetGameInterface().GetGameLogic().
+            m_parent.GetGameInterface().GetGameLogic().
                UserAction(userActionLookWall, id);
          }
          break;
@@ -260,12 +260,12 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       case ingameModeUse:
          if (is_object)
          {
-            m_parent->GetGameInterface().GetGameLogic().
+            m_parent.GetGameInterface().GetGameLogic().
                UserAction(userActionUseObject, id);
          }
          else
          {
-            m_parent->GetGameInterface().GetGameLogic().
+            m_parent.GetGameInterface().GetGameLogic().
                UserAction(userActionUseWall, id);
          }
          break;
@@ -274,7 +274,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       case ingameModeGet:
          if (is_object)
          {
-            m_parent->GetGameInterface().GetGameLogic().
+            m_parent.GetGameInterface().GetGameLogic().
                UserAction(userActionGetObject, id);
          }
          break;
@@ -283,7 +283,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       case ingameModeTalk:
          if (is_object)
          {
-            m_parent->GetGameInterface().GetGameLogic().
+            m_parent.GetGameInterface().GetGameLogic().
                UserAction(userActionTalkObject, id);
          }
          break;

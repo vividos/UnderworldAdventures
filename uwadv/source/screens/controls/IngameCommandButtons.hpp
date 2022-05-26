@@ -81,6 +81,12 @@ enum IngameCommandMenu
 class IngameCommandButtons : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngameCommandButtons(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes command buttons
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

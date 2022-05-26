@@ -28,6 +28,12 @@
 class IngameMoveArrows : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngameMoveArrows(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes move arrows window
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

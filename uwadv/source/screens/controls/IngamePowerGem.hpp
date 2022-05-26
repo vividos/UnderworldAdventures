@@ -27,6 +27,12 @@
 class IngamePowerGem : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngamePowerGem(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes powergem
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

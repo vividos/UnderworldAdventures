@@ -27,6 +27,12 @@
 class IngameRuneshelf : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngameRuneshelf(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes runeshelf
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

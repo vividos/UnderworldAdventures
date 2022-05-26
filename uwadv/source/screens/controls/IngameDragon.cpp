@@ -25,8 +25,9 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-IngameDragon::IngameDragon(bool drg_left)
-   :m_leftDragon(drg_left)
+IngameDragon::IngameDragon(OriginalIngameScreen& screen, bool leftDragon)
+   :OriginalIngameControl(screen),
+   m_leftDragon(leftDragon)
 {
 }
 
@@ -72,7 +73,7 @@ bool IngameDragon::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent->GetGameInterface().GetGameLogic().UserAction(userActionClickedDragons);
+      m_parent.GetGameInterface().GetGameLogic().UserAction(userActionClickedDragons);
       return true;
    }
 

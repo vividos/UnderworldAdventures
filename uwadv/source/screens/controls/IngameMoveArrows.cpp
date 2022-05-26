@@ -52,7 +52,7 @@ bool IngameMoveArrows::ProcessEvent(SDL_Event& event)
       if (m_lastPressedKey != Base::keyNone && !IsInWindow(xpos, ypos))
       {
          // unpress (release) key
-         m_parent->KeyEvent(false, m_lastPressedKey);
+         m_parent.KeyEvent(false, m_lastPressedKey);
          m_lastPressedKey = Base::keyNone;
       }
    }
@@ -80,7 +80,7 @@ bool IngameMoveArrows::MouseEvent(bool buttonClicked, bool leftButton,
    if (buttonClicked)
    {
       // simulate key press (or release)
-      m_parent->KeyEvent(buttonDown, new_selected_key);
+      m_parent.KeyEvent(buttonDown, new_selected_key);
 
       if (!buttonDown)
          m_lastPressedKey = Base::keyNone;
@@ -95,8 +95,8 @@ bool IngameMoveArrows::MouseEvent(bool buttonClicked, bool leftButton,
          if (new_selected_key != m_lastPressedKey)
          {
             // change pressed button
-            m_parent->KeyEvent(false, m_lastPressedKey);
-            m_parent->KeyEvent(true, new_selected_key);
+            m_parent.KeyEvent(false, m_lastPressedKey);
+            m_parent.KeyEvent(true, new_selected_key);
 
             m_lastPressedKey = new_selected_key;
          }

@@ -23,11 +23,12 @@
 #include "OriginalIngameControl.hpp"
 #include "../OriginalIngameScreen.hpp"
 
+OriginalIngameControl::OriginalIngameControl(OriginalIngameScreen& screen)
+   :m_parent(screen)
+{
+}
+
 Physics::PlayerPhysicsObject& OriginalIngameControl::GetPlayerPhysicsObject()
 {
-   UaAssert(m_parent != nullptr);
-   if (m_parent == nullptr)
-      throw std::runtime_error("m_parent is nullptr!");
-
-   return m_parent->GetPlayerPhysicsObject();
+   return m_parent.GetPlayerPhysicsObject();
 }

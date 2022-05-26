@@ -30,13 +30,13 @@ class OriginalIngameScreen;
 class OriginalIngameControl : public ImageQuad
 {
 public:
-   /// sets parent window
-   void SetParent(OriginalIngameScreen* parent) { m_parent = parent; }
+   /// ctor
+   OriginalIngameControl(OriginalIngameScreen& screen);
 
    /// returns player physics tracking object
    Physics::PlayerPhysicsObject& GetPlayerPhysicsObject();
 
 protected:
    /// parent screen
-   OriginalIngameScreen* m_parent;
+   OriginalIngameScreen& m_parent;
 };

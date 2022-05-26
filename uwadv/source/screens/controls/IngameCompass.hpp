@@ -27,6 +27,12 @@
 class IngameCompass : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngameCompass(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// initializes compass
    virtual void Init(IGame& game, unsigned int xpos,
       unsigned int ypos) override;

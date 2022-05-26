@@ -243,7 +243,7 @@ void IngameCommandButtons::UpdateMenu()
    }
 
    // add border
-   AddBorder(m_parent->m_backgroundImage.GetImage());
+   AddBorder(m_parent.m_backgroundImage.GetImage());
 
    Update();
 }
@@ -325,14 +325,14 @@ void IngameCommandButtons::DoButtonAction()
          // button "options"
       case 0:
          m_menu = commandMenuOptions;
-         m_parent->SetGameMode(ingameModeOptions);
+         m_parent.SetGameMode(ingameModeOptions);
          break;
 
          // all other buttons just toggle the game mode
       default:
          // update game mode; note: the code assumes that IngameGameMode
          // values are contiguous
-         m_parent->SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
+         m_parent.SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
          break;
       }
       break;
@@ -342,19 +342,19 @@ void IngameCommandButtons::DoButtonAction()
       switch (m_selectedButton)
       {
       case 0: // save game
-         m_parent->ScheduleAction(ingameActionSaveGame, true);
+         m_parent.ScheduleAction(ingameActionSaveGame, true);
          m_menu = commandMenuActions;
          m_selectedButton = m_savedActionButton;
-         m_parent->SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
+         m_parent.SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
          //m_menu = commandMenuSave; // old-style save menu
          //m_selectedButton = 1;
          break;
 
       case 1: // restore game
-         m_parent->ScheduleAction(ingameActionLoadGame, true);
+         m_parent.ScheduleAction(ingameActionLoadGame, true);
          m_menu = commandMenuActions;
          m_selectedButton = m_savedActionButton;
-         m_parent->SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
+         m_parent.SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
          //m_menu = commandMenuRestore; // old-style restore menu
          //m_selectedButton = 1;
          break;
@@ -380,7 +380,7 @@ void IngameCommandButtons::DoButtonAction()
       case 5: // return to game
          m_menu = commandMenuActions;
          m_selectedButton = m_savedActionButton;
-         m_parent->SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
+         m_parent.SetGameMode(IngameGameMode(m_selectedButton - 1 + ingameModeTalk));
          break;
 
       case 6: // quit game
@@ -398,7 +398,7 @@ void IngameCommandButtons::DoButtonAction()
       switch (m_selectedButton)
       {
       case 2: // yes
-         m_parent->ScheduleAction(ingameActionExit, true);
+         m_parent.ScheduleAction(ingameActionExit, true);
          break;
 
       case 3: // no

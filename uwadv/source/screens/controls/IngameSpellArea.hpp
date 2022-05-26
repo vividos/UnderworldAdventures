@@ -27,6 +27,12 @@
 class IngameSpellArea : public OriginalIngameControl
 {
 public:
+   /// ctor
+   IngameSpellArea(OriginalIngameScreen& screen)
+      :OriginalIngameControl(screen)
+   {
+   }
+
    /// dtor
    virtual ~IngameSpellArea() {}
 

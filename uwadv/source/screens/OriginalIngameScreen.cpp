@@ -46,22 +46,21 @@ const unsigned int c_ingameScreenshotYRes = 100;
 
 /// ctor; sets parent pointers for ingame controls
 OriginalIngameScreen::OriginalIngameScreen(IGame& game)
-   :Screen(game), m_vitalityFlask(true), m_manaFlask(false),
-   m_leftDragon(true), m_rightDragon(false),
+   :Screen(game),
+   m_compass(*this),
+   m_runeShelf(*this),
+   m_spellArea(*this),
+   m_vitalityFlask(*this, true),
+   m_manaFlask(*this, false),
+   m_gargoyleEyes(*this),
+   m_leftDragon(*this, true),
+   m_rightDragon(*this, false),
+   m_commandButtons(*this),
+   m_view3d(*this),
+   m_powerGem(*this),
+   m_moveArrows(*this),
    m_playerPhysics(m_game.GetUnderworld().GetPlayer(), m_game.GetSettings().GetBool(Base::settingUwadvFeatures))
 {
-   m_compass.SetParent(this);
-   m_runeShelf.SetParent(this);
-   m_spellArea.SetParent(this);
-   m_vitalityFlask.SetParent(this);
-   m_manaFlask.SetParent(this);
-   m_gargoyleEyes.SetParent(this);
-   m_leftDragon.SetParent(this);
-   m_rightDragon.SetParent(this);
-   m_commandButtons.SetParent(this);
-   m_view3d.SetParent(this);
-   m_powerGem.SetParent(this);
-   m_moveArrows.SetParent(this);
 }
 
 void OriginalIngameScreen::Init()

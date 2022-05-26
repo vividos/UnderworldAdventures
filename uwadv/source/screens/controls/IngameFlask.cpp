@@ -68,7 +68,7 @@ void IngameFlask::Init(IGame& game, unsigned int xpos,
 
 void IngameFlask::Draw()
 {
-   Underworld::Player& player = m_parent->GetGameInterface().GetUnderworld().
+   Underworld::Player& player = m_parent.GetGameInterface().GetUnderworld().
       GetPlayer();
    m_isPoisoned = player.GetAttribute(Underworld::attrPoisoned) != 0;
 
@@ -102,7 +102,7 @@ bool IngameFlask::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent->GetGameInterface().GetGameLogic().UserAction(
+      m_parent.GetGameInterface().GetGameLogic().UserAction(
          m_isVitalityFlask ? userActionClickedVitalityFlash : userActionClickedManaFlask);
 
       return true;
