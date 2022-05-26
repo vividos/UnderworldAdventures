@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,6 +69,15 @@ RenderWindow::RenderWindow(int width, int height, const char* title, bool fullsc
 
    // setup OpenGL viewport
    glViewport(0, 0, m_width, m_height);
+}
+
+RenderWindow::RenderWindow(const void* handle)
+   :m_width(0),
+   m_height(0),
+   m_context(nullptr),
+   m_sdlRenderer(nullptr)
+{
+   m_window = SDL_CreateWindowFrom(handle);
 }
 
 void RenderWindow::SetFullscreen(bool fullscreen)

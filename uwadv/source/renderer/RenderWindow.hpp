@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ class RenderWindow
 public:
    /// creates new render window with given size and fullscreen flag
    RenderWindow(int width, int height, const char* title, bool fullscreen);
+
+   /// creates render window from existing window handle; doesn't initialize OpenGL
+   RenderWindow(const void* handle);
 
    /// sets fullscreen mode (or goes back to windowed mode)
    void SetFullscreen(bool fullscreen);
