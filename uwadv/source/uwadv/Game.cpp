@@ -30,8 +30,8 @@
 #include "import/GameStringsImporter.hpp"
 #include "physics/GeometryProvider.hpp"
 #include <ctime>
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 
 #ifdef WIN32
 #include "win32/resource.h"

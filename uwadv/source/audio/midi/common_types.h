@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include <SDL_types.h>
+#include <SDL2/SDL_types.h>
 
 // derive Pentagram types from SDL types
 typedef Uint64 uint64;

@@ -20,11 +20,11 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "SDL_version.h"
-#include "SDL_video.h"
-#include "SDL_endian.h"
-#include "SDL_pixels.h"
-#include "SDL_stdinc.h"
+#include "SDL2/SDL_version.h"
+#include "SDL2/SDL_video.h"
+#include "SDL2/SDL_endian.h"
+#include "SDL2/SDL_pixels.h"
+#include "SDL2/SDL_stdinc.h"
 
 #include "pnglite.h"
 #include "SDL_pnglite.h"

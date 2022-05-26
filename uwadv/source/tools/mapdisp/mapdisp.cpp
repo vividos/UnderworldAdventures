@@ -28,7 +28,7 @@
 /// with the cursor up and down keys the distance to the viewpoint can be
 /// adjusted. finally, page-up and page-down loads another map level.
 //
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "Level.hpp"
 #include "LevelList.hpp"
 #include "File.hpp"

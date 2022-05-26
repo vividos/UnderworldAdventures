@@ -14,6 +14,6 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		"${PROJECT_SOURCE_DIR}/../audio")
 
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} audio)
+target_link_libraries(${PROJECT_NAME} SDL2::SDL2main audio)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "uwadv/tools")

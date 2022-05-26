@@ -23,9 +23,9 @@
 
 #include "Base.hpp"
 #include <string>
-#include <SDL_types.h>
-#include <SDL_rwops.h>
-#include <SDL_endian.h>
+#include <SDL2/SDL_types.h>
+#include <SDL2/SDL_rwops.h>
+#include <SDL2/SDL_endian.h>
 
 namespace Base
 {

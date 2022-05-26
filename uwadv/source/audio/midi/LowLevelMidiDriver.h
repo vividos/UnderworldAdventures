@@ -27,8 +27,8 @@ class XMidiSequence;
 
 #include <atomic>
 #include <queue>
-#include <SDL.h>
-#include <SDL_thread.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
 
 //! Specifies the max number of simultaneous playing sequences supported
 //! \note Only 2 simultaneous playing sequences required for Ultima 8

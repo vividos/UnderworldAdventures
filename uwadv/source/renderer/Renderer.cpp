@@ -28,7 +28,7 @@
 #include "Underworld.hpp"
 #include "GameInterface.hpp"
 #include "Constants.hpp"
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 
 Renderer::Renderer()
    :m_viewOffset(0.0, 0.0, 0.0),

@@ -22,7 +22,7 @@
 #include "pch.hpp"
 #include "File.hpp"
 #include "TextFile.hpp"
-#include <SDL_rwops.h>
+#include <SDL2/SDL_rwops.h>
 #include "SDL_rwops_gzfile.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

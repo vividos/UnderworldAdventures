@@ -26,7 +26,7 @@
 #include "ResourceManager.hpp"
 #include "File.hpp"
 #include "String.hpp"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 // for optimizing, we omit the first pass in loading frames
 // the xres, yres and maxframes members have to be set before calling

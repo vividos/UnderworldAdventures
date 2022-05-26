@@ -23,7 +23,7 @@
 #include "Playlist.hpp"
 #include "Settings.hpp"
 #include "TextFile.hpp"
-#include <SDL_rwops.h>
+#include <SDL2/SDL_rwops.h>
 
 namespace Detail
 {

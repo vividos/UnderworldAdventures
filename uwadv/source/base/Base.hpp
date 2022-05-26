@@ -103,7 +103,7 @@ int UaTracePrintf(const char *fmt, ...);
 #include "Exception.hpp"
 #include "String.hpp"
 #include <memory>
-#include <SDL_types.h>
+#include <SDL2/SDL_types.h>
 
 struct SDL_RWops;
 

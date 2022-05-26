@@ -23,8 +23,8 @@
 #include "Audio.hpp"
 #include "MidiPlayer.hpp"
 #include "Settings.hpp"
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include "File.hpp"
 #include "ResourceManager.hpp"
 

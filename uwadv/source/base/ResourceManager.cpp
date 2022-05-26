@@ -23,7 +23,7 @@
 #include "ResourceManager.hpp"
 #include "Settings.hpp"
 #include "FileSystem.hpp"
-#include <SDL_rwops.h>
+#include <SDL2/SDL_rwops.h>
 #include <algorithm>
 #include <zzip/zzip.h>
 #include "SDL_rwops_zzip.h"

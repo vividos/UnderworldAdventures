@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include <SDL_rwops.h>
+#include <SDL2/SDL_rwops.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include <SDL_thread.h>
+#include <SDL2/SDL_thread.h>
 #include <map>
 #include <deque>
 #include "IDebugServer.hpp"

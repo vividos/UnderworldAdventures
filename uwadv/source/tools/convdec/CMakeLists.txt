@@ -17,6 +17,6 @@ target_include_directories(${PROJECT_NAME}
 		"${PROJECT_SOURCE_DIR}/../conv"
 		"${PROJECT_SOURCE_DIR}/../underworld")
 
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} base conv import underworld)
+target_link_libraries(${PROJECT_NAME} SDL2::SDL2main base conv import underworld)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "uwadv/tools")

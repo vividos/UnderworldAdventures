@@ -22,7 +22,7 @@
 #pragma once
 
 #include "Triangle3d.hpp"
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 #include <gl/GLU.h>
 
 // under win32, the callback function must have standard calling convention

@@ -29,7 +29,7 @@
 #include <vector>
 #include <map>
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #define UWPATH "e:\\uw1\\"
 //#define UWPATH "e:\\uw2\\"

@@ -24,10 +24,7 @@ project("UnderworldAdventures")
 find_package(OpenGL REQUIRED)
 
 # Configure SDL2
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/source/thirdparty/SDL2-2.0.18)
-
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
 
 # Configure common paths.
 include_directories("source")

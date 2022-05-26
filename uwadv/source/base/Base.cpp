@@ -23,7 +23,7 @@
 #include <cstdio>
 #include <cstdarg>
 #include <sstream>
-#include <SDL_rwops.h>
+#include <SDL2/SDL_rwops.h>
 #ifdef HAVE_WIN32
 #include <Windows.h> // for OutputDebugStringA
 #endif

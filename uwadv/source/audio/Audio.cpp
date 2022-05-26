@@ -29,8 +29,8 @@
 #include "Path.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include "MidiPlayer.hpp"
 #include "VoiceFile.hpp"
 #include "String.hpp"

@@ -24,4 +24,4 @@
 #include "common.hpp"
 #include "Base.hpp"
 #include "Audio.hpp"
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>

@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for audio.
 #
@@ -9,8 +9,7 @@ cmake_minimum_required(VERSION 3.8)
 project(audio)
 
 # Confiure SDL2_mixer
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../thirdparty/SDL2_mixer-2.0.4)
-find_package(SDL2_mixer REQUIRED)
+find_package(sdl2-mixer REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
@@ -39,11 +38,9 @@ add_library(${PROJECT_NAME} STATIC
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
-	PRIVATE
-		"${PROJECT_SOURCE_DIR}/../base"
-		"${SDL2_MIXER_INCLUDE_DIRS}")
+	PRIVATE "${PROJECT_SOURCE_DIR}/../base")
 
-target_link_libraries(${PROJECT_NAME} base ${SDL2_MIXER_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} base SDL2::SDL2_mixer)
 
 if (WIN32)
 	target_link_libraries(${PROJECT_NAME} winmm.lib)

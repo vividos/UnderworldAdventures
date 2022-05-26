@@ -27,7 +27,7 @@
 #include "TextFile.hpp"
 #include "FileSystem.hpp"
 #include <cerrno>
-#include <SDL_rwops.h>
+#include <SDL2/SDL_rwops.h>
 
 using Base::Keymap;
 using Base::KeyType;

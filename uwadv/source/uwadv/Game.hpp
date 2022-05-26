@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "base/Settings.hpp"
 #include "base/ResourceManager.hpp"
 #include "ui/Screen.hpp"

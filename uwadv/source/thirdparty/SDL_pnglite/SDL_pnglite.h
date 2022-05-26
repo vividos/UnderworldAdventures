@@ -29,7 +29,7 @@
 #ifndef _SDL_pnglite_h
 #define _SDL_pnglite_h
 
-#include "begin_code.h"
+#include "SDL2/begin_code.h"
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 /* *INDENT-OFF* */
@@ -97,7 +97,7 @@ extern DECLSPEC int SDLCALL SDL_HeaderCheckPNG_RW(SDL_RWops *src, int freesrc, i
 }
 /* *INDENT-ON* */
 #endif
-#include "close_code.h"
+#include "SDL2/close_code.h"
 
 
 #endif

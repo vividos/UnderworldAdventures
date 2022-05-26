@@ -23,7 +23,7 @@
 
 #include <fstream>
 #include <cmath>
-#include "SDL_rwops.h"
+#include <SDL2/SDL_rwops.h>
 
 class IDataSource
 {

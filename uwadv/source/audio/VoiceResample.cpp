@@ -20,7 +20,7 @@
 /// \brief voc file resample implementation
 //
 #include "pch.hpp"
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include "resamp.h"
 #include <vector>
 

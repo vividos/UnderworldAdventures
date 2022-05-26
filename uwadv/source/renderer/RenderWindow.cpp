@@ -21,10 +21,10 @@
 //
 #include "pch.hpp"
 #include "RenderWindow.hpp"
-#include <SDL_opengl.h>
+#include <SDL2/SDL_opengl.h>
 
 #ifdef WIN32
-#include <SDL_syswm.h>
+#include <SDL2/SDL_syswm.h>
 #endif
 
 RenderWindow::RenderWindow(int width, int height, const char* title, bool fullscreen)
