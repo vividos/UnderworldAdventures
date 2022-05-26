@@ -24,8 +24,9 @@
 #include "ImageScreen.hpp"
 #include "ImageManager.hpp"
 
-ImageWindow::ImageWindow(ImageScreen& screen)
-   :m_screen(screen)
+ImageWindow::ImageWindow(ImageScreen& screen, bool useTransparency)
+   :m_screen(screen),
+   m_useTransparency(useTransparency)
 {
 }
 
@@ -49,7 +50,7 @@ void ImageWindow::UpdateImage()
       m_image,
       m_windowXPos,
       m_windowYPos,
-      true);
+      m_useTransparency);
 
    m_screen.UpdateImage();
 }

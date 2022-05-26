@@ -29,7 +29,7 @@ class ImageWindow : public Window
 {
 public:
    /// ctor
-   ImageWindow(ImageScreen& screen);
+   ImageWindow(ImageScreen& screen, bool useTransparency = true);
 
    /// initializes image window
    void Init(unsigned int xpos, unsigned int ypos,
@@ -50,4 +50,8 @@ private:
 
    /// the image for this image window
    IndexedImage m_image;
+
+   /// determines if transparency is used in the image, when pasting onth the
+   /// screen's image
+   bool m_useTransparency;
 };
