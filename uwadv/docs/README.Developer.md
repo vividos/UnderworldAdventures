@@ -6,7 +6,10 @@ navigate the document.
 [1. Introduction](#1-introduction)<br/>
 
 [2. Compiling Underworld Adventures](#2-compiling-underworld-adventures)<br/>
-[2.1 Microsoft Visual Studio on Windows](#2-1-microsoft-visual-studio-on-windows)<br/>
+[2.1 vcpkg dependency manager](#2-1-vcpkg-dependency-manager)<br/>
+[2.2 Microsoft Visual Studio on Windows](#2-1-microsoft-visual-studio-on-windows)<br/>
+[2.3 CMake on Windows, Linux and macOS](#2-2-cmake-on-windows-linux-and-macos)<br/>
+[2.4 Visual Studio Code](#2-3-visual-studio-code)<br/>
 
 [3. Developing Underworld Adventures](#3-developing-underworld-adventures)<br/>
 [3.1 Code guidelines](#3-1-code-guidelines)<br/>
@@ -47,12 +50,33 @@ scripting and the interfaces to the game, please check out the chapter
 There are several platforms on which Underworld Adventures can be built and
 run.
 
-### 2.1 Microsoft Visual Studio on Windows
+### 2.1 vcpkg dependency manager
+
+Underworld Adventures uses the `vcpkg` C/C++ dependency manager to resolve
+external libraries like SDL2 and zlib. This tool is platform independent and
+makes it easy to compile these libraries for your platform. It also updates
+the libraries automatically, making it easy to always use the latest versions
+of the dependencies.
+
+Underworld Adventures uses vcpkg in Manifest mode. This means that there is a
+local vcpkg installation on your development computer, but the external
+libraries are referenced using the `vcpkg.json` file in the `uwadv` folder.
+There is no need to install libraries by yourself. You have to set up vcpkg
+once, though, in a separate folder. Follow the steps on the vcpkg
+documentation pages, by clicking "Get Started" on this page:
+https://vcpkg.io/
+
+Note: When using Visual Studio Code, you should change the path to your vcpkg
+folder in the file ".vscode/settings.json" so that CMake can find the vcpkg
+folder.
+
+### 2.2 Microsoft Visual Studio on Windows
 
 Underworld Adventures can be compiled using the latest Visual Studio version
 from Microsoft. As of writing this document, Visual Studio 2019 is the
 current version. Any later version should also work. Either Community or
-Professional version should work. Install the "C++" workload.
+Professional version should work. Install the "Desktop development with C++"
+workload.
 
 Open the "uwadv.sln" file located in the "uwadv" folder. In the project
 workspace, you will see several projects, organized by some solution folders.
@@ -74,13 +98,50 @@ copied to the folder as well, if it doesn't exist yet.
 More information about running Underworld Adventures can be found in the file
 ["README.Manual.md"](README.Manual.md).
 
-### 2.2 CMake on Windows, Linux and macOS
+### 2.3 CMake on Windows, Linux and macOS
 
 Underworld Adventures can be compiled using the CMake build system, which
 supports several platforms. The CMake build system supersedes the automake
 based build system and the MinGW makefiles. The minimum CMake version needed
 currently is 3.15.
 
+When using Visual Studio, you can use the "Open a local folder" and specify
+the `uwadv` folder. Visual Studio then starts in "CMake mode" and will use
+CMake to build the projects. The solution (`.sln`) and project (`.vcproj`)
+files are ignored in this mode.
+
+You can also use Visual Studio code. See the next chapter for more infos.
+
+When using CMake on the command line, be sure to also specify the `vcpkg`
+toolchain file, or the builds will not find the library packages. Like so:
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake ...
+
+### 2.4 Visual Studio Code
+
+You can also use Visual Studio Code to build and develop for Underworld
+Adventures. `vscode` also uses the CMake project files, so be sure to install
+(at least) the following extensions:
+
+- C/C++ by Microsoft
+- CMake Tools by Microsoft
+
+Open the project by using "File > Open Folder..." and open the `uwadv` file.
+The folder has a .vscode folder with a `settings.json` file with all the
+settings for Visual Studio Code. The `vcpkg` folder has to be adjusted in the
+`CMAKE_TOOLCHAIN_FILE` variable in the `cmake.configureSettings` section.
+
+To compile the project, you can choose the following in the lower status bar:
+
+- build variant: One of Debug, Release, MinSizeRel and RelWithDebInfo
+- active kit: A compiler kit installed on your computer, e.g. an installed
+  Visual Studio 2019, a gcc or Clang compiler or other kits.
+- default build target: Specifies the static library or executable to build.
+  Any folder name that has a `CMakeFiles.txt` file can be used. Choose `uwadv`
+  for the main executable, or e.g. `ALL_BUILD` to build all CMake projects.
+
+Then press the `Build" button on the lower status bar to compile the chosen
+project.
 
 ## 3. Developing Underworld Adventures
 
