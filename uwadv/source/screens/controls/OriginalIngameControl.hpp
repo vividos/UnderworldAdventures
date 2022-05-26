@@ -16,22 +16,27 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file IngameControls.hpp
-/// \brief ingame screen controls
+/// \file OriginalIngameControl.hpp
+/// \brief original ingame control base class
 //
 #pragma once
 
 #include "ImageQuad.hpp"
-#include "Keymap.hpp"
 #include "physics/PlayerPhysicsObject.hpp"
-#include "controls/OriginalIngameControl.hpp"
-#include "controls/IngameCompass.hpp"
-#include "controls/IngameRuneshelf.hpp"
-#include "controls/IngameSpellArea.hpp"
-#include "controls/IngameFlask.hpp"
-#include "controls/IngameGargoyleEyes.hpp"
-#include "controls/IngameDragon.hpp"
-#include "controls/Ingame3DView.hpp"
-#include "controls/IngamePowerGem.hpp"
-#include "controls/IngameMoveArrows.hpp"
-#include "controls/IngameCommandButtons.hpp"
+
+class OriginalIngameScreen;
+
+/// ingame screen control base class
+class OriginalIngameControl : public ImageQuad
+{
+public:
+   /// sets parent window
+   void SetParent(OriginalIngameScreen* parent) { m_parent = parent; }
+
+   /// returns player physics tracking object
+   Physics::PlayerPhysicsObject& GetPlayerPhysicsObject();
+
+protected:
+   /// parent screen
+   OriginalIngameScreen* m_parent;
+};

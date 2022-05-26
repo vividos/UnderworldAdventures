@@ -48,10 +48,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AcknowledgementsScreen.cpp" />
+    <ClCompile Include="controls\Ingame3DView.cpp" />
+    <ClCompile Include="controls\IngameCommandButtons.cpp" />
+    <ClCompile Include="controls\IngameCompass.cpp" />
+    <ClCompile Include="controls\IngameDragon.cpp" />
+    <ClCompile Include="controls\IngameFlask.cpp" />
+    <ClCompile Include="controls\IngameGargoyleEyes.cpp" />
+    <ClCompile Include="controls\IngameMoveArrows.cpp" />
+    <ClCompile Include="controls\IngamePowerGem.cpp" />
+    <ClCompile Include="controls\IngameRuneshelf.cpp" />
+    <ClCompile Include="controls\IngameSpellArea.cpp" />
+    <ClCompile Include="controls\OriginalIngameControl.cpp" />
     <ClCompile Include="ConversationScreen.cpp" />
     <ClCompile Include="CreateCharacterScreen.cpp" />
     <ClCompile Include="CutsceneViewScreen.cpp" />
-    <ClCompile Include="IngameControls.cpp" />
     <ClCompile Include="OriginalIngameScreen.cpp" />
     <ClCompile Include="MapViewScreen.cpp" />
     <ClCompile Include="Panel.cpp" />
@@ -66,6 +76,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AcknowledgementsScreen.hpp" />
+    <ClInclude Include="controls\Ingame3DView.hpp" />
+    <ClInclude Include="controls\IngameCommandButtons.hpp" />
+    <ClInclude Include="controls\IngameCompass.hpp" />
+    <ClInclude Include="controls\IngameDragon.hpp" />
+    <ClInclude Include="controls\IngameFlask.hpp" />
+    <ClInclude Include="controls\IngameGargoyleEyes.hpp" />
+    <ClInclude Include="controls\IngameMoveArrows.hpp" />
+    <ClInclude Include="controls\IngamePowerGem.hpp" />
+    <ClInclude Include="controls\IngameRuneshelf.hpp" />
+    <ClInclude Include="controls\IngameSpellArea.hpp" />
+    <ClInclude Include="controls\OriginalIngameControl.hpp" />
     <ClInclude Include="ConversationScreen.hpp" />
     <ClInclude Include="CreateCharacterScreen.hpp" />
     <ClInclude Include="CutsceneViewScreen.hpp" />

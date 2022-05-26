@@ -16,22 +16,32 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file IngameControls.hpp
-/// \brief ingame screen controls
+/// \file IngameCompass.hpp
+/// \brief ingame compass control
 //
 #pragma once
 
-#include "ImageQuad.hpp"
-#include "Keymap.hpp"
-#include "physics/PlayerPhysicsObject.hpp"
-#include "controls/OriginalIngameControl.hpp"
-#include "controls/IngameCompass.hpp"
-#include "controls/IngameRuneshelf.hpp"
-#include "controls/IngameSpellArea.hpp"
-#include "controls/IngameFlask.hpp"
-#include "controls/IngameGargoyleEyes.hpp"
-#include "controls/IngameDragon.hpp"
-#include "controls/Ingame3DView.hpp"
-#include "controls/IngamePowerGem.hpp"
-#include "controls/IngameMoveArrows.hpp"
-#include "controls/IngameCommandButtons.hpp"
+#include "OriginalIngameControl.hpp"
+
+/// compass control
+class IngameCompass : public OriginalIngameControl
+{
+public:
+   /// initializes compass
+   virtual void Init(IGame& game, unsigned int xpos,
+      unsigned int ypos) override;
+
+   /// draws compass
+   virtual void Draw() override;
+
+   // virtual methods from Window
+   virtual bool MouseEvent(bool buttonClicked, bool leftButton,
+      bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
+
+private:
+   /// current compass image
+   unsigned int m_currentCompassImageIndex;
+
+   /// compass images
+   std::vector<IndexedImage> m_compassImages;
+};

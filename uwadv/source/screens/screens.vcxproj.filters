@@ -9,6 +9,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="controls">
+      <UniqueIdentifier>{444e129e-5da6-4672-a0e3-9942f61c563b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConversationScreen.cpp">
@@ -38,9 +41,6 @@
     <ClCompile Include="OriginalIngameScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IngameControls.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AcknowledgementsScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,6 +49,39 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameFlask.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\OriginalIngameControl.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameCompass.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameRuneshelf.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameSpellArea.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameGargoyleEyes.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameDragon.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\Ingame3DView.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngamePowerGem.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameMoveArrows.cpp">
+      <Filter>controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\IngameCommandButtons.cpp">
+      <Filter>controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +123,39 @@
     </ClInclude>
     <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameFlask.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\OriginalIngameControl.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameCompass.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameRuneshelf.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameSpellArea.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameGargoyleEyes.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameDragon.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\Ingame3DView.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngamePowerGem.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameMoveArrows.hpp">
+      <Filter>controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\IngameCommandButtons.hpp">
+      <Filter>controls</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
