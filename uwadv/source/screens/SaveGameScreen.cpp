@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 
 const unsigned int SaveGameButton::c_buttonWidth = 55;
 
+/// fadein/out time
 const double SaveGameScreen::s_fadeTime = 0.5;
 
 /// Draws edges into an image.
@@ -67,7 +68,7 @@ void SaveGameButton::Init(SaveGameScreen* screen,
    IGame& game, unsigned int xpos, unsigned int ypos,
    const char* text, SaveGameButtonId buttonId)
 {
-   std::string buttonText(text);
+   std::string buttonText{ text };
 
    m_screen = screen;
    m_buttonId = buttonId;
@@ -462,6 +463,8 @@ void SaveGameScreen::Init()
 
 void SaveGameScreen::Destroy()
 {
+   Screen::Destroy();
+
    m_previewImageTexture.Done();
 
    UaTrace("leaving save game screen\n\n");
@@ -603,6 +606,7 @@ void SaveGameScreen::Tick()
             break;
 
          default:
+            UaAssertMsg(false, "invalid save game button");
             break;
          }
       }

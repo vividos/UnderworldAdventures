@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -61,11 +61,11 @@ public:
    virtual bool MouseEvent(bool buttonClicked, bool leftButton,
       bool buttonDown, unsigned int mouseX, unsigned int mouseY) override;
 
-protected:
+private:
    /// updates button image according to state
    void UpdateButton(bool buttonStatePressed);
 
-protected:
+private:
    // constants
 
    /// standard button width
@@ -152,14 +152,14 @@ public:
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void Tick() override;
 
-protected:
+private:
    /// starts asking for a savegame name
    void AskForSavegameDescription();
 
    /// saves game to disk
    void SaveGameToDisk();
 
-protected:
+private:
    // constants
 
    /// time to fade in/out
