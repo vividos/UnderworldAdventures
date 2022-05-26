@@ -28,6 +28,7 @@
 #include "Font.hpp"
 #include "TextScroll.hpp"
 #include "TextEditWindow.hpp"
+#include "ImageWindow.hpp"
 #include "MouseCursor.hpp"
 
 class SaveGameScreen;
@@ -43,11 +44,14 @@ enum SaveGameButtonId
 };
 
 /// savegame screen button class
-class SaveGameButton : public ImageQuad
+class SaveGameButton : public ImageWindow
 {
 public:
    /// ctor
-   SaveGameButton() {}
+   SaveGameButton(ImageScreen& screen)
+      :ImageWindow(screen, false)
+   {
+   }
 
    /// initializes button
    void Init(SaveGameScreen* screen, IGame& game,
@@ -85,12 +89,13 @@ private:
 };
 
 /// savegames list class
-class SaveGamesList : public ImageQuad
+class SaveGamesList : public ImageWindow
 {
 public:
    /// ctor
-   SaveGamesList()
-      :m_selectedSavegameItemIndex(-1)
+   SaveGamesList(ImageScreen& screen)
+      :ImageWindow(screen),
+      m_selectedSavegameItemIndex(-1)
    {
    }
 

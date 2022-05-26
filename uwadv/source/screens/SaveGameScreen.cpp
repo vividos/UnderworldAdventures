@@ -135,11 +135,8 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       m_buttonImages[2].PasteImage(tempImage, text_xpos, text_ypos, true);
    }
 
-   // create window
-   m_image.Create(c_buttonWidth, m_buttonImages[0].GetYRes());
-   m_image.SetPalette(game.GetImageManager().GetPalette(3));
-
-   ImageQuad::Init(game, xpos, ypos);
+   ImageWindow::Init(xpos, ypos,
+      c_buttonWidth, m_buttonImages[0].GetYRes());
 
    UpdateButton(false);
 }
@@ -183,14 +180,14 @@ void SaveGameButton::UpdateButton(bool buttonStatePressed)
 {
    // paste base button
    IndexedImage& button0 = m_buttonImages[0];
-   m_image.PasteImage(button0, 0, 0);
+   GetImage().PasteImage(button0, 0, 0);
 
    // base border depending on selection
    IndexedImage& button = m_buttonImages[buttonStatePressed ? 1 : 2];
 
-   m_image.PasteImage(button, 0, 0, true);
+   GetImage().PasteImage(button, 0, 0, true);
 
-   Update();
+   UpdateImage();
 }
 
 void SaveGamesList::Init(SaveGameScreen* screen,
@@ -207,13 +204,10 @@ void SaveGamesList::Init(SaveGameScreen* screen,
    // load font
    m_normalFont.Load(game.GetResourceManager(), fontNormal);
 
-   // setup image
-   ImageQuad::Init(game, xpos, ypos);
+   ImageWindow::Init(xpos, ypos, 119, 126);
 
-   GetImage().Create(119, 126);
    GetImage().Clear(142);
-
-   Update();
+   UpdateImage();
 }
 
 void SaveGamesList::UpdateList()
@@ -281,7 +275,7 @@ void SaveGamesList::UpdateList()
       GetImage().PasteImage(tempImage, 2, static_cast<unsigned int>(i * (charHeight + 1) + 2), true);
    }
 
-   Update();
+   UpdateImage();
 
    m_screen->UpdateInfo();
 }
@@ -321,7 +315,12 @@ bool SaveGamesList::MouseEvent(bool buttonClicked, bool leftButton,
 
 SaveGameScreen::SaveGameScreen(IGame& game,
    bool calledFromStartMenu, bool disableSaveButton)
-   :ImageScreen(game, 0, c_fadeTime),
+   :ImageScreen(game, 3, c_fadeTime),
+   m_saveButton(*this),
+   m_loadButton(*this),
+   m_refreshButton(*this),
+   m_exitButton(*this),
+   m_savegamesList(*this),
    m_calledFromStartMenu(calledFromStartMenu),
    m_disableSaveButton(disableSaveButton)
 {
@@ -348,8 +347,6 @@ void SaveGameScreen::Init()
 
       // init background image
       IndexedImage& img = GetImage();
-      img.Create(320, 200);
-      img.SetPalette(m_game.GetImageManager().GetPalette(3));
 
       img.Clear(142);
       DrawImageEdges(img, 2, 2, 320 - 4, 200 - 4, true);
@@ -392,9 +389,9 @@ void SaveGameScreen::Init()
 
       // prepare background image
       IndexedImage& img = GetImage();
-
       img.Create(320, 200);
-      img.SetPalette(m_game.GetImageManager().GetPalette(3));
+      img.SetPalette(temp_back.GetPalette());
+
       img.PasteRect(temp_back, 160, 0, 160, 200, 0, 0);
 
       // add frame
@@ -430,6 +427,7 @@ void SaveGameScreen::Init()
    m_infoAreaImage.GetImage().Create(128, 105);
    m_infoAreaImage.GetImage().SetPalette(GetImage().GetPalette());
    m_infoAreaImage.Init(m_game, 160 + 16, 8);
+   RegisterWindow(&m_infoAreaImage);
 
    // init savegames list
    m_savegamesList.Init(this, m_game, 19, 13, m_disableSaveButton);
@@ -510,6 +508,8 @@ void SaveGameScreen::Draw()
 {
    ImageScreen::Draw();
 
+   glEnable(GL_BLEND);
+
    // render edit field when needed
    if (m_isEditingDescription)
       m_textEdit.Draw();
@@ -517,9 +517,7 @@ void SaveGameScreen::Draw()
    // render savegame preview image
    if (m_showPreview)
    {
-      glEnable(GL_BLEND);
       m_infoAreaImage.Draw();
-      glDisable(GL_BLEND);
 
       m_previewImageTexture.Use();
 
@@ -540,6 +538,8 @@ void SaveGameScreen::Draw()
       glTexCoord2d(0.0, 0.0); glVertex2i(200, 200 - 133);
       glEnd();
    }
+
+   glDisable(GL_BLEND);
 }
 
 void SaveGameScreen::OnFadeOutEnded()
