@@ -32,9 +32,9 @@ class ClickArea : public Window
 public:
    /// ctor
    ClickArea(Screen& screen, std::function<void()> onButtonPressed)
-      :Window(screen),
-      m_onButtonPressed(onButtonPressed)
+      :m_onButtonPressed(onButtonPressed)
    {
+      SetScreen(&screen);
    }
 
    /// called when mouse event is received
