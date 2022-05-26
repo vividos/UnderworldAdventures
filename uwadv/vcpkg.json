@@ -7,7 +7,7 @@
     "sdl2",
     {
       "name": "sdl2-mixer",
-      "features": [ "dynamic-load", "mpg123", "libflac", "libvorbis", "opusfile", "nativemidi" ]
+      "features": [ "mpg123", "libflac", "libvorbis", "opusfile", "nativemidi" ]
     }
   ]
 }
