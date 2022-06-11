@@ -19,6 +19,23 @@
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             }
+        },
+        {
+            "name": "android-arm64-v8a-debug",
+            "displayName": "Android ARM64 Debug",
+            "description": "Compile for ARM64 processor under Android",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/output/build/${presetName}",
+            "cacheVariables": { 
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/output/install/${presetName}",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake",
+                "VCPKG_TARGET_TRIPLET": "arm64-android",
+                "VCPKG_CMAKE_SYSTEM_NAME": "Android",
+                "ANDROID_ABI": "arm64-v8a",
+                "ANDROID_PLATFORM": "android-21"
+            }
         }
     ],
     "buildPresets": [
