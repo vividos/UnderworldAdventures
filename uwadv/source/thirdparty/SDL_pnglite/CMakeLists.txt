@@ -16,6 +16,10 @@ add_library(${PROJECT_NAME} STATIC
 	"pnglite.c" "pnglite.h"
 	"SDL_pnglite.c" "SDL_pnglite.h")
 
+if (MSVC)
+	 target_compile_options(${PROJECT_NAME} PRIVATE /W2)
+endif()
+
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE "${ZLIB_INCLUDE_DIRS}")
