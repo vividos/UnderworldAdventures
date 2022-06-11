@@ -20,7 +20,7 @@ before_build:
   - cmd: |
       pushd "C:\Tools\vcpkg"
       git pull > nul
-      .\bootstrap-vcpkg.bat -disableMetrics
+      call .\bootstrap-vcpkg.bat -disableMetrics
       popd
 
 build:
