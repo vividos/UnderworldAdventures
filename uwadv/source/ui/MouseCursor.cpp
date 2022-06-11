@@ -25,7 +25,7 @@
 #include "Renderer.hpp"
 #include "ImageManager.hpp"
 
-void MouseCursor::Init(IGame& game, unsigned int initialType)
+void MouseCursor::Init(IBasicGame& game, unsigned int initialType)
 {
    Window::Create(0, 0, 0, 0);
 

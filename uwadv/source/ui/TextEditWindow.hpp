@@ -35,7 +35,7 @@ public:
    virtual ~TextEditWindow();
 
    /// initializes text scroll
-   void Init(IGame& game, unsigned int xpos, unsigned int ypos,
+   void Init(IBasicGame& game, unsigned int xpos, unsigned int ypos,
       unsigned int width, Uint8 backgroundColor, Uint8 prefixColor, Uint8 textColor,
       const char* prefixText, const char* startText = "", bool border = false);
 

@@ -32,7 +32,7 @@
 /// \param game reference to game interface
 /// \param xpos x position on Screen
 /// \param ypos y position
-void ImageQuad::Init(IGame& game, unsigned int xpos,
+void ImageQuad::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    Window::Create(xpos, ypos, m_image.GetXRes(), m_image.GetYRes());

@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameGargoyleEyes::Init(IGame& game, unsigned int xpos,
+void IngameGargoyleEyes::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    GetImage().Create(20, 3);

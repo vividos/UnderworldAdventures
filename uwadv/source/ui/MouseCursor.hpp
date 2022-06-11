@@ -40,7 +40,7 @@ public:
    virtual ~MouseCursor() {}
 
    /// initializes mouse cursor class
-   void Init(IGame& game, unsigned int initialType = 0);
+   void Init(IBasicGame& game, unsigned int initialType = 0);
 
    /// show or hide the cursor
    void Show(bool show);

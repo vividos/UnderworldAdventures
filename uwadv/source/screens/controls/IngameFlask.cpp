@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameFlask::Init(IGame& game, unsigned int xpos,
+void IngameFlask::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    GetImage().Create(24, 33);

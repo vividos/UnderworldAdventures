@@ -31,7 +31,7 @@ IngameDragon::IngameDragon(OriginalIngameScreen& screen, bool leftDragon)
 {
 }
 
-void IngameDragon::Init(IGame& game, unsigned int xpos,
+void IngameDragon::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    // load images

@@ -40,7 +40,7 @@ public:
    IngameDragon(OriginalIngameScreen& screen, bool leftDragon);
 
    /// initializes dragon
-   virtual void Init(IGame& game, unsigned int xpos,
+   virtual void Init(IBasicGame& game, unsigned int xpos,
       unsigned int ypos) override;
 
    /// updates the dragon's image

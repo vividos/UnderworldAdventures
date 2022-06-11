@@ -46,7 +46,7 @@ public:
    }
 
    /// initializes image quad window
-   virtual void Init(IGame& game, unsigned int xpos, unsigned int ypos);
+   virtual void Init(IBasicGame& game, unsigned int xpos, unsigned int ypos);
 
    /// returns image to draw
    IndexedImage& GetImage()

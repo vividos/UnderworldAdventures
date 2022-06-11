@@ -23,7 +23,7 @@
 #include "IngameMoveArrows.hpp"
 #include "../OriginalIngameScreen.hpp"
 
-void IngameMoveArrows::Init(IGame& game, unsigned int xpos,
+void IngameMoveArrows::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageQuad::Init(game, xpos, ypos);

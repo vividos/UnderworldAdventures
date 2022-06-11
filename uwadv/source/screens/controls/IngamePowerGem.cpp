@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngamePowerGem::Init(IGame& game, unsigned int xpos,
+void IngamePowerGem::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    m_attackMode = false;

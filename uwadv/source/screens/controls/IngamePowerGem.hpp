@@ -34,7 +34,7 @@ public:
    }
 
    /// initializes powergem
-   virtual void Init(IGame& game, unsigned int xpos,
+   virtual void Init(IBasicGame& game, unsigned int xpos,
       unsigned int ypos) override;
 
    /// sets attack mode, e.g. for keyboard combat

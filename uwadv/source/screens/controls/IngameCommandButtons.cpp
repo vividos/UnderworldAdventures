@@ -87,7 +87,7 @@ struct IngameCommandMenuInfo
    },
 };
 
-void IngameCommandButtons::Init(IGame& game, unsigned int xpos,
+void IngameCommandButtons::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    // load images

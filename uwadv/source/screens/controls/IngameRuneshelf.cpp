@@ -26,7 +26,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameRuneshelf::Init(IGame& game, unsigned int xpos,
+void IngameRuneshelf::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    GetImage().Create(46, 16);

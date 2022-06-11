@@ -34,7 +34,7 @@ public:
    }
 
    /// initializes flask
-   virtual void Init(IGame& game, unsigned int xpos,
+   virtual void Init(IBasicGame& game, unsigned int xpos,
       unsigned int ypos) override;
 
    /// updates eyes image

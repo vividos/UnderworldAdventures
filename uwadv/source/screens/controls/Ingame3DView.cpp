@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "Renderer.hpp"
 
-void Ingame3DView::Init(IGame& game, unsigned int xpos,
+void Ingame3DView::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageQuad::Init(game, xpos, ypos);
