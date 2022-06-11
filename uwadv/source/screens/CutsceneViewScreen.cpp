@@ -31,7 +31,6 @@ extern "C"
 {
 #include "lua.h"
 #include "lualib.h"
-#include "ldebug.h"
 }
 
 /// frames per second for cutscene animation

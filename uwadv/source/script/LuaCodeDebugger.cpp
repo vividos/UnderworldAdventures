@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 extern "C"
 {
 #include "lua.h"
-#include "ldebug.h" // for Proto
 }
 
 const char* LuaCodeDebugger::s_selfDebuggerName = "_debugger_self";
