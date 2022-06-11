@@ -10,6 +10,8 @@ project(game)
 
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
+	"DebugServer.cpp" "DebugServer.hpp"
+	"GameConfigLoader.cpp" "GameConfigLoader.hpp"
 )
 
 target_include_directories(${PROJECT_NAME}

@@ -22,7 +22,7 @@
 #include "pch.hpp"
 #include "Game.hpp"
 #include "TextFile.hpp"
-#include "GameConfigLoader.hpp"
+#include "game/GameConfigLoader.hpp"
 #include "screens/UwadvMenuScreen.hpp"
 #include "screens/OriginalIngameScreen.hpp"
 #include "screens/StartSplashScreen.hpp"

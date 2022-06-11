@@ -70,14 +70,10 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\uwadv\DebugServer.cpp" />
-    <ClCompile Include="..\..\uwadv\GameConfigLoader.cpp" />
     <ClCompile Include="GameStudio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\IDebugServer.hpp" />
-    <ClInclude Include="..\..\uwadv\DebugServer.hpp" />
-    <ClInclude Include="..\..\uwadv\GameConfigLoader.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

@@ -10,9 +10,7 @@ project(uwadv)
 
 set(uwadv_SRC
 	"pch.cpp" "pch.hpp"
-	"DebugServer.cpp" "DebugServer.hpp"
 	"Game.cpp" "Game.hpp"
-	"GameConfigLoader.cpp" "GameConfigLoader.hpp"
 	"../IDebugServer.hpp"
 	"main.cpp")
 

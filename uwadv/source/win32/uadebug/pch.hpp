@@ -91,7 +91,7 @@ extern CAppModule _Module;
 
 // Underworld Adventures includes
 #include "common.hpp"
-#include "uwadv/DebugServer.hpp"
+#include "game/DebugServer.hpp"
 
 
 // array length macro

@@ -29,8 +29,8 @@
 #include "import/GameStringsImporter.hpp"
 #include "GameInterface.hpp"
 #include "GameStrings.hpp"
-#include "uwadv/DebugServer.hpp"
-#include "uwadv/GameConfigLoader.hpp"
+#include "game/DebugServer.hpp"
+#include "game/GameConfigLoader.hpp"
 #include "ui/ImageManager.hpp"
 #include "physics/PhysicsModel.hpp"
 #include <ctime>

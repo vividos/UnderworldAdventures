@@ -35,7 +35,7 @@
 #include "underworld/GameLogic.hpp"
 #include "GameInterface.hpp"
 #include "MainGameLoop.hpp"
-#include "DebugServer.hpp"
+#include "game/DebugServer.hpp"
 #include "GameStrings.hpp"
 #include "physics/PhysicsModel.hpp"
 
