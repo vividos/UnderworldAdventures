@@ -12,7 +12,12 @@ project(base)
 add_compile_definitions(Z_LARGE64)
 find_package(ZLIB REQUIRED)
 
-find_package(zziplib REQUIRED)
+# Configure zziplib
+#find_package(zziplib REQUIRED)
+
+# workaround for missing zziplib find_package config script
+set(ZZIPLIB_INCLUDE_DIR "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+set(ZZIPLIB_LIBRARY "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib/zzip.lib")
 
 # ignore the compiler's warning about deprecated codecvt classes
 add_compile_definitions(_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
@@ -46,7 +51,8 @@ add_library(${PROJECT_NAME} STATIC
 	"Vector3d.hpp")
 
 target_include_directories(${PROJECT_NAME}
-	PUBLIC "${PROJECT_SOURCE_DIR}")
+	PUBLIC "${PROJECT_SOURCE_DIR}"
+	PRIVATE "${ZZIPLIB_INCLUDE_DIR}")
 
 target_link_libraries(${PROJECT_NAME}
-	PRIVATE ZLIB::ZLIB zziplib::zziplib)
+	PRIVATE ZLIB::ZLIB ${ZZIPLIB_LIBRARY})
