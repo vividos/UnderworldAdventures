@@ -18,11 +18,9 @@ cache:
 before_build:
   - ps: uwadv\Patch-BuildVersion.ps1 -version $env:appveyor_build_version
   - cmd: |
-      pushd "C:\Tools\vcpkg"
+      cd "C:\Tools\vcpkg"
       git pull > nul
       call .\bootstrap-vcpkg.bat -disableMetrics
-      popd
-      exit 0
 
 build:
   project: uwadv\uwadv.sln
@@ -30,7 +28,7 @@ build:
   verbosity: minimal
 
 after_build:
-- cmd: cd uwadv\output\bin\Release && "c:\Program Files\7-Zip\7z.exe" a -r -x!pdb\ -x!hacking.exe -x!unittest.* -x!*.exp -x!*.lib ..\..\..\..\uwadv-%appveyor_build_version%.zip *.*
+- cmd: cd && cd uwadv\output\bin\Release && "c:\Program Files\7-Zip\7z.exe" a -r -x!pdb\ -x!hacking.exe -x!unittest.* -x!*.exp -x!*.lib ..\..\..\..\uwadv-%appveyor_build_version%.zip *.*
 
 artifacts:
 - path: uwadv-*.zip
