@@ -215,5 +215,8 @@ VoiceFile::VoiceFile(Base::SDL_RWopsPtr rwops)
 
 Base::SDL_RWopsPtr VoiceFile::GetFileData() const
 {
-   return Base::MakeRWopsPtr(SDL_RWFromConstMem(&m_fileData[0], static_cast<int>(m_fileData.size())));
+   return Base::MakeRWopsPtr(
+      SDL_RWFromConstMem(
+         m_fileData.data(),
+         static_cast<int>(m_fileData.size())));
 }
