@@ -24,7 +24,6 @@
 #include "GameInterface.hpp"
 #include "IUserInterface.hpp"
 #include "GameStrings.hpp"
-#include "uwadv/DebugServer.hpp"
 #include "Settings.hpp"
 #include "ResourceManager.hpp"
 

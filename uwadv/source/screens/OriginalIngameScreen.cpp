@@ -30,7 +30,6 @@
 #include "SaveGameScreen.hpp"
 #include "CutsceneViewScreen.hpp"
 #include "MapViewScreen.hpp"
-#include "uwadv/DebugServer.hpp"
 #include "ConversationScreen.hpp"
 #include "Model3D.hpp"
 #include "physics/PhysicsModel.hpp"
