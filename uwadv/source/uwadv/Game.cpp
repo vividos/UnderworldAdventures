@@ -31,7 +31,6 @@
 #include "physics/GeometryProvider.hpp"
 #include <ctime>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
 
 #ifdef WIN32
 #include "win32/resource.h"

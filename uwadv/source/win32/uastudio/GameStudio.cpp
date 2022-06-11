@@ -213,7 +213,7 @@ void GameStudio::Run()
       // do server side debug processing
       m_debugServer.Tick();
 
-      Sleep(10);
+      SDL_Delay(10);
    }
 
    UaTrace("uastudio main loop ended\n\n");

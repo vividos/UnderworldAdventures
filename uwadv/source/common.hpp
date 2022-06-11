@@ -40,7 +40,6 @@
 
 // SDL includes
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
 
 // uwadv includes
 #include "Base.hpp"

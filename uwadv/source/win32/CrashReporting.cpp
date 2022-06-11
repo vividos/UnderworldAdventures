@@ -24,6 +24,7 @@
 #include <tchar.h> // for _sntprintf, _tcslen
 #include <strsafe.h>
 #include <ctime>
+#include <windows.h>
 #include <DbgHelp.h>
 #pragma comment(lib, "dbghelp.lib")
 
