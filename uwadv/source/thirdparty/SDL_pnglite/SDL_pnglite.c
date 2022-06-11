@@ -146,7 +146,7 @@ SDL_HeaderCheckPNG_RW(SDL_RWops *src, int freesrc, int *w, int *h, int *pf)
     }
     if (freesrc) {
         SDL_RWclose(src); /* errors only on pending writes */
-    } else if ( -1 == SDL_RWseek(src, RW_SEEK_SET, fp_offset)) {
+    } else if ( -1 == SDL_RWseek(src, fp_offset, RW_SEEK_SET)) {
         rv = -1;
     }
     return rv;
