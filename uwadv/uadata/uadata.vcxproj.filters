@@ -186,9 +186,6 @@
     <None Include="build.cmd" />
     <None Include="README.Data.md" />
     <None Include="Underworld Adventures Soundtrack.m3u" />
-    <None Include="uw2\scripts\game.lua">
-      <Filter>uw2\scripts</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="uw1\scripts\createchar.lua">
@@ -224,5 +221,6 @@
     <CustomBuild Include="uw1\scripts\objectlist.lua">
       <Filter>uw1\scripts</Filter>
     </CustomBuild>
+    <CustomBuild Include="uw2\scripts\game.lua" />
   </ItemGroup>
 </Project>
