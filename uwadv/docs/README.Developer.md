@@ -7,9 +7,9 @@ navigate the document.
 
 [2. Compiling Underworld Adventures](#2-compiling-underworld-adventures)<br/>
 [2.1 vcpkg dependency manager](#2-1-vcpkg-dependency-manager)<br/>
-[2.2 Microsoft Visual Studio on Windows](#2-1-microsoft-visual-studio-on-windows)<br/>
-[2.3 CMake on Windows, Linux and macOS](#2-2-cmake-on-windows-linux-and-macos)<br/>
-[2.4 Visual Studio Code](#2-3-visual-studio-code)<br/>
+[2.2 Microsoft Visual Studio on Windows](#2-2-microsoft-visual-studio-on-windows)<br/>
+[2.3 CMake on Windows, Linux and macOS](#2-3-cmake-on-windows-linux-and-macos)<br/>
+[2.4 Visual Studio Code](#2-4-visual-studio-code)<br/>
 
 [3. Developing Underworld Adventures](#3-developing-underworld-adventures)<br/>
 [3.1 Code guidelines](#3-1-code-guidelines)<br/>
@@ -396,7 +396,7 @@ Here's an overview of all functions:
 - `spell_cancel(Integer runeshelf_index)`:
   Cancels a currently active spell displayed on the runeshelf. The index of
   the spell is given.
-  
+
 - `ui_clicked_compass()`:
   Called when the user clicked on the compass. Prints game time and how hungry
   the player is.
@@ -705,7 +705,7 @@ Contains tilemap related functions:
 
 Contains runebag access functions:
 
-- `runebag.set(RuneType rune_type, Boolean is_set)`: 
+- `runebag.set(RuneType rune_type, Boolean is_set)`:
   Sets or clears a rune in the rune bag. `RuneType` can either be a character
   for the rune, or a 1-based index into the rune bag. Note that the 'x' and
   'z' runes don't exist.
@@ -935,7 +935,7 @@ The Lua scripting language library is licensed under the
 >
 > The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 >
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ### ZZIPlib
 
