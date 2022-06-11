@@ -31,6 +31,6 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 		"${PROJECT_SOURCE_DIR}/../underworld")
 
-target_link_libraries(${PROJECT_NAME} SDL2::SDL2main base conv import renderer screens script ui underworld)
+target_link_libraries(${PROJECT_NAME} SDL2::SDL2main base conv import renderer screens script ui underworld game)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "uwadv")

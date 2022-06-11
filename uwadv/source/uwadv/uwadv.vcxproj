@@ -109,6 +109,9 @@
     <ProjectReference Include="..\base\base.vcxproj">
       <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\game\game.vcxproj">
+      <Project>{cab867f7-8630-40f9-9e48-3e3f80d8804d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\import\import.vcxproj">
       <Project>{a974fda8-7d50-4b04-892a-edb00b68f7d6}</Project>
     </ProjectReference>
