@@ -29,7 +29,7 @@
     </ClCompile>
     <Lib>
       <OutputFile>$(SolutionDir)output\lib\$(Configuration)\$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;$(SolutionDir)source\thirdparty\SDL2-2.0.18\lib\x86;$(SolutionDir)source\thirdparty\SDL2_mixer-2.0.4\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)output\lib\$(Configuration)\;$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\lib\manual-link;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
