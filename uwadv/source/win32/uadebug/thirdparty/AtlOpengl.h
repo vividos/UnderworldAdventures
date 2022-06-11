@@ -89,7 +89,7 @@ public:
 	    ATLASSERT(nPixelFormat != 0);
 		
 		BOOL bResult = dc.SetPixelFormat (nPixelFormat, &pfd);
-		ATLASSERT(bResult);
+		ATLVERIFY(bResult);
 		
 		m_hRC = dc.wglCreateContext();
 		ATLASSERT(m_hRC);
