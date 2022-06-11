@@ -105,6 +105,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		vcpkg.json = vcpkg.json
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "source\game\game.vcxproj", "{CAB867F7-8630-40F9-9E48-3E3F80D8804D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppVeyor|Win32 = AppVeyor|Win32
@@ -331,6 +333,14 @@ Global
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.Release|Win32.Build.0 = Release|Win32
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.SonarCloud|Win32.ActiveCfg = Release|Win32
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623}.SonarCloud|Win32.Build.0 = Release|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.AppVeyor|Win32.ActiveCfg = Release|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.AppVeyor|Win32.Build.0 = Release|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.Debug|Win32.Build.0 = Debug|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.Release|Win32.ActiveCfg = Release|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.Release|Win32.Build.0 = Release|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.SonarCloud|Win32.ActiveCfg = Release|Win32
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D}.SonarCloud|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -367,6 +377,7 @@ Global
 		{0B492E5E-7E48-4169-8663-02517FA08DEB} = {8AB01551-9ABA-4108-B761-BA600FFF704A}
 		{72FE0270-5AE8-41F5-B767-F58505E56360} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
 		{E1AF378E-282D-4355-AAFB-DA1FE36A5623} = {973B57CA-C119-411A-8994-16CD9FB18BBB}
+		{CAB867F7-8630-40F9-9E48-3E3F80D8804D} = {F4E92C83-ECFD-4C0C-B40B-1136FE3B73ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62C784B6-0AE4-42AB-833B-6267BA627046}
