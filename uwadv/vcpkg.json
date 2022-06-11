@@ -11,6 +11,10 @@
       "features": [ "dynamic-load", "mpg123", "libflac", "libvorbis", "opusfile", "nativemidi" ]
     },
     {
+      "name": "lua",
+      "features": [ "tools" ]
+    },
+    {
       "name": "wtl",
       "platform": "windows"
     }

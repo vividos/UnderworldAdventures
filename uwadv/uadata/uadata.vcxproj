@@ -53,7 +53,8 @@
       <Command>call build.cmd "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuild>
-      <Command>"$(OutDir)tools\luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
+      <Command>"$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\tools\lua\luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"
+</Command>
       <Message>Compiling Lua script "%(Filename)%(Extension)"...</Message>
       <Outputs>%(RelativeDir)%(FileName).lob</Outputs>
     </CustomBuild>
@@ -63,7 +64,8 @@
       <Command>call build.cmd "$(OutDir)"</Command>
     </PostBuildEvent>
     <CustomBuild>
-      <Command>"$(OutDir)tools\luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"</Command>
+      <Command>"$(VcpkgManifestRoot)\vcpkg_installed\$(VcpkgTriplet)\$(VcpkgTriplet)\tools\lua\luac.exe" -o "%(RelativeDir)%(FileName).lob" "%(FullPath)"
+</Command>
       <Message>Compiling Lua script "%(Filename)%(Extension)"...</Message>
       <Outputs>%(RelativeDir)%(FileName).lob</Outputs>
     </CustomBuild>

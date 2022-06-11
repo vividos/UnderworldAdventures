@@ -22,6 +22,7 @@ del %OUTDIR%\Lexilla.dll 2> nul
 del %OUTDIR%\lua.properties 2> nul
 del %OUTDIR%\README.Manual.txt 2> nul
 del %OUTDIR%\tools\README.Tools.txt 2> nul
+del %OUTDIR%\tools\luac.exe 2> nul
 del %OUTDIR%\uw1-walkthrough.txt 2> nul
 
 exit 0

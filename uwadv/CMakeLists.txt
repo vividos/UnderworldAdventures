@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: Top-level CMake project file, do global configuration
 # and include sub-projects here.
@@ -43,7 +43,6 @@ add_subdirectory("source/script")
 add_subdirectory("source/ui")
 add_subdirectory("source/uwadv")
 add_subdirectory("source/thirdparty/hqx")
-add_subdirectory("source/thirdparty/lua")
 add_subdirectory("source/thirdparty/SDL_pnglite")
 add_subdirectory("source/tools/convdbg")
 add_subdirectory("source/tools/convdec")

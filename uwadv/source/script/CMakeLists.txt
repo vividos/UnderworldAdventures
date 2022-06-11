@@ -1,12 +1,14 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for script.
 #
 cmake_minimum_required(VERSION 3.8)
 
 project(script)
+
+find_package(lua REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
