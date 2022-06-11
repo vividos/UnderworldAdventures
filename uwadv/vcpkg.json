@@ -4,6 +4,7 @@
   "dependencies": [
     "zlib",
     "zziplib",
+    "opengl",
     "sdl2",
     {
       "name": "sdl2-mixer",
