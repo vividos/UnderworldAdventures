@@ -21,34 +21,17 @@
 //
 #pragma once
 
-namespace Base
-{
-   class Settings;
-   class ResourceManager;
-   class SavegamesManager;
-}
+#include "IBasicGame.hpp"
+
 namespace Audio
 {
    class AudioManager;
 }
-namespace Physics
-{
-   class PhysicsModel;
-}
-namespace Underworld
-{
-   class Underworld;
-   class GameLogic;
-}
-class ImageManager;
+
 class Renderer;
 class RenderWindow;
 class Viewport;
-class RenderWindow;
-class IScripting;
-class IDebugServer;
 class Screen;
-class GameStrings;
 class IUserInterface;
 
 /// game events that can be sent to the event queue via SDL_PushEvent using SDL_USEREVENT
@@ -68,57 +51,6 @@ enum GameEvents
 
    /// last (dummy) event
    gameEventLast
-};
-
-
-/// basic game interface class, without ui stuff
-class IBasicGame
-{
-public:
-   /// returns game tickrate
-   virtual double GetTickRate() = 0;
-
-   /// pauses or unpauses game
-   virtual bool PauseGame(bool pause) = 0;
-
-   /// returns settings object
-   virtual Base::Settings& GetSettings() = 0;
-
-   /// returns settings object
-   virtual Base::ResourceManager& GetResourceManager() = 0;
-
-   /// returns savegames manager object
-   virtual Base::SavegamesManager& GetSavegamesManager() = 0;
-
-   /// returns image manager object
-   virtual ImageManager& GetImageManager() = 0;
-
-   /// returns scripting object
-   virtual IScripting& GetScripting() = 0;
-
-   /// returns debugger object
-   virtual IDebugServer& GetDebugger() = 0;
-
-   /// returns game strings object
-   virtual GameStrings& GetGameStrings() = 0;
-
-   /// returns underworld object
-   virtual Underworld::Underworld& GetUnderworld() = 0;
-
-   /// returns game logic object
-   virtual Underworld::GameLogic& GetGameLogic() = 0;
-
-   /// returns physics model
-   virtual Physics::PhysicsModel& GetPhysicsModel() = 0;
-
-   /// returns user interface instance; may be null
-   virtual IUserInterface* GetUserInterface() = 0;
-
-   /// initializes game; only called after all stuff is initialized and ready
-   virtual void InitGame() = 0;
-
-   /// cleans up game
-   virtual void DoneGame() = 0;
 };
 
 
