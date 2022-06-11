@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2021 Underworld Adventures Team
+# Copyright (c) 2002-2022 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for hqx.
 #
@@ -17,11 +17,12 @@ add_library(${PROJECT_NAME} STATIC
 	"src/init.c")
 
 # Compiler options to enable static linking
-target_compile_options(${PROJECT_NAME}
-	PUBLIC "/U_DLL"
-	PRIVATE "/D_WIN32"
-	PRIVATE "/D_LIB"
-)
+if (MSVC)
+	target_compile_options(${PROJECT_NAME}
+		PUBLIC "/U_DLL"
+		PRIVATE "/D_WIN32"
+		PRIVATE "/D_LIB")
+endif()
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}/src")
