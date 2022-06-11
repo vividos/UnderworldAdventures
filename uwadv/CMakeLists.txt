@@ -41,11 +41,15 @@ add_subdirectory("source/ui")
 add_subdirectory("source/uwadv")
 add_subdirectory("source/thirdparty/hqx")
 add_subdirectory("source/thirdparty/SDL_pnglite")
+
+if(NOT ANDROID)
 add_subdirectory("source/tools/convdbg")
 add_subdirectory("source/tools/convdec")
 add_subdirectory("source/tools/strpak")
 add_subdirectory("source/tools/uwdump")
 add_subdirectory("source/tools/xmi2mid")
+endif()
+
 add_subdirectory("uadata")
 
 install(
