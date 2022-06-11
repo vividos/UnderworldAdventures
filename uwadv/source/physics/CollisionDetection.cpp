@@ -39,7 +39,7 @@ using Physics::CollisionData;
 const double c_physicsMinDistance = 0.005;
 
 /// collision data
-struct CollisionData
+struct Physics::CollisionData
 {
    /// default ctor
    CollisionData()

@@ -187,7 +187,7 @@ namespace Underworld
       NpcObject& GetNpcObject();
 
       /// returns NPC object when this object is an NPC; const version
-      const NpcObject& Object::GetNpcObject() const;
+      const NpcObject& GetNpcObject() const;
 
       // loading / saving
 

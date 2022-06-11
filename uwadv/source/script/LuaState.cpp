@@ -87,7 +87,7 @@ LuaState::LuaState()
    lua_pop(L, 1);
 }
 
-LuaState::~LuaState()
+LuaState::~LuaState() noexcept
 {
    lua_close(L);
 }

@@ -31,7 +31,7 @@ extern "C"
 /// storage name of DoAction function pointer
 static const char* s_doActionFuncName = "_do_action_func";
 
-CreateCharacterLuaScripting::~CreateCharacterLuaScripting()
+CreateCharacterLuaScripting::~CreateCharacterLuaScripting() noexcept
 {
    lua_getglobal(L, s_doActionFuncName);
    T_actionFunc* func = reinterpret_cast<T_actionFunc*>(lua_touserdata(L, -1));

@@ -59,7 +59,7 @@ public:
    }
 
    /// analyzes input and returns token type (or 0 when finished)
-   int yylex();
+   int yylex() override;
 
    /// provides more input for lexer
    virtual int LexerInput(char* buffer, int maxSize) override

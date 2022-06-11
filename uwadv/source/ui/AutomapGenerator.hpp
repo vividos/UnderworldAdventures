@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2021 Underworld Adventures Team
+// Copyright (c) 2021-2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 //
 #pragma once
 
+#include "Tilemap.hpp"
 #include "Font.hpp"
 #include <array>
 
@@ -37,8 +38,6 @@ namespace Underworld
    class Tilemap;
    class MapNotes;
    class Player;
-   enum TilemapTileType;
-   enum AutomapFlag;
 }
 
 namespace UI

@@ -25,6 +25,7 @@
 #include <cctype>
 #include <codecvt>
 #include <cstdarg>
+#include <locale>
 
 std::string Base::String::Format(const char* format, ...)
 {
