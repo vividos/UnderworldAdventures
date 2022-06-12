@@ -29,12 +29,10 @@
 void IngameRuneshelf::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   GetImage().Create(46, 16);
+   ImageWindow::Init(xpos, ypos, 46, 16);
 
    // load images 232..255; A-Z without X and Z
    game.GetImageManager().LoadList(m_runestoneImages, "objects", 232, 256);
-
-   ImageQuad::Init(game, xpos, ypos);
 }
 
 /// Updates the runeshelf image from runeshelf content.
@@ -54,12 +52,11 @@ void IngameRuneshelf::UpdateRuneshelf()
       // paste appropriate rune image
       IndexedImage& img_rune = m_runestoneImages[rune];
 
-      unsigned int dest = m_hasBorder ? 1 : 0;
       img_shelf.PasteRect(img_rune, 0, 0, 14, 14,
-         i * 15 + dest, dest, true);
+         i * 15, 0, true);
    }
 
-   Update();
+   UpdateImage();
 }
 
 bool IngameRuneshelf::MouseEvent(bool buttonClicked, bool leftButton,

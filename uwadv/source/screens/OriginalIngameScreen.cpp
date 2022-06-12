@@ -131,8 +131,6 @@ void OriginalIngameScreen::Init()
 
    // init compass
    m_compass.Init(m_game, 112, 131);
-   m_compass.AddBorder(m_backgroundImage);
-   m_compass.Update();
    RegisterWindow(&m_compass);
 
    // init textscroll
@@ -168,16 +166,13 @@ void OriginalIngameScreen::Init()
 
    // vitality/mana flasks
    m_vitalityFlask.Init(m_game, 248, 125);
-   m_vitalityFlask.AddBorder(m_backgroundImage);
    RegisterWindow(&m_vitalityFlask);
 
    m_manaFlask.Init(m_game, 284, 125);
-   m_manaFlask.AddBorder(m_backgroundImage);
    RegisterWindow(&m_manaFlask);
 
    // gargoyle eyes
    m_gargoyleEyes.Init(m_game, 128, 4);
-   //m_gargoyleEyes.AddBorder(m_backgroundImage);
    m_gargoyleEyes.UpdateEyes();
    RegisterWindow(&m_gargoyleEyes);
 
@@ -198,7 +193,6 @@ void OriginalIngameScreen::Init()
 
    // init powergem
    m_powerGem.Init(m_game, 4, 139);
-   m_powerGem.AddBorder(m_backgroundImage);
    m_powerGem.UpdateGem();
    RegisterWindow(&m_powerGem);
 

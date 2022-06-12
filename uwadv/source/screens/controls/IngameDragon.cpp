@@ -34,20 +34,18 @@ IngameDragon::IngameDragon(OriginalIngameScreen& screen, bool leftDragon)
 void IngameDragon::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
+   ImageWindow::Init(xpos, ypos, 37, 104);
+
    // load images
    game.GetImageManager().LoadList(m_dragonImages, "dragons",
-      m_leftDragon ? 0 : 18, m_leftDragon ? 18 : 36);
+      m_leftDragon ? 0 : 18,
+      m_leftDragon ? 18 : 36);
 
    // prepare image
    IndexedImage& img = GetImage();
 
-   img.Create(37, 104);
    img.SetPalette(game.GetImageManager().GetPalette(0));
    img.Clear(0);
-
-
-   ImageQuad::Init(game, xpos, ypos);
-
 
    // dragon part that's never moving
    img.PasteImage(m_dragonImages[0], m_leftDragon ? 0 : 24, 69);
@@ -65,7 +63,7 @@ void IngameDragon::UpdateDragon()
    unsigned int tail_frame = 14;
    img.PasteImage(m_dragonImages[tail_frame], m_leftDragon ? 4 : 20, 0);
 
-   Update();
+   UpdateImage();
 }
 
 bool IngameDragon::MouseEvent(bool buttonClicked, bool leftButton,

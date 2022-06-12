@@ -28,11 +28,9 @@
 void IngameGargoyleEyes::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   GetImage().Create(20, 3);
+   ImageWindow::Init(xpos, ypos, 20, 3);
 
    game.GetImageManager().LoadList(m_eyesImages, "eyes");
-
-   ImageQuad::Init(game, xpos, ypos);
 }
 
 /// \todo update eyes from data in Underworld
@@ -40,9 +38,8 @@ void IngameGargoyleEyes::UpdateEyes()
 {
    unsigned int new_image = 0;
 
-   unsigned int dest = m_hasBorder ? 1 : 0;
-   GetImage().PasteImage(m_eyesImages[new_image], dest, dest);
-   Update();
+   GetImage().PasteImage(m_eyesImages[new_image], 0, 0);
+   UpdateImage();
 }
 
 bool IngameGargoyleEyes::MouseEvent(bool buttonClicked, bool leftButton,

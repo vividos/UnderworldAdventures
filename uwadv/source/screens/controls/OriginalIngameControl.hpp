@@ -21,13 +21,13 @@
 //
 #pragma once
 
-#include "ImageQuad.hpp"
+#include "ImageWindow.hpp"
 #include "physics/PlayerPhysicsObject.hpp"
 
 class OriginalIngameScreen;
 
 /// ingame screen control base class
-class OriginalIngameControl : public ImageQuad
+class OriginalIngameControl : public ImageWindow
 {
 public:
    /// ctor
@@ -35,6 +35,9 @@ public:
 
    /// returns player physics tracking object
    Physics::PlayerPhysicsObject& GetPlayerPhysicsObject();
+
+   /// initializes ingame control
+   virtual void Init(IBasicGame&, unsigned int xpos, unsigned int ypos) = 0;
 
 protected:
    /// parent screen

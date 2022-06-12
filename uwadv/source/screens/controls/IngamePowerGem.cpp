@@ -28,14 +28,11 @@
 void IngamePowerGem::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
+   ImageWindow::Init(xpos, ypos, 31, 12);
+
    m_attackMode = false;
 
    game.GetImageManager().LoadList(m_powerGemImages, "power");
-
-   GetImage().Create(31, 12);
-   GetImage().SetPalette(game.GetImageManager().GetPalette(0));
-
-   ImageQuad::Init(game, xpos, ypos);
 }
 
 void IngamePowerGem::UpdateGem()
@@ -56,10 +53,9 @@ void IngamePowerGem::UpdateGem()
       }
    }
 
-   unsigned int dest = m_hasBorder ? 1 : 0;
-   GetImage().PasteImage(m_powerGemImages[frame], dest, dest);
+   GetImage().PasteImage(m_powerGemImages[frame], 0, 0);
 
-   Update();
+   UpdateImage();
 }
 
 bool IngamePowerGem::MouseEvent(bool buttonClicked, bool leftButton,

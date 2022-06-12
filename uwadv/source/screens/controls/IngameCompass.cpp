@@ -29,9 +29,7 @@ void IngameCompass::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
    // init image
-   GetImage().Create(52, 26);
-
-   ImageQuad::Init(game, xpos, ypos);
+   ImageWindow::Init(xpos, ypos, 52, 26);
 
    // load compass images
    {
@@ -66,6 +64,8 @@ void IngameCompass::Init(IBasicGame& game, unsigned int xpos,
    }
 
    m_currentCompassImageIndex = 16;
+
+   UpdateImage();
 }
 
 void IngameCompass::Draw()
@@ -85,13 +85,12 @@ void IngameCompass::Draw()
       // reupload compass texture
       m_currentCompassImageIndex = compassimg;
 
-      unsigned int dest = m_hasBorder ? 1 : 0;
-      GetImage().PasteImage(m_compassImages[compassimg], dest, dest);
+      GetImage().PasteImage(m_compassImages[compassimg], 0, 0);
 
-      Update();
+      UpdateImage();
    }
 
-   ImageQuad::Draw();
+   ImageWindow::Draw();
 }
 
 bool IngameCompass::MouseEvent(bool buttonClicked, bool leftButton,

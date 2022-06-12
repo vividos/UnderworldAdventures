@@ -90,16 +90,12 @@ struct IngameCommandMenuInfo
 void IngameCommandButtons::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
+   ImageWindow::Init(xpos, ypos, 35, 108);
+
    // load images
    game.GetImageManager().LoadList(m_buttonImages, "optbtns");
 
    game.GetImageManager().LoadList(m_actionButtonImages, "lfti");
-
-   // create image
-   IndexedImage& img = GetImage();
-   img.SetPalette(game.GetImageManager().GetPalette(0));
-
-   ImageQuad::Init(game, xpos, ypos);
 
    m_options[0] = m_options[1] = m_options[2] = 0;
    m_selectedButton = -1;
@@ -191,8 +187,6 @@ void IngameCommandButtons::UpdateMenu()
    m_windowXPos = windowPositions[menuinfo.base_image * 2];
    m_windowYPos = windowPositions[menuinfo.base_image * 2 + 1];
 
-   m_windowWidth = 35;
-   m_windowHeight = 108;
    img.Create(m_windowWidth, m_windowHeight);
 
    // base image
@@ -242,10 +236,7 @@ void IngameCommandButtons::UpdateMenu()
       }
    }
 
-   // add border
-   AddBorder(m_parent.m_backgroundImage);
-
-   Update();
+   UpdateImage();
 }
 
 bool IngameCommandButtons::MouseEvent(bool buttonClicked,

@@ -28,12 +28,10 @@
 void IngameSpellArea::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   GetImage().Create(51, 18);
+   ImageWindow::Init(xpos, ypos, 51, 18);
 
    // load images 232..255; A-Z without X and Z
    game.GetImageManager().LoadList(m_spellImages, "spells");
-
-   ImageQuad::Init(game, xpos, ypos);
 }
 
 /// Updates the active spell area image.
@@ -53,12 +51,11 @@ void IngameSpellArea::UpdateSpellArea()
       // paste appropriate spell image
       IndexedImage& img_spell = m_spellImages[(spell[i] - 1) % 21];
 
-      unsigned int dest = m_hasBorder ? 1 : 0;
       img_area.PasteRect(img_spell, 0, 0, 16, 18,
-         i * 17 + dest, dest, true);
+         i * 17, 0, true);
    }
 
-   Update();
+   UpdateImage();
 }
 
 bool IngameSpellArea::MouseEvent(bool buttonClicked, bool leftButton,

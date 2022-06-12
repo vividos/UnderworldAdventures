@@ -28,10 +28,8 @@
 void Ingame3DView::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   ImageQuad::Init(game, xpos, ypos);
-
-   m_windowWidth = 224 - 54 + 1;
-   m_windowHeight = 131 - 20 + 1;
+   ImageWindow::Init(xpos, ypos,
+      224 - 54 + 1, 131 - 20 + 1);
 
    m_mouseMove = false;
    m_in3dView = false;
@@ -78,7 +76,7 @@ bool Ingame3DView::ProcessEvent(SDL_Event& event)
       }
    }
 
-   return ImageQuad::ProcessEvent(event);
+   return ImageWindow::ProcessEvent(event);
 }
 
 bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,

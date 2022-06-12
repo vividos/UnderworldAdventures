@@ -26,10 +26,7 @@
 void IngameMoveArrows::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   ImageQuad::Init(game, xpos, ypos);
-
-   m_windowWidth = 63;
-   m_windowHeight = 14;
+   ImageWindow::Create(xpos, ypos, 63, 14);
 
    m_lastPressedKey = Base::keyNone;
 }
@@ -41,7 +38,7 @@ void IngameMoveArrows::Draw()
 
 bool IngameMoveArrows::ProcessEvent(SDL_Event& event)
 {
-   bool ret = ImageQuad::ProcessEvent(event);
+   bool ret = ImageWindow::ProcessEvent(event);
 
    if (event.type == SDL_MOUSEMOTION)
    {

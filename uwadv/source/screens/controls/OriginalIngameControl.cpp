@@ -24,7 +24,8 @@
 #include "../OriginalIngameScreen.hpp"
 
 OriginalIngameControl::OriginalIngameControl(OriginalIngameScreen& screen)
-   :m_parent(screen)
+   :ImageWindow(screen),
+   m_parent(screen)
 {
 }
 

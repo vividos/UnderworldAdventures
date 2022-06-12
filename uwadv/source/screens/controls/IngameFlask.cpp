@@ -28,7 +28,7 @@
 void IngameFlask::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos)
 {
-   GetImage().Create(24, 33);
+   ImageWindow::Init(xpos, ypos, 24, 33);
 
    // load flask images
    {
@@ -60,8 +60,6 @@ void IngameFlask::Init(IBasicGame& game, unsigned int xpos,
       }
    }
 
-   ImageQuad::Init(game, xpos, ypos);
-
    m_lastFlaskImageIndex = 14 * 2;
    m_isPoisoned = false;
 }
@@ -87,14 +85,13 @@ void IngameFlask::Draw()
       UpdateFlask();
    }
 
-   ImageQuad::Draw();
+   ImageWindow::Draw();
 }
 
 void IngameFlask::UpdateFlask()
 {
-   unsigned int dest = m_hasBorder ? 1 : 0;
-   GetImage().PasteImage(m_flaskImages[m_lastFlaskImageIndex], dest, dest);
-   Update();
+   GetImage().PasteImage(m_flaskImages[m_lastFlaskImageIndex], 0, 0);
+   UpdateImage();
 }
 
 bool IngameFlask::MouseEvent(bool buttonClicked, bool leftButton,
