@@ -102,21 +102,19 @@ void ImageQuad::Draw()
    double u = m_texture.GetTexU(), v = m_texture.GetTexV();
    m_texture.Use(0);
 
-   unsigned int quadwidth = m_windowWidth;
-   unsigned int quadheight = m_windowHeight;
    double dx = 0.0, dy = 0.0;
 
    unsigned int x0, x1, y0, y1;
    x0 = m_windowXPos;
-   x1 = m_windowXPos + quadwidth;
+   x1 = m_windowXPos + m_windowWidth;
 
    y0 = 200 - m_windowYPos;
-   y1 = 200 - m_windowYPos - quadheight;
+   y1 = 200 - m_windowYPos - m_windowHeight;
 
    if (m_hasBorder)
    {
-      dx = 1.0 / quadwidth;
-      dy = 1.0 / quadheight;
+      dx = 1.0 / m_windowWidth;
+      dy = 1.0 / m_windowHeight;
       x0++; x1--; y0--; y1++;
    }
 
