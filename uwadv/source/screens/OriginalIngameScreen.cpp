@@ -134,6 +134,9 @@ void OriginalIngameScreen::Init()
 
    m_game.GetViewport().SetViewport3D(52, 19, 172, 112);
 
+   m_fadeout3dViewImage.Init(m_game, 52, 19);
+   m_fadeout3dViewImage.Create(52, 19, 172, 112);
+
    // init compass
    m_compass.Init(m_game, 112, 131);
    m_compass.AddBorder(m_backgroundImage.GetImage());
@@ -290,20 +293,14 @@ void OriginalIngameScreen::Draw()
 
       if (m_fadeState == 0 || m_fadeState == 2)
       {
-         // when fading in/out, lay a quad over the already rendered 3d view
+         // when fading in/out, lay a quad over the already rendered 3D view
          Uint8 alpha = m_fading.GetFadeValue();
          if (alpha < 255)
          {
             glColor4ub(0, 0, 0, 255 - alpha);
             glBindTexture(GL_TEXTURE_2D, 0);
 
-            // draw quad
-            glBegin(GL_QUADS);
-            glVertex2i(52, 68);
-            glVertex2i(226, 68);
-            glVertex2i(226, 182);
-            glVertex2i(52, 182);
-            glEnd();
+            m_fadeout3dViewImage.Draw();
          }
 
          glColor3ub(alpha, alpha, alpha);

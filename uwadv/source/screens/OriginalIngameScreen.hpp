@@ -233,6 +233,9 @@ protected:
    /// move arrows
    IngameMoveArrows m_moveArrows;
 
+   /// image to draw over the 3D view area when fading in/out
+   ImageQuad m_fadeout3dViewImage;
+
 
    // game related
 
