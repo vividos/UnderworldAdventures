@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -303,4 +303,44 @@ void Renderer::GetModel3DBoundingTriangles(unsigned int x,
       Vector3d base = UnderworldRenderer::CalcObjectPosition(x, y, object);
       modelManager.GetBoundingTriangles(object, base, allTriangles);
    }
+}
+
+void Renderer::TakeSavegameScreenshot(unsigned int xres, unsigned int yres,
+   std::vector<Uint32>& screenshotRgbaData,
+   const Underworld::Underworld& underworld)
+{
+   Viewport* originalViewport = m_viewport;
+
+   // set up viewport and camera
+   // note: viewport is set only for having a proper aspect ratio; the real
+   // viewport is set some more lines below
+   Viewport viewport{ *m_viewport };
+   viewport.SetViewport3D(0, 0, xres, yres);
+   SetViewport(&viewport);
+
+   Vector3d viewOffset{0, 0, 20.0 };
+   SetupFor3D(viewOffset);
+
+   glViewport(0, 0, xres, yres);
+
+   glClear(GL_COLOR_BUFFER_BIT);
+
+   RenderUnderworld(underworld);
+
+   screenshotRgbaData.resize(xres * yres, 0);
+
+   // read in scanlines
+   glReadBuffer(GL_BACK);
+
+   for (unsigned int lineIndex = 0; lineIndex < yres; lineIndex++)
+   {
+      glReadPixels(0,
+         yres - lineIndex - 1, xres,
+         1,
+         GL_RGBA,
+         GL_UNSIGNED_BYTE,
+         &screenshotRgbaData[lineIndex * xres]);
+   }
+
+   SetViewport(originalViewport);
 }

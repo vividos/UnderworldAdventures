@@ -982,44 +982,13 @@ void OriginalIngameScreen::ShowMap()
 void OriginalIngameScreen::DoSavegameScreenshot(
    unsigned int xres, unsigned int yres)
 {
-   std::vector<Uint32> screenshot_rgba;
-   unsigned int screenshot_xres, screenshot_yres;
-
-   // set up viewport and camera
-   // note: viewport is set only for having a proper aspect ratio; the real
-   // viewport is set some more lines below
-   m_game.GetViewport().SetViewport3D(0, 0, xres, yres);
-
-   Vector3d m_viewOffset(0, 0, 20.0);
-   m_game.GetRenderer().SetupFor3D(m_viewOffset);
-
-   glViewport(0, 0, xres, yres);
-
-   glClear(GL_COLOR_BUFFER_BIT);
-
-   // render a const world
-   m_game.GetRenderer().RenderUnderworld(m_game.GetUnderworld());
-
-   // prepare screenshot
-   screenshot_xres = xres;
-   screenshot_yres = yres;
-
-   screenshot_rgba.clear();
-   screenshot_rgba.resize(xres*yres, 0);
-
-   // read in scanlines
-   glReadBuffer(GL_BACK);
-
-   for (unsigned int i = 0; i < yres; i++)
-   {
-      glReadPixels(0, yres - i - 1, xres, 1, GL_RGBA, GL_UNSIGNED_BYTE,
-         &screenshot_rgba[i*xres]);
-   }
-
-   // reset viewport to original
-   m_game.GetViewport().SetViewport3D(52, 19, 172, 112);
+   std::vector<Uint32> screenshotRgbaData;
+   m_game.GetRenderer().TakeSavegameScreenshot(
+      xres, yres,
+      screenshotRgbaData,
+      m_game.GetUnderworld());
 
    // set in savegames manager
    m_game.GetSavegamesManager().SetSaveScreenshot(
-      screenshot_xres, screenshot_yres, screenshot_rgba);
+      xres, yres, screenshotRgbaData);
 }
