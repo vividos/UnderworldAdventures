@@ -5,7 +5,7 @@
                https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
-Document version: 1.81, as of 2022-02-04
+Document version: 1.82, as of 2022-06-12
 
 
 Table of Contents
@@ -318,7 +318,7 @@ Table of Contents
 
    * = not in "static" install
 
-   cs???.n00   anim control files (?)
+   cs???.n00   cutscene control files
 
    cs000.n01   black screen
    cs000.n02 * garamon in swirling air
@@ -1111,6 +1111,8 @@ Table of Contents
       0010   Int32   content type, always contains "ANIM"
       0014   Int16   width in pixels
       0016   Int16   height in pixels
+      ...
+      0044   Int16   frame rate
 
    The whole header is 128 bytes long. After the header color cycling info
    follows (which also is 128 bytes long), which is not used in uw1. Then
@@ -1203,53 +1205,87 @@ Table of Contents
          }
       }
 
+   The .n00 files are special, as they are not following the .anm format, but
+   contain animiation control instructions.
+
+   The file consists of variable length entries, starting with an Int16 frame
+   number, an Int16 command and a variable number of command arguments,
+   depending on the command. In uw1 there are 0x0f commands, and uw2 extends
+   them to 0x1f commands.
+
+   The following commands are used. The command names are not offical and
+   invented for this document.
+
+     Int16  name      args  meaining
+      0000  show-text  2    displays text arg[1] with color arg[0]
+      0001  set-flag   0    sets some flag to 0
+      0002  no-op      2    no-op, arguments are ignored
+      0003  pause      1    pauses for arg[0] / 2 seconds
+
+      0004  to-frame   2    plays up to frame arg[0]
+      0005  ????       1    unknown, set frame for static cutscene?
+      0006  end-cutsc  0    ends cutscene
+      0007  rep-seg    1    repeat segment arg[0] times
+
+      0008  open-file  2    opens a new file csXXX.nYY, with XXX from arg[0]
+                            and YY from arg[1]; XXX and YY are formatted as
+                            octal values
+      0009  fade-out   1    fades out at rate arg[0] (higher is faster)
+      000a  fade-in    1    fades in at rate arg[0] (higher is faster)
+      000b  ????       1    unknown
+
+      000c  ????       1    unknown
+      000d  text-play  3    displays text arg[1] with color arg[0] and plays
+                            audio arg[2]
+      000e  ????       2    unknown
+      000f  klang      0    plays 'klang' sound
+
+   Commands 0000 and 000d output the text at arg[1]; when the value is
+   0xffff, no text is output.
+
 3.7.2  Cutscene animation [uw2]
 
-   Cutscenes in underworld 2 are stored in the CUTS/ folder. Each cutscene is
-   split into a header file and one or more fragment files. Files starting
-   with CSxxx are part of cutscene x with the number encoded in octal in the
-   filename. The extension of the the file is .N00 for the header and .Nyy for
-   fragment y, again encoded in octal.
-   The cutscenes can refer to background files LBACKxxx.BYT
+   Ultima Underworld 2 extends the .n00 file commands with another set of
+   commands:
 
-3.7.2.1 Cutscene header format [uw2]
+     Int16  name      args  meaining
+      0010  ????       *    unknown, not used in uw2
+      0011  ????       *    unknown, not used in uw2
+      0012  no-op2     4    does nothing, not used in uw2
+      0013  ????       3    unknown
 
-   The cutscene header for each cutscene is stored in file CSxxx.N00. The
-   format of the file is yet unknown. The file is supposed to hold
-      the music to play during playback
-      the sound effect (voice over) to play
-      which subtitles to use
-      references to LBACKxxx and paning information
+      0014  ????       3    unknown
+      0015  ????       2    unknown
+      0016  ????       3    unknown
+      0017  ????       3    unknown
 
-3.7.2.2 Cutscene fragment format [uw2]
+      0018  ????       1    unknown, usually at the start of cutscene
+      0019  ????       1    unknown
+      001a  no-op3     1    does nothing, not used in uw2
+      001b  ????       1    unknown
 
-   A cutscene fragment is stored largely in the same manner as in uw1: The file
-   contains one record for each frame in the animation. Records are stored in
-   pages, where each page can contain a variable number of records.
-   Each fragment is associated with a single string of a block in STRINGS.PAK
-   Relevant fields are
+   (*) Commands 0010 and 0011 have a variable number of arguments:
 
-   00000006 - 00000007      number of pages in the the fragment
-   00000008 - 0000000B      number of records (=frames) in the fragment
-   00000044 - 00000045      framerate
-   00000080 - 000000FF      palette cycling information
-   00000100 - 000004FF      initial palette information 256 x[blue green red 0]
-   00000500 - ........      short page header
-   00000B00 - 00010AFF      page 0
-   00010B00 - 00020AFF      page 1
-   ....
+      0010: numArgs = arg[1] * 3 + 2
+      0011: numArgs = arg[3] * 3 + 4
 
-   <<TODO framerate>>
-   <<TODO palette cycling>>
-   <<TODO document page header>>
-   <<TODO document record layout>>
+   The existing 0005 command is slightly changed:
 
+     Int16  name      args  meaining
+      0005  ????       0    unknown
 
-3.7.2.2 Cutscene background format [uw2]
+   The existing 0008 "open-file" command is extended: When arg[0] == 0x03e4
+   (=996) is passed, a random page is used, using the formula:
+     rand() / 4 + 28
 
-   Cutscene backgrounds are simple index maps of 320 x 200 pixel. The pixel
-   are orderes top to bottom and left to right. The palette is stored with
-   the cutscene that references the background.
+   The cutscenes can refer to background files lbackXXX.byt. The files are
+   are simple index maps of 320 x 200 pixel. The pixel are ordered top to
+   bottom and left to right. The palette is stored with the cutscene that
+   references the background.
+
+   The cutscene commands were figured out thanks to khedoros' code in his uw
+   engine:
+   https://github.com/khedoros/uw-engine/blob/master/csparse.cpp
 
 3.8  Weapon animations
 
