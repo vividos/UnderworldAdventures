@@ -38,13 +38,13 @@ const double StartMenuScreen::s_fadeTime = 0.5;
 const double StartMenuScreen::s_paletteShiftsPerSecond = 20.0;
 
 StartMenuScreen::StartMenuScreen(IGame& game)
-   :Screen(game)
+   :ImageScreen(game, 0, s_fadeTime)
 {
 }
 
 void StartMenuScreen::Init()
 {
-   Screen::Init();
+   ImageScreen::Init();
 
    UaTrace("start menu screen started\n");
 
@@ -53,16 +53,13 @@ void StartMenuScreen::Init()
    // load background image
    if (!isUw2)
    {
-      m_game.GetImageManager().Load(m_screenImage.GetImage(), "data/opscr.byt",
-         0, 2, imageByt);
-      m_screenImage.GetImage().ClonePalette();
+      m_game.GetImageManager().Load(GetImage(), "data/opscr.byt", 0, 2, imageByt);
+      GetImage().ClonePalette();
    }
    else
    {
-      m_game.GetImageManager().LoadFromArk(m_screenImage.GetImage(), "data/byt.ark", 5, 0);
+      m_game.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 5, 0);
    }
-
-   m_screenImage.Init(m_game, 0, 0);
 
    // load button graphics
    m_game.GetImageManager().LoadList(m_buttonImages, "opbtn", 0, 8, 2);
@@ -82,15 +79,9 @@ void StartMenuScreen::Resume()
 
    m_game.GetRenderer().SetupForUserInterface();
 
-   glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-   m_screenImage.Update();
-
-   m_fader.Init(true, m_game.GetTickRate(), s_fadeTime);
+   UpdateImage();
 
    // set other flags/values
-   m_stage = 0;
    m_isJourneyOnwardAvailable = m_game.GetSavegamesManager().GetSavegamesCount() > 0;
    m_selectedArea = -1;
    m_shiftCount = 0.0;
@@ -104,62 +95,57 @@ void StartMenuScreen::Resume()
          !isUw2 ? Audio::musicUw1_Introduction : Audio::musicUw2_LabyrinthOfWorldsTheme,
          false);
    }
+
+   StartFadein();
 }
 
 void StartMenuScreen::Destroy()
 {
-   UaTrace("start menu screen ended\n\n");
+   ImageScreen::Destroy();
 
-   m_screenImage.Destroy();
+   UaTrace("start menu screen ended\n\n");
 }
 
 void StartMenuScreen::Draw()
 {
-   // no need to clear the screen, since we overdraw all of it anyway
-
    // do we need to reupload the image quad texture?
    if (m_reuploadImage)
    {
-      // combine button graphics with background image
-      const unsigned int buttonCoordinates[] =
-      {
-         98,81, 81,104, 72,128, 85,153
-      };
-
-      unsigned int max = m_isJourneyOnwardAvailable ? 4 : 3;
-      for (unsigned int i = 0; i < max; i++)
-      {
-         unsigned int buttonNr = i * 2;
-         if (int(i) == m_selectedArea) buttonNr++;
-
-         IndexedImage& img = m_buttonImages[buttonNr];
-         m_screenImage.GetImage().PasteRect(img,
-            0, 0, img.GetXRes(), img.GetYRes(),
-            buttonCoordinates[i * 2], buttonCoordinates[i * 2 + 1]);
-      }
-
-      m_screenImage.Update();
-
+      UpdateBackgroundImage();
       m_reuploadImage = false;
    }
 
-   // calculate brightness of texture quad
-   Uint8 light = m_fader.GetFadeValue();
+   ImageScreen::Draw();
+}
 
-   glColor3ub(light, light, light);
+void StartMenuScreen::UpdateBackgroundImage()
+{
+   // combine button graphics with background image
+   const unsigned int buttonCoordinates[] =
+   {
+      98,81, 81,104, 72,128, 85,153
+   };
 
-   // render screen image and mouse
-   m_screenImage.Draw();
+   unsigned int max = m_isJourneyOnwardAvailable ? 4 : 3;
+   for (unsigned int i = 0; i < max; i++)
+   {
+      unsigned int buttonNr = i * 2;
+      if (int(i) == m_selectedArea) buttonNr++;
 
-   // draw subwindows
-   Screen::Draw();
+      IndexedImage& img = m_buttonImages[buttonNr];
+      GetImage().PasteRect(img,
+         0, 0, img.GetXRes(), img.GetYRes(),
+         buttonCoordinates[i * 2], buttonCoordinates[i * 2 + 1]);
+   }
+
+   UpdateImage();
 }
 
 bool StartMenuScreen::ProcessEvent(SDL_Event& event)
 {
    bool ret = false;
 
-   ret |= Screen::ProcessEvent(event);
+   ret |= ImageScreen::ProcessEvent(event);
 
    int lastSelectedArea = m_selectedArea;
 
@@ -184,9 +170,9 @@ bool StartMenuScreen::ProcessEvent(SDL_Event& event)
 
       case SDLK_RETURN:
          // simulate clicking on that area
-         if (m_stage == 1)
+         if (!IsFadeInProgress())
          {
-            m_stage++;
+            StartFadeout();
             ret = true;
          }
          break;
@@ -209,12 +195,7 @@ bool StartMenuScreen::ProcessEvent(SDL_Event& event)
 
 void StartMenuScreen::Tick()
 {
-   // when fading in or out, check if blend time is over
-   if ((m_stage == 0 || m_stage == 2) && m_fader.Tick())
-   {
-      // do next stage
-      m_stage++;
-   }
+   ImageScreen::Tick();
 
    // uw1: do palette shifting
    bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
@@ -226,25 +207,15 @@ void StartMenuScreen::Tick()
          m_shiftCount -= 1.0 / s_paletteShiftsPerSecond;
 
          // shift palette
-         m_screenImage.GetImage().GetPalette()->Rotate(64, 64, false);
+         GetImage().GetPalette()->Rotate(64, 64, false);
 
          // initiate new upload
          m_reuploadImage = true;
       }
    }
-
-   // in stage 3, we really press the selected button
-   if (m_stage == 3)
-   {
-      PressButton();
-      m_stage = 0;
-
-      // fade in, in case user returns to menu screen
-      m_fader.Init(true, m_game.GetTickRate(), s_fadeTime);
-   }
 }
 
-void StartMenuScreen::PressButton()
+void StartMenuScreen::OnFadeOutEnded()
 {
    UaTrace("button %u was pressed\n", m_selectedArea);
 
@@ -292,8 +263,7 @@ bool StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool butto
    // a button click action?
    if (buttonClicked)
    {
-      // only in stage 1
-      if (m_stage == 1)
+      if (!IsFadeInProgress())
       {
          if (buttonDown)
          {
@@ -307,8 +277,7 @@ bool StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool butto
             // determine if user released the mouse button over the same area
             if (area != -1 && m_selectedArea == area)
             {
-               m_stage++; // next stage
-               m_fader.Init(false, m_game.GetTickRate(), s_fadeTime);
+               StartFadeout();
 
                // fade out music when selecting "introduction"
                if (m_selectedArea == 0)
@@ -320,9 +289,9 @@ bool StartMenuScreen::MouseEvent(bool buttonClicked, bool leftButton, bool butto
    else
    {
       // a mouse move action with at least one button down
-      Uint8 mouse_state = SDL_GetMouseState(NULL, NULL);
-      if (m_stage == 1 &&
-         (mouse_state & (SDL_BUTTON_LMASK | SDL_BUTTON_RMASK)) != 0 &&
+      Uint8 mouseState = SDL_GetMouseState(NULL, NULL);
+      if (!IsFadeInProgress() &&
+         (mouseState & (SDL_BUTTON_LMASK | SDL_BUTTON_RMASK)) != 0 &&
          area != -1)
          m_selectedArea = area;
    }

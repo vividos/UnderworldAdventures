@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,17 +21,15 @@
 //
 #pragma once
 
-#include "Screen.hpp"
-#include "ImageQuad.hpp"
+#include "ImageScreen.hpp"
 #include "MouseCursor.hpp"
-#include "FadingHelper.hpp"
 
 /// \brief start menu screen class
 /// The screen displays the main game menu. The user can select one of the
 /// menu items "Introduction", "Create Character", "Acknowledgements" or
 /// "Journey Onward" (only available when savegames are detected). Above
 /// the menu there is a "warping" Ultima Underworld logo.
-class StartMenuScreen : public Screen
+class StartMenuScreen : public ImageScreen
 {
 public:
    /// ctor
@@ -49,15 +47,18 @@ public:
    virtual bool MouseEvent(bool buttonClicked, bool leftButton, bool buttonDown,
       unsigned int mouseX, unsigned int mouseY) override;
 
-protected:
+   // virtual functions from ImageScreen
+   virtual void OnFadeOutEnded() override;
+
+private:
    /// called when resuming the screen
    void Resume();
 
-   /// does a button press
-   void PressButton();
-
    /// determines selected area by mouse coordinates
    int GetSelectedArea();
+
+   /// updates background image, e.g. when a selected button has changed
+   void UpdateBackgroundImage();
 
 protected:
    // constants
@@ -69,14 +70,8 @@ protected:
    static const double s_paletteShiftsPerSecond;
 
 
-   /// fading helper
-   FadingHelper m_fader;
-
    /// mouse cursor
    MouseCursor m_mouseCursor;
-
-   /// current stage
-   unsigned int m_stage;
 
    /// count for palette shifting
    double m_shiftCount;
@@ -86,9 +81,6 @@ protected:
 
    /// indicates if "journey onward" is available
    bool m_isJourneyOnwardAvailable;
-
-   /// start screen image
-   ImageQuad m_screenImage;
 
    /// image list with buttons
    std::vector<IndexedImage> m_buttonImages;
