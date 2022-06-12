@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "Screen.hpp"
+#include "ImageScreen.hpp"
 #include "ImageQuad.hpp"
 #include "TextScroll.hpp"
 #include "MouseCursor.hpp"
@@ -42,7 +42,7 @@ enum ConversationScreenState
 };
 
 /// conversation screen class
-class ConversationScreen : public Screen,
+class ConversationScreen : public ImageScreen,
    public Conv::ICodeCallback
 {
 public:
@@ -57,6 +57,9 @@ public:
    virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void Tick() override;
+
+   // virtual functions from ImageScreen
+   virtual void OnFadeInEnded() override;
 
    // virtual functions from ICodeCallback
    virtual void Say(Uint16 index) override;
@@ -82,9 +85,6 @@ protected:
 
    // UI elements
 
-   /// background image
-   ImageQuad m_backgroundImage;
-
    /// conversation scroll
    TextScroll m_conversationScroll;
 
@@ -96,9 +96,6 @@ protected:
 
    /// mouse cursor
    MouseCursor m_mouseCursor;
-
-   /// fading helper
-   FadingHelper m_fader;
 
    /// font for panel names
    Font m_normalFont;

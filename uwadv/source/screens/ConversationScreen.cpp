@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ const double ConversationScreen::s_answerWaitTime = 0.4;
 
 ConversationScreen::ConversationScreen(IGame& game,
    Uint16 convObjectPos)
-   :Screen(game),
+   :ImageScreen(game, 0, s_fadeTime),
    m_convObjectPos(convObjectPos),
    m_codeVM(game.GetGameLogic()),
    m_convDebugger(game.GetGameLogic(), m_codeVM)
@@ -48,7 +48,7 @@ ConversationScreen::ConversationScreen(IGame& game,
 
 void ConversationScreen::Init()
 {
-   Screen::Init();
+   ImageScreen::Init();
 
    UaTrace("conversation screen started\n");
    UaTrace("talking to npc at object pos %u, ", m_convObjectPos);
@@ -73,14 +73,11 @@ void ConversationScreen::Init()
    // init renderer
    m_game.GetRenderer().SetupForUserInterface();
 
-   glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
    m_normalFont.Load(m_game.GetResourceManager(), fontNormal);
 
    // background image
    {
-      IndexedImage& image = m_backgroundImage.GetImage();
+      IndexedImage& image = GetImage();
 
       bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
 
@@ -180,9 +177,7 @@ void ConversationScreen::Init()
       // fill scroll area
       image.FillRect(56, 51, 164, 81, 42);
 
-      m_backgroundImage.Init(m_game, 0, 0);
-      m_backgroundImage.Update();
-      RegisterWindow(&m_backgroundImage);
+      UpdateImage();
    }
 
    // adjust scroll width for uw_demo
@@ -224,7 +219,6 @@ void ConversationScreen::Init()
    }
 
    m_state = convScreenStateFadeIn;
-   m_fader.Init(true, m_game.GetTickRate(), s_fadeTime);
 
    m_waitCount = 0;
 
@@ -254,6 +248,8 @@ void ConversationScreen::Init()
 
 void ConversationScreen::Destroy()
 {
+   ImageScreen::Destroy();
+
    m_convDebugger.Done();
 
    // write back conv. globals
@@ -264,15 +260,7 @@ void ConversationScreen::Destroy()
 
 void ConversationScreen::Draw()
 {
-   // calculate quad brightness
-   Uint8 light = 255;
-   if (m_state == convScreenStateFadeIn || m_state == convScreenStateFadeOut)
-      light = m_fader.GetFadeValue();
-
-   glColor3ub(light, light, light);
-
-   // render ui elements
-   Screen::Draw();
+   ImageScreen::Draw();
 
    // render text edit window when available
    if (m_state == convScreenStateTextInput)
@@ -281,7 +269,7 @@ void ConversationScreen::Draw()
 
 bool ConversationScreen::ProcessEvent(SDL_Event& event)
 {
-   if (Screen::ProcessEvent(event))
+   if (ImageScreen::ProcessEvent(event))
       return true;
 
    // process text input-specific events
@@ -341,18 +329,17 @@ bool ConversationScreen::ProcessEvent(SDL_Event& event)
             m_waitCount = unsigned(s_answerWaitTime * m_game.GetTickRate());
          }
       }
-      else
-         if (m_state == convScreenStateWaitEnd)
-         {
-            // start fade out
-            m_state = convScreenStateFadeOut;
-            m_fader.Init(false, m_game.GetTickRate(), s_fadeTime);
+      else if (m_state == convScreenStateWaitEnd)
+      {
+         // start fade out
+         m_state = convScreenStateFadeOut;
+         StartFadeout();
 
-            m_waitCount = 0;
+         m_waitCount = 0;
 
-            // fade out music
-            m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
-         }
+         // fade out music
+         m_game.GetAudioManager().FadeoutMusic(static_cast<int>(s_fadeTime * 1000));
+      }
       break;
 
    default:
@@ -364,6 +351,8 @@ bool ConversationScreen::ProcessEvent(SDL_Event& event)
 
 void ConversationScreen::Tick()
 {
+   ImageScreen::Tick();
+
    // still waiting?
    if (m_waitCount > 0)
    {
@@ -391,18 +380,14 @@ void ConversationScreen::Tick()
       m_menuScroll.ClearScroll();
       return;
    }
+}
 
-   // check for fading in/out
-   if ((m_state == convScreenStateFadeIn || m_state == convScreenStateFadeOut) && m_fader.Tick())
-   {
-      if (m_state == convScreenStateFadeIn)
-         m_state = convScreenStateRunning;
-      else
-      {
-         // leave screen
-         m_game.RemoveScreen();
-      }
-   }
+void ConversationScreen::OnFadeInEnded()
+{
+   ImageScreen::OnFadeInEnded();
+
+   if (m_state == convScreenStateFadeIn)
+      m_state = convScreenStateRunning;
 }
 
 void ConversationScreen::Say(Uint16 index)
