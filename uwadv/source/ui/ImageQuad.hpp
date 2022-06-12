@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class ImageQuad : public Window
 public:
    /// ctor
    ImageQuad()
-      :m_splitTextures(false), m_hasBorder(false)
+      :m_hasBorder(false)
    {
    }
 
@@ -73,9 +73,6 @@ protected:
 
    /// image quad texture
    Texture m_texture;
-
-   /// indicates if we use two textures to draw the quad
-   bool m_splitTextures;
 
    /// indicates if images are drawn using smooth (filtered) pixels
    bool m_smoothUI;

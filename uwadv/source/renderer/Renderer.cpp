@@ -46,6 +46,13 @@ Renderer::~Renderer()
 /// \param game game interface
 void Renderer::InitGame(IBasicGame& game)
 {
+   // check if textures > 256 x 256 are supported
+   GLint maxTextureSize = 0;
+   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+
+   if (maxTextureSize <= 256)
+      throw Base::Exception("OpenGL doesn't support textures larger than 256x256!");
+
    m_rendererImpl = new UnderworldRenderer(game);
    if (m_rendererImpl == NULL)
       throw Base::Exception("couldn't create UnderworldRenderer class");
