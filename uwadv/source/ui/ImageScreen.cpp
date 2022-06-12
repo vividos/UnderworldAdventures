@@ -110,7 +110,8 @@ void ImageScreen::Init()
 
 void ImageScreen::Draw()
 {
-   glClear(GL_COLOR_BUFFER_BIT);
+   if (m_clearDrawBuffer)
+      glClear(GL_COLOR_BUFFER_BIT);
 
    glEnable(GL_BLEND);
 

@@ -73,9 +73,18 @@ protected:
    /// returns current fade in/out alpha value [0..255]
    Uint8 GetCurentFadeAlphaValue() const;
 
+   /// sets flag if draw buffer should be cleared before drawing
+   void SetClearDrawBuffer(bool clearDrawBuffer)
+   {
+      m_clearDrawBuffer = clearDrawBuffer;
+   }
+
 private:
    /// the actual 320x200 image quad to display
    ImageQuad m_image;
+
+   /// indicates if draw buffer is cleared before drawing image
+   bool m_clearDrawBuffer = true;
 
    /// time to fade in/out
    const double m_fadeInOutTime;
