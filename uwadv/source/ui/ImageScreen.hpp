@@ -70,6 +70,9 @@ protected:
    /// returns if the screen is currently fading in or out
    bool IsFadeInProgress() const;
 
+   /// returns current fade in/out alpha value [0..255]
+   Uint8 GetCurentFadeAlphaValue() const;
+
 private:
    /// the actual 320x200 image quad to display
    ImageQuad m_image;

@@ -72,6 +72,14 @@ bool ImageScreen::IsFadeInProgress() const
    return m_fadeState != 1 && m_fadeState != 3;
 }
 
+Uint8 ImageScreen::GetCurentFadeAlphaValue() const
+{
+   if (!IsFadeInProgress())
+      return 255;
+
+   return m_fader.GetFadeValue();
+}
+
 void ImageScreen::OnFadeInEnded()
 {
    // empty
