@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "Screen.hpp"
+#include "ImageScreen.hpp"
 #include "IUserInterface.hpp"
 #include "Keymap.hpp"
 #include "MouseCursor.hpp"
@@ -72,7 +72,7 @@ enum IngameMoveState
 
 /// original ingame screen
 class OriginalIngameScreen :
-   public Screen,
+   public ImageScreen,
    public IUserInterface,
    public IPanelParent
 {
@@ -82,13 +82,14 @@ public:
    /// dtor
    virtual ~OriginalIngameScreen() {}
 
-   // virtual methods from Screen
+   // virtual methods from ImageScreen
    virtual void Init() override;
    virtual void Destroy() override;
    virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void KeyEvent(bool keyDown, Base::KeyType key) override;
    virtual void Tick() override;
+   virtual void OnFadeOutEnded() override;
 
    /// schedules action and starts fadeout if specified
    void ScheduleAction(IngameAction action, bool fadeoutBefore);
@@ -161,7 +162,7 @@ protected:
 
 
    /// background image
-   ImageQuad m_backgroundImage;
+   IndexedImage m_backgroundImage;
 
    /// mouse cursor
    MouseCursor m_mouseCursor;
@@ -176,11 +177,6 @@ protected:
    /// all inventory objects
    std::vector<IndexedImage> m_inventoryObjectImages;
 
-   /// fading helper
-   FadingHelper m_fading;
-
-   /// current fading state; 0: fadein; 2: fadeout
-   unsigned int m_fadeState;
 
    /// action to perform after fadeout
    IngameAction m_fadeoutAction;

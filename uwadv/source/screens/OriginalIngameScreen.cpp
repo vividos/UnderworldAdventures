@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ const unsigned int c_ingameScreenshotYRes = 100;
 
 /// ctor; sets parent pointers for ingame controls
 OriginalIngameScreen::OriginalIngameScreen(IGame& game)
-   :Screen(game),
+   :ImageScreen(game, 0, s_fadeTime),
    m_compass(*this),
    m_runeShelf(*this),
    m_spellArea(*this),
@@ -60,11 +60,12 @@ OriginalIngameScreen::OriginalIngameScreen(IGame& game)
    m_moveArrows(*this),
    m_playerPhysics(m_game.GetUnderworld().GetPlayer(), m_game.GetSettings().GetBool(Base::settingUwadvFeatures))
 {
+   ImageScreen::SetClearDrawBuffer(false);
 }
 
 void OriginalIngameScreen::Init()
 {
-   Screen::Init();
+   ImageScreen::Init();
 
    UaTrace("orig. ingame user interface started\n");
 
@@ -77,16 +78,10 @@ void OriginalIngameScreen::Init()
    m_ingameMode = ingameModeDefault;
    m_tickCount = 0;
 
-   m_fadeState = 0;
-
    m_fadeoutAction = ingameActionNone;
    m_fadeoutParameter = 0;
 
    m_game.GetImageManager().LoadList(m_inventoryObjectImages, "objects");
-
-   // set OpenGL flags
-   glDisable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    Notify(notifyLevelChange);
 
@@ -102,7 +97,7 @@ void OriginalIngameScreen::Init()
    {
       if (settings.GetGameType() == Base::gameUw2)
       {
-         m_game.GetImageManager().LoadFromArk(m_backgroundImage.GetImage(), "data/byt.ark", 4, 0);
+         m_game.GetImageManager().LoadFromArk(m_backgroundImage, "data/byt.ark", 4, 0);
       }
       else
       {
@@ -113,19 +108,16 @@ void OriginalIngameScreen::Init()
          if (settings.GetBool(Base::settingUw1IsUwdemo))
             mainscreenname = "data/dmain.byt";
 
-         m_game.GetImageManager().Load(m_backgroundImage.GetImage(),
+         m_game.GetImageManager().Load(m_backgroundImage,
             mainscreenname, 0, 0, imageByt);
       }
 
-      m_backgroundImage.Init(m_game, 0, 0);
+      m_backgroundImage.FillRect(236, 7, 83, 114, 0); // panel area
+      m_backgroundImage.FillRect(272, 3, 10, 4, 0);
+      m_backgroundImage.FillRect(272, 121, 10, 18, 0);
 
-      m_backgroundImage.GetImage().FillRect(236, 7, 83, 114, 0); // panel area
-      m_backgroundImage.GetImage().FillRect(272, 3, 10, 4, 0);
-      m_backgroundImage.GetImage().FillRect(272, 121, 10, 18, 0);
-
-      m_backgroundImage.Update();
-
-      RegisterWindow(&m_backgroundImage);
+      GetImage() = m_backgroundImage;
+      UpdateImage();
    }
 
    // init 3d view window
@@ -139,7 +131,7 @@ void OriginalIngameScreen::Init()
 
    // init compass
    m_compass.Init(m_game, 112, 131);
-   m_compass.AddBorder(m_backgroundImage.GetImage());
+   m_compass.AddBorder(m_backgroundImage);
    m_compass.Update();
    RegisterWindow(&m_compass);
 
@@ -161,7 +153,7 @@ void OriginalIngameScreen::Init()
       RegisterWindow(&m_textScroll);
 
       // fill message scroll background area
-      m_backgroundImage.GetImage().FillRect(16, 169, scrollwidth, 30, 42);
+      m_backgroundImage.FillRect(16, 169, scrollwidth, 30, 42);
    }
 
    // runeshelf
@@ -176,16 +168,16 @@ void OriginalIngameScreen::Init()
 
    // vitality/mana flasks
    m_vitalityFlask.Init(m_game, 248, 125);
-   m_vitalityFlask.AddBorder(m_backgroundImage.GetImage());
+   m_vitalityFlask.AddBorder(m_backgroundImage);
    RegisterWindow(&m_vitalityFlask);
 
    m_manaFlask.Init(m_game, 284, 125);
-   m_manaFlask.AddBorder(m_backgroundImage.GetImage());
+   m_manaFlask.AddBorder(m_backgroundImage);
    RegisterWindow(&m_manaFlask);
 
    // gargoyle eyes
    m_gargoyleEyes.Init(m_game, 128, 4);
-   //m_gargoyleEyes.AddBorder(m_backgroundImage.GetImage());
+   //m_gargoyleEyes.AddBorder(m_backgroundImage);
    m_gargoyleEyes.UpdateEyes();
    RegisterWindow(&m_gargoyleEyes);
 
@@ -206,7 +198,7 @@ void OriginalIngameScreen::Init()
 
    // init powergem
    m_powerGem.Init(m_game, 4, 139);
-   m_powerGem.AddBorder(m_backgroundImage.GetImage());
+   m_powerGem.AddBorder(m_backgroundImage);
    m_powerGem.UpdateGem();
    RegisterWindow(&m_powerGem);
 
@@ -243,10 +235,6 @@ void OriginalIngameScreen::Resume()
 
    m_game.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
 
-   // setup fade-in
-   m_fadeState = 0;
-   m_fading.Init(true, m_game.GetTickRate(), s_fadeTime);
-
    if (m_fadeoutAction == ingameActionConversation)
    {
       // after conversations, play "Dark Abyss"
@@ -257,6 +245,8 @@ void OriginalIngameScreen::Resume()
       // normal start, play "Descent"
       m_game.GetAudioManager().StartMusicTrack(Audio::musicUw1_Descent, true);
    }
+
+   StartFadein();
 }
 
 void OriginalIngameScreen::Destroy()
@@ -264,7 +254,7 @@ void OriginalIngameScreen::Destroy()
    Suspend();
 
    // only windows and other stuff has to be destroyed that wasn't registered
-   // with Screen::RegisterWindow()
+   // with ImageScreen::RegisterWindow()
 
 
 
@@ -291,10 +281,10 @@ void OriginalIngameScreen::Draw()
 
       glEnable(GL_BLEND);
 
-      if (m_fadeState == 0 || m_fadeState == 2)
+      if (IsFadeInProgress())
       {
          // when fading in/out, lay a quad over the already rendered 3D view
-         Uint8 alpha = m_fading.GetFadeValue();
+         Uint8 alpha = GetCurentFadeAlphaValue();
          if (alpha < 255)
          {
             glColor4ub(0, 0, 0, 255 - alpha);
@@ -309,7 +299,7 @@ void OriginalIngameScreen::Draw()
          glColor3ub(255, 255, 255);
 
       // draw all registered windows
-      Screen::Draw();
+      ImageScreen::Draw();
 
       glDisable(GL_BLEND);
    }
@@ -321,7 +311,7 @@ bool OriginalIngameScreen::ProcessEvent(SDL_Event& event)
    if (event.type == SDL_USEREVENT && event.user.code == gameEventResumeScreen)
       Resume();
 
-   return Screen::ProcessEvent(event);
+   return ImageScreen::ProcessEvent(event);
 }
 
 void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
@@ -729,11 +719,11 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
 
 void OriginalIngameScreen::Tick()
 {
-   Screen::Tick();
+   ImageScreen::Tick();
 
    // evaluate underworld;
    // only evaluate when the user is not in the options menu
-   if (m_fadeoutAction == ingameActionNone && m_ingameMode != ingameModeOptions)
+   if (!IsFadeInProgress() && m_ingameMode != ingameModeOptions)
    {
       m_game.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / m_game.GetTickRate());
 
@@ -746,21 +736,13 @@ void OriginalIngameScreen::Tick()
       // do renderer-specific tick processing
       m_game.GetRenderer().Tick(m_game.GetTickRate());
    }
+}
 
-   // action to perform?
-   if (((m_fadeState == 0 || m_fadeState == 2) && m_fading.Tick()) || m_fadeState == 5)
-   {
-      if (m_fadeState == 5)
-         m_fadeState = 1;
-      else
-         m_fadeState++;
+void OriginalIngameScreen::OnFadeOutEnded()
+{
+   DoAction(m_fadeoutAction);
 
-      // now it's time
-      DoAction(m_fadeoutAction);
-
-      m_fadeState = 0;
-      m_fadeoutAction = ingameActionNone;
-   }
+   m_fadeoutAction = ingameActionNone;
 }
 
 void OriginalIngameScreen::ScheduleAction(IngameAction action, bool fadeoutBefore)
@@ -768,12 +750,9 @@ void OriginalIngameScreen::ScheduleAction(IngameAction action, bool fadeoutBefor
    m_fadeoutAction = action;
 
    if (fadeoutBefore)
-   {
-      m_fadeState = 2;
-      m_fading.Init(false, m_game.GetTickRate(), s_fadeTime);
-   }
+      StartFadeout();
    else
-      m_fadeState = 5; // special ScheduleAction fade state
+      DoAction(action); // do action immediately
 
    // check which action we scheduled
    switch (action)

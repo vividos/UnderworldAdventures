@@ -243,7 +243,7 @@ void IngameCommandButtons::UpdateMenu()
    }
 
    // add border
-   AddBorder(m_parent.m_backgroundImage.GetImage());
+   AddBorder(m_parent.m_backgroundImage);
 
    Update();
 }
