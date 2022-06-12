@@ -22,16 +22,188 @@
 #include "common.hpp"
 #include "File.hpp"
 #include "Path.hpp"
+#include "String.hpp"
+#include "GameStrings.hpp"
 
 extern void DumpSinglePaletteColors(const Uint8* palette, bool scaleUpValues);
 
-/// dumps an .n00 animation control file
-void DumpAnimationControlFile(Base::File& file)
+/// command name for each command
+static std::map<Uint16, const char*> c_cutseneCommandNames =
 {
+   { 0x0000, "show-text" },
+   { 0x0000, "set-flag" },
+   { 0x0002, "no-op" },
+   { 0x0003, "pause" },
+
+   { 0x0004, "to-frame" },
+   { 0x0006, "end-cutsc" },
+   { 0x0007, "rep-seg" },
+
+   { 0x0008, "open-file" },
+   { 0x0009, "fade-out" },
+   { 0x000a, "fade-in" },
+
+   { 0x000d, "text-play" },
+   { 0x000f, "klang" },
+
+   // uw2
+   { 0x0012, "no-op2" },
+   { 0x001a, "no-op3" },
+};
+
+/// number of arguments per command
+static std::map<Uint16, size_t> c_cutseneCommandNumArgs =
+{
+   { 0x0000, 2 },
+   { 0x0001, 0 },
+   { 0x0002, 2 },
+   { 0x0003, 1 },
+
+   { 0x0004, 2 },
+   { 0x0005, 1 }, // uw2: 0
+   { 0x0006, 0 },
+   { 0x0007, 1 },
+
+   { 0x0008, 2 },
+   { 0x0009, 1 },
+   { 0x000a, 1 },
+   { 0x000b, 1 },
+
+   { 0x000c, 1 },
+   { 0x000d, 3 },
+   { 0x000e, 2 },
+   { 0x000f, 0 },
+
+   // uw2
+   { 0x0010, 0 }, // arg0 * 3 + 2
+   { 0x0011, 0 }, // arg0 * 3 + 4
+   { 0x0012, 4 },
+   { 0x0013, 3 },
+
+   { 0x0014, 3 },
+   { 0x0015, 2 },
+   { 0x0016, 3 },
+   { 0x0017, 3 },
+
+   { 0x0018, 1 },
+   { 0x0019, 1 },
+   { 0x001a, 1 },
+   { 0x001b, 1 },
+};
+
+bool GetStringBlockFromFilename(std::string filename, unsigned int& blockNum)
+{
+   Base::String::Lowercase(filename);
+
+   std::string octalCutscene = filename.substr(
+      filename.find(".n00") - 3, 3);
+
+   if (octalCutscene.size() != 3)
+      return false;
+
+   blockNum = 0x0c00 +
+      (octalCutscene[0] - '0') * 64 +
+      (octalCutscene[1] - '0') * 8 +
+      octalCutscene[2] - '0';
+
+   return true;
+}
+
+/// dumps an .n00 animation control file
+void DumpAnimationControlFile(Base::File& file,
+   const std::string& filename, const GameStrings& gameStrings, bool isUw2)
+{
+   unsigned int blockNum;
+   if (!GetStringBlockFromFilename(filename, blockNum))
+   {
+      printf("error: couldn't get strings block number from filename %s",
+         filename.c_str());
+      return;
+   }
+
    Uint32 fileLength = file.FileLength();
 
-   printf("n00 header, file length %u (0x%08x)\n",
-      fileLength, fileLength);
+   bool isBlockAvail = gameStrings.IsBlockAvail(blockNum);
+
+   printf("n00 header, file length %u (0x%08x), strings block 0x%04x%s\n\n",
+      fileLength, fileLength,
+      blockNum,
+      isBlockAvail ? "" : " (not available)");
+
+   Uint16 maxCommand = !isUw2 ? 0x0f : 0x1b;
+
+   for (Uint32 fileIndex = 0; fileIndex < fileLength; fileIndex += 4)
+   {
+      Uint16 frameNumber = file.Read16();
+      Uint16 command = file.Read16();
+
+      const char* commandName =
+         c_cutseneCommandNames.find(command) == c_cutseneCommandNames.end()
+         ? "????"
+         : c_cutseneCommandNames[command];
+
+      printf("0x%04x: at frame 0x%04x: command 0x%02x (%- 9s)",
+         fileIndex, frameNumber, command, commandName);
+
+      if (command > maxCommand)
+      {
+         printf(" oh dear, bad cutscene command 0x%02x at 0x%04x\n",
+            command, fileIndex);
+         break;
+      }
+
+      UaAssert(c_cutseneCommandNumArgs.find(command) != c_cutseneCommandNumArgs.end());
+      size_t commandNumArgs = c_cutseneCommandNumArgs[command];
+
+      if (isUw2 && command == 0x0005)
+         commandNumArgs = 0;
+
+      // adjust variable sized args
+      if (command == 0x0010)
+         commandNumArgs = 2;
+      else if (command == 0x0011)
+         commandNumArgs = 4;
+
+      if (commandNumArgs > 0)
+      {
+         std::vector<Uint16> args;
+         for (size_t i = 0; i < commandNumArgs; i++)
+            args.push_back(file.Read16());
+
+         printf(" [");
+         for (size_t i = 0; i < commandNumArgs; i++)
+         {
+            if (fileIndex + i >= fileLength)
+               break;
+
+            if (i > 0)
+               printf(" ");
+
+            printf("%04x", args[i]);
+         }
+
+         printf("]");
+
+         if (command == 0x00 || command == 0x0d)
+         {
+            std::string text = args[1] == 0xffff
+               ? "no text"
+               : "\"" + gameStrings.GetString(blockNum, args[1]) + "\"";
+
+            Base::String::Replace(text, "\n", "\\n");
+
+            printf(": %s", text.c_str());
+         }
+         else if (command == 0x08)
+            printf(": cs%03o.n%02o", args[0], args[1]);
+      }
+
+      fileIndex += commandNumArgs * 2;
+
+      printf("\n");
+   }
+
+   printf("end of file\n");
 }
 
 /// dumps file containing .anm header and large pages
@@ -201,7 +373,7 @@ void DumpCutscene(const std::string& filename, const GameStrings& gameStrings, b
    Base::String::Lowercase(extension);
 
    if (extension == ".n00")
-      DumpAnimationControlFile(file);
+      DumpAnimationControlFile(file, filename, gameStrings, isUw2);
    else
       DumpLargePageFile(file);
 }
