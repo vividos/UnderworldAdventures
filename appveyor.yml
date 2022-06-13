@@ -13,7 +13,7 @@ platform: Win32
 configuration: AppVeyor
 
 cache:
-  - $env:localappdata\vcpkg\archives -> appveyor.yml
+  - C:\Users\appveyor\AppData\Local\vcpkg\archives -> appveyor.yml
 
 before_build:
   - ps: uwadv\Patch-BuildVersion.ps1 -version $env:appveyor_build_version
