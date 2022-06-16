@@ -64,7 +64,6 @@ public:
    virtual Underworld::Underworld& GetUnderworld() override { return m_gameLogic->GetUnderworld(); }
    virtual Underworld::GameLogic& GetGameLogic() override { return *m_gameLogic.get(); }
    virtual Physics::PhysicsModel& GetPhysicsModel() override { return m_physicsModel; }
-   virtual IUserInterface* GetUserInterface() override { return this; }
 
    // virtual IGame methods
    virtual void InitGame();

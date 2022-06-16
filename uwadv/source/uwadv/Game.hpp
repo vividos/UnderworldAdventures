@@ -108,10 +108,6 @@ public:
    {
       return *m_gameLogic;
    }
-   virtual IUserInterface* GetUserInterface() override
-   {
-      return m_userInterface;
-   }
 
    // IGame methods
    virtual void InitGame() override;
@@ -150,7 +146,6 @@ public:
 
    virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) override;
    virtual void RemoveScreen() override;
-   virtual void RegisterUserInterface(IUserInterface* userInterface) override;
    virtual unsigned int GetScreenXRes() override { return m_width; }
    virtual unsigned int GetScreenYRes() override { return m_height; }
 
@@ -244,9 +239,6 @@ private:
 
    /// Physics model for the game
    Physics::PhysicsModel m_physicsModel;
-
-   /// user interface; the ingame screen
-   IUserInterface* m_userInterface;
 
    /// screen queued to destroy
    Screen* m_screenToDestroy;

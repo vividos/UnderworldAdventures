@@ -53,6 +53,12 @@ namespace Underworld
          m_userInterface = userInterface;
       }
 
+      /// returns currently set user interface; may be nullptr
+      IUserInterface* GetUserInterface()
+      {
+         return m_userInterface;
+      }
+
       /// evaluates whole underworld for a given time point
       void EvaluateUnderworld(double time);
 

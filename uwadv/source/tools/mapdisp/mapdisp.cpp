@@ -208,11 +208,6 @@ private:
       throw std::runtime_error("object not available");
    }
 
-   virtual IUserInterface* GetUserInterface() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
    virtual void InitGame() override
    {
    }
@@ -256,10 +251,6 @@ private:
    }
 
    virtual void RemoveScreen() override
-   {
-   }
-
-   virtual void RegisterUserInterface(IUserInterface* userInterface) override
    {
    }
 

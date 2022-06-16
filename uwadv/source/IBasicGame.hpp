@@ -82,9 +82,6 @@ public:
    /// returns physics model
    virtual Physics::PhysicsModel& GetPhysicsModel() = 0;
 
-   /// returns user interface instance; may be null
-   virtual IUserInterface* GetUserInterface() = 0;
-
    /// initializes game; only called after all stuff is initialized and ready
    virtual void InitGame() = 0;
 

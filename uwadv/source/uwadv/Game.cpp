@@ -578,12 +578,6 @@ void Game::RemoveScreen()
    SDL_PushEvent(&event);
 }
 
-void Game::RegisterUserInterface(IUserInterface* userInterface)
-{
-   GetGameLogic().RegisterUserInterface(userInterface);
-   m_userInterface = userInterface;
-}
-
 void Game::GetSurroundingTriangles(unsigned int xpos,
    unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles)
 {

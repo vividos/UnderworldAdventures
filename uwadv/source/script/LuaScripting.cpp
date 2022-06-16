@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -354,8 +354,8 @@ int LuaScripting::uw_print(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       const char* text = lua_tostring(L, -1);
       callback->PrintScroll(text);
@@ -392,8 +392,8 @@ int LuaScripting::uw_start_conv(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       Uint16 conversationObjectPos = static_cast<Uint16>(lua_tointeger(L, -1));
       callback->StartConversation(conversationObjectPos);
@@ -406,8 +406,8 @@ int LuaScripting::uw_show_cutscene(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       unsigned int cutsceneNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
       callback->ShowCutscene(cutsceneNumber);
@@ -420,8 +420,8 @@ int LuaScripting::uw_show_map(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       callback->ShowMap();
    }
@@ -433,8 +433,8 @@ int LuaScripting::uw_show_ingame_anim(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       unsigned int ingameAnimationNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
       callback->Notify(notifyUpdateShowIngameAnimation, ingameAnimationNumber);
@@ -447,8 +447,8 @@ int LuaScripting::uw_cursor_use_item(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       // TODO implement
       //unsigned int ingameAnimationNumber = static_cast<unsigned int>(lua_tointeger(L, -1));
@@ -461,8 +461,8 @@ int LuaScripting::uw_cursor_target(lua_State* L)
 {
    LuaScripting& self = GetScriptingFromSelf(L);
 
-   IUserInterface* callback = self.m_game->GetUserInterface();
-   if (callback != NULL)
+   IUserInterface* callback = self.m_game->GetGameLogic().GetUserInterface();
+   if (callback != nullptr)
    {
       // TODO implement
    }
@@ -882,7 +882,7 @@ int LuaScripting::inventory_float_add_item(lua_State* L)
    // param is the item ID
    const Underworld::ObjectInfo& info = inventory.GetObjectInfo(inventoryPos);
 
-   self.m_game->GetUserInterface()->Notify(notifySelectTarget, info.m_itemID);
+   self.m_game->GetGameLogic().GetUserInterface()->Notify(notifySelectTarget, info.m_itemID);
 
    return 1;
 }

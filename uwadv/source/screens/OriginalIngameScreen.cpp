@@ -218,14 +218,14 @@ void OriginalIngameScreen::Suspend()
 
    m_game.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
 
-   m_game.RegisterUserInterface(NULL);
+   m_game.GetGameLogic().RegisterUserInterface(nullptr);
 }
 
 void OriginalIngameScreen::Resume()
 {
    UaTrace("resuming orig. ingame user interface\n");
 
-   m_game.RegisterUserInterface(this);
+   m_game.GetGameLogic().RegisterUserInterface(this);
 
    m_game.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
 
