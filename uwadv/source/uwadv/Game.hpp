@@ -63,7 +63,7 @@ public:
    void Done();
 
    // IBasicGame methods
-   virtual double GetTickRate() override
+   virtual double GetTickRate() const override
    {
       return m_tickRate;
    }

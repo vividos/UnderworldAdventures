@@ -52,7 +52,7 @@ public:
    void Run();
 
    // virtual IBasicGame methods
-   virtual double GetTickRate() { return 20.0; }
+   virtual double GetTickRate() const { return 20.0; }
    virtual bool PauseGame(bool pause);
    virtual Base::Settings& GetSettings() override { return m_settings; }
    virtual Base::ResourceManager& GetResourceManager() override { return *m_resourceManager.get(); }
