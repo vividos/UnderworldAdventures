@@ -21,24 +21,26 @@
 //
 #pragma once
 
-#include "Screen.hpp"
-#include "ImageQuad.hpp"
+#include "ImageScreen.hpp"
 #include "Font.hpp"
 #include "Cutscene.hpp"
-#include "FadingHelper.hpp"
+
+/// stages for the splash screen
+enum SplashScreenStage
+{
+   splashScreenShowFirstOpeningScreen = 0, ///< first opening screen
+   splashScreenShowSecondOpeningScreen, ///< second opening screen; not in uw_demo
+   splashScreenFadeinAnimation,
+   splashScreenShowAnimation,    ///< cutscene animation
+   splashScreenFadeoutAnimation,
+   splashScreenFadeoutFinished,
+};
 
 /// \brief start splash screen class
 /// The screen displays the splash screen sequence at start of Ultima
 /// Underworld. It shows two images (or just one when using the demo) and the
 /// animated logo. The images are skipped when savegames are available.
-/// The screen can be in one of these stages:
-/// stage 0: first opening screen
-/// stage 1: second opening screen (not in uw_demo)
-/// stage 2: fading in animation
-/// stage 3: showing animation
-/// stage 4: fading out animation
-/// stage 5: screen finished
-class StartSplashScreen : public Screen
+class StartSplashScreen : public ImageScreen
 {
 public:
    /// ctor
@@ -49,9 +51,16 @@ public:
    // virtual functions from Screen
    virtual void Init() override;
    virtual void Destroy() override;
-   virtual void Draw() override;
    virtual bool ProcessEvent(SDL_Event& event) override;
    virtual void Tick() override;
+
+   // virtual functions from ImageScreen
+   virtual void OnFadeInEnded() override;
+   virtual void OnFadeOutEnded() override;
+
+private:
+   /// updates screen image for the next stage
+   void UpdateForNextStage();
 
 private:
    /// number of seconds the splash screen images are shown
@@ -66,23 +75,14 @@ private:
    /// palette shifts per second
    static const double c_paletteShiftsPerSecond;
 
-   /// fading helper
-   FadingHelper m_fader;
-
-   /// current stage we are in
-   unsigned int m_stage;
+   /// current splash screen stage we are in
+   SplashScreenStage m_stage;
 
    /// count of ticks since last stage-start
    unsigned int m_tickCount;
 
-   /// current still image
-   ImageQuad m_currentImage;
-
    /// current cutscene
    Cutscene m_currentCutscene;
-
-   /// cutscene image
-   ImageQuad m_cutsceneImage;
 
    /// current animation frame
    unsigned int m_currentFrame;

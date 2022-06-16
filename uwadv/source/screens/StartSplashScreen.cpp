@@ -43,14 +43,18 @@ const double StartSplashScreen::c_animationFrameRate = 5.0;
 const double StartSplashScreen::c_paletteShiftsPerSecond = 5.0;
 
 StartSplashScreen::StartSplashScreen(IGame& game)
-   :Screen(game),
+   :ImageScreen(game, 0, c_blendTime),
+   m_stage(splashScreenShowFirstOpeningScreen),
+   m_tickCount(0),
+   m_currentFrame(0),
+   m_animationCount(0.0),
    m_shiftCount(0.0)
 {
 }
 
 void StartSplashScreen::Init()
 {
-   Screen::Init();
+   ImageScreen::Init();
 
    UaTrace("start splash screen started\n");
 
@@ -63,61 +67,18 @@ void StartSplashScreen::Init()
 
    m_game.GetRenderer().SetupForUserInterface();
 
-   // load first image
-   UaTrace("loading first image\n");
-   if (!isUw2)
-   {
-      const char* firstImageName = "data/pres1.byt";
-      if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
-         firstImageName = "data/presd.byt";
-
-      // load image, palette 5
-      m_game.GetImageManager().Load(m_currentImage.GetImage(),
-         firstImageName, 0, 5, imageByt);
-   }
-   else
-   {
-      m_game.GetImageManager().LoadFromArk(m_currentImage.GetImage(), "data/byt.ark", 6, 5);
-   }
-
-   m_currentImage.Init(m_game, 0, 0);
-
-   // demo game?
-   if (!isUw2 &&
-      m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
-   {
-      // write a string under the demo title
-      Font font;
-      IndexedImage tempImage;
-      font.Load(m_game.GetResourceManager(), fontBig);
-      font.CreateString(tempImage, "Underworld Adventures", 198);
-
-      double scale = 0.9;
-      unsigned int xpos = unsigned((320 - tempImage.GetXRes() * scale) / 2);
-
-      m_currentImage.GetImage().PasteRect(tempImage, 0, 0,
-         tempImage.GetXRes(), tempImage.GetYRes(),
-         xpos, 200 - 16);
-   }
-
-   m_currentImage.Update();
-
-   // set up variables
-   m_stage = 0;
-   m_tickCount = 0;
-   m_currentFrame = 0;
-   m_animationCount = 0.0;
+   SetFadeinComplete();
 
    // leave out first two screens when we have savegames
    if (!m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo) &&
       m_game.GetSavegamesManager().GetSavegamesCount() > 0)
    {
-      UaTrace("skipping images (savegames available)\n");
+      UaTrace("skipping splash images (savegames are available)\n");
 
-      m_stage = 1;
-      m_tickCount = unsigned(c_showTime * m_game.GetTickRate()) + 1;
-      Tick();
+      m_stage = splashScreenFadeinAnimation;
    }
+
+   UpdateForNextStage();
 
    // switch on cursor for this screen
    SDL_ShowCursor(1);
@@ -125,58 +86,16 @@ void StartSplashScreen::Init()
 
 void StartSplashScreen::Destroy()
 {
-   Screen::Destroy();
-
-   m_currentImage.Destroy();
-   m_cutsceneImage.Destroy();
+   ImageScreen::Destroy();
 
    SDL_ShowCursor(0);
 
    UaTrace("start splash screen ended\n\n");
 }
 
-void StartSplashScreen::Draw()
-{
-   Screen::Draw();
-
-   // calculate brightness of texture quad
-   Uint8 light = 255;
-
-   switch (m_stage)
-   {
-      // anim fade-in/fade-out
-   case 2:
-   case 4:
-      light = m_fader.GetFadeValue();
-      break;
-
-      // finished
-   case 5:
-      light = 0;
-      break;
-   }
-
-   glColor3ub(light, light, light);
-
-   if (m_stage >= 2)
-   {
-      // prepare and convert animation frame
-      m_currentCutscene.GetFrame(m_cutsceneImage.GetImage(), m_currentFrame);
-      m_cutsceneImage.Update();
-
-      // render quad
-      m_cutsceneImage.Draw();
-   }
-   else
-   {
-      // render still image
-      m_currentImage.Draw();
-   }
-}
-
 bool StartSplashScreen::ProcessEvent(SDL_Event& event)
 {
-   bool ret = false;
+   bool handled = false;
 
    switch (event.type)
    {
@@ -185,109 +104,80 @@ bool StartSplashScreen::ProcessEvent(SDL_Event& event)
       // when a key or mouse button was pressed, go to next stage
       switch (m_stage)
       {
-      case 0: // first or second image
-      case 1:
+         // first or second image
+      case splashScreenShowFirstOpeningScreen:
+      case splashScreenShowSecondOpeningScreen:
          m_tickCount = unsigned(c_showTime * m_game.GetTickRate()) + 1;
-         ret = true;
+         handled = true;
          break;
 
-      case 2: // fading in animation
-         m_stage = 4;
+      case splashScreenFadeinAnimation:
+         m_stage = SplashScreenStage(m_stage + 1);
          m_tickCount = unsigned(c_blendTime * m_game.GetTickRate()) - m_tickCount;
+         UpdateForNextStage();
 
-         // init fadeout
-         m_fader.Init(false, m_game.GetTickRate(), c_blendTime, m_tickCount);
+         StartFadein();
 
-         ret = true;
+         handled = true;
          break;
 
-      case 3: // showing animation
-         m_stage++;
+      case splashScreenShowAnimation:
+         m_stage = SplashScreenStage(m_stage + 1);
          m_tickCount = 0;
 
          // fade out music when we have the demo (ingame starts after this)
          if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
             m_game.GetAudioManager().FadeoutMusic(static_cast<int>(c_blendTime * 1000));
 
-         // init fadeout
-         m_fader.Init(false, m_game.GetTickRate(), c_blendTime);
+         StartFadeout();
 
-         ret = true;
+         handled = true;
          break;
       }
       break;
    }
 
-   return ret;
+   return handled;
 }
 
 void StartSplashScreen::Tick()
 {
-   Screen::Tick();
+   ImageScreen::Tick();
 
    m_tickCount++;
-
-   // check if animation should be loaded
-   if ((m_stage == 1 || (m_stage == 0 &&
-      m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))) &&
-      m_tickCount >= c_showTime * m_game.GetTickRate())
-   {
-      UaTrace("loading animation\n");
-
-      // load animation
-      m_currentCutscene.Load(m_game.GetResourceManager(), "cuts/cs011.n01", m_cutsceneImage.GetImage());
-      m_cutsceneImage.Init(m_game, 0, 0);
-
-      m_currentFrame = 0;
-      m_animationCount = 0.0;
-      m_stage = 2;
-      m_tickCount = 0;
-
-      // init fadein
-      m_fader.Init(true, m_game.GetTickRate(), c_blendTime);
-   }
+   bool isShowTimeElapsed = m_tickCount >= c_showTime * m_game.GetTickRate();
 
    bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
 
-   // check other stages
    switch (m_stage)
    {
-   case 0:
-      if (m_tickCount >= c_showTime * m_game.GetTickRate())
+   case splashScreenShowFirstOpeningScreen:
+      if (isShowTimeElapsed)
       {
-         UaTrace("loading second image\n");
-
-         // load second image
-         if (!isUw2)
-         {
-            m_game.GetImageManager().Load(m_currentImage.GetImage(),
-               "data/pres2.byt", 0, 5, imageByt);
-         }
+         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+            m_stage = SplashScreenStage(m_stage + 2);
          else
-         {
-            m_game.GetImageManager().LoadFromArk(m_currentImage.GetImage(), "data/byt.ark", 7, 5);
-         }
+            m_stage = SplashScreenStage(m_stage + 1);
 
-         m_currentImage.Update();
-
-         m_stage++;
          m_tickCount = 0;
+
+         UpdateForNextStage();
       }
       break;
 
-      // fade-in / out
-   case 2:
-   case 4:
-      if (m_fader.Tick())
+   case splashScreenShowSecondOpeningScreen:
+      if (isShowTimeElapsed)
       {
-         m_stage++;
+         m_stage = SplashScreenStage(m_stage + 1);
          m_tickCount = 0;
-         break;
-      }
-      // no break, fall through
 
-      // animation
-   case 3:
+         UpdateForNextStage();
+      }
+      break;
+
+   case splashScreenFadeinAnimation:
+   case splashScreenShowAnimation:
+   case splashScreenFadeoutAnimation:
       // check if we have to do a new animation frame
       m_animationCount += 1.0 / m_game.GetTickRate();
       if (m_animationCount >= 1.0 / c_animationFrameRate)
@@ -307,44 +197,154 @@ void StartSplashScreen::Tick()
             if (m_currentFrame > m_currentCutscene.GetMaxFrames() - 14)
                m_currentFrame = m_currentCutscene.GetMaxFrames() - 14;
          }
+
+         // prepare and convert animation frame
+         m_currentCutscene.GetFrame(GetImage(), m_currentFrame);
+         UpdateImage();
       }
       break;
 
-      // finished
-   case 5:
-      // start next screen
-      if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
-      {
-         // when we have the demo, we immediately go to the ingame screen
+   case splashScreenFadeoutFinished:
+      // nothing to do
+      break;
 
-         // load and init new game
-         Import::LoadUnderworld(m_game.GetSettings(), m_game.GetResourceManager(), m_game.GetUnderworld());
-
-         m_game.GetScripting().InitNewGame();
-
-         // to ingame screen
-         m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
-         return;
-      }
-      else
-         m_game.ReplaceScreen(new StartMenuScreen(m_game), false);
+   default:
+      UaAssertMsg(false, "invalid splash screen stage!");
       break;
    }
 
    // shift palette when uw2 animation is shown
-   if (isUw2 && m_stage >= 2 && m_stage < 5)
+   if (isUw2 && m_stage >= splashScreenFadeinAnimation && m_stage < splashScreenFadeoutFinished)
    {
       m_shiftCount += 1.0 / m_game.GetTickRate();
       if (m_shiftCount >= 1.0 / c_paletteShiftsPerSecond)
       {
          m_shiftCount -= 1.0 / c_paletteShiftsPerSecond;
 
-         IndexedImage& cutsceneImage = m_cutsceneImage.GetImage();
+         IndexedImage& cutsceneImage = GetImage();
+
          cutsceneImage.GetPalette()->Rotate(43, 6, false);
          cutsceneImage.GetPalette()->Rotate(49, 3, false);
          cutsceneImage.GetPalette()->Rotate(57, 9, false);
 
-         m_cutsceneImage.Update();
+         UpdateImage();
       }
+   }
+}
+
+void StartSplashScreen::OnFadeInEnded()
+{
+   m_stage = SplashScreenStage(m_stage + 1);
+   UpdateForNextStage();
+}
+
+void StartSplashScreen::OnFadeOutEnded()
+{
+   // start next screen
+   if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+   {
+      // when we have the demo, we immediately go to the ingame screen
+
+      // load and init new game
+      Import::LoadUnderworld(m_game.GetSettings(), m_game.GetResourceManager(), m_game.GetUnderworld());
+
+      m_game.GetScripting().InitNewGame();
+
+      m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
+      return;
+   }
+   else
+      m_game.ReplaceScreen(new StartMenuScreen(m_game), false);
+}
+
+void StartSplashScreen::UpdateForNextStage()
+{
+   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+
+   switch (m_stage)
+   {
+   case splashScreenShowFirstOpeningScreen:
+      UaTrace("loading first image\n");
+      if (!isUw2)
+      {
+         const char* firstImageName = "data/pres1.byt";
+         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+            firstImageName = "data/presd.byt";
+
+         // load image, palette 5
+         m_game.GetImageManager().Load(GetImage(),
+            firstImageName, 0, 5, imageByt);
+      }
+      else
+      {
+         m_game.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 6, 5);
+      }
+
+      // demo game?
+      if (!isUw2 &&
+         m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+      {
+         // write a string under the demo title
+         Font font;
+         IndexedImage tempImage;
+         font.Load(m_game.GetResourceManager(), fontBig);
+         font.CreateString(tempImage, "Underworld Adventures", 198);
+
+         double scale = 0.9;
+         unsigned int xpos = unsigned((320 - tempImage.GetXRes() * scale) / 2);
+
+         GetImage().PasteRect(tempImage, 0, 0,
+            tempImage.GetXRes(), tempImage.GetYRes(),
+            xpos, 200 - 16);
+      }
+
+      UpdateImage();
+      break;
+
+   case splashScreenShowSecondOpeningScreen:
+      UaTrace("loading second image\n");
+
+      if (!isUw2)
+      {
+         m_game.GetImageManager().Load(GetImage(),
+            "data/pres2.byt", 0, 5, imageByt);
+      }
+      else
+      {
+         m_game.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 7, 5);
+      }
+
+      UpdateImage();
+      break;
+
+   case splashScreenFadeinAnimation:
+      UaTrace("loading animation\n");
+
+      m_currentFrame = 0;
+      m_animationCount = 0.0;
+      m_tickCount = 0;
+
+      m_currentCutscene.Load(m_game.GetResourceManager(), "cuts/cs011.n01", GetImage());
+      m_currentCutscene.GetFrame(GetImage(), m_currentFrame);
+      UpdateImage();
+
+      StartFadein();
+      break;
+
+   case splashScreenShowAnimation:
+      // do nothing; wait for timer to advance stage
+      break;
+
+   case splashScreenFadeoutAnimation:
+      // do nothing; wait for fadeout to finish
+      break;
+
+   case splashScreenFadeoutFinished:
+      // do nothing
+      break;
+
+   default:
+      UaAssertMsg(false, "invalid splash screen stage!");
+      break;
    }
 }
