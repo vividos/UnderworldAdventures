@@ -184,7 +184,7 @@ void AudioManager::PlaySound(const std::string& soundName)
    VoiceFile vocFile(rwops);
 
    // start playing
-   Mix_Chunk* mc = Mix_LoadWAV_RW(vocFile.GetFileData().get(), true);
+   Mix_Chunk* mc = Mix_LoadWAV_RW(vocFile.GetFileData().get(), false);
    if (mc == NULL)
    {
       UaTrace("couldn't load sound file %s: %s\n", vocFilename.c_str(), Mix_GetError());
