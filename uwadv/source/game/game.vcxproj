@@ -51,6 +51,7 @@
   <ItemGroup>
     <ClCompile Include="DebugServer.cpp" />
     <ClCompile Include="GameConfigLoader.cpp" />
+    <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -59,6 +60,7 @@
   <ItemGroup>
     <ClInclude Include="DebugServer.hpp" />
     <ClInclude Include="GameConfigLoader.hpp" />
+    <ClInclude Include="LevelEditor.hpp" />
     <ClInclude Include="pch.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +72,9 @@
     </ProjectReference>
     <ProjectReference Include="..\physics\physics.vcxproj">
       <Project>{6917cdd3-2eef-4b6d-9256-ed5b64391341}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\renderer\renderer.vcxproj">
+      <Project>{db683b59-d89d-4074-80a1-ad9a71c16dfc}</Project>
     </ProjectReference>
     <ProjectReference Include="..\script\script.vcxproj">
       <Project>{4548e978-a076-4ba2-88b3-a41f46e53b16}</Project>

@@ -12,6 +12,7 @@ add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"DebugServer.cpp" "DebugServer.hpp"
 	"GameConfigLoader.cpp" "GameConfigLoader.hpp"
+	"LevelEditor.cpp" "LevelEditor.hpp"
 )
 
 target_include_directories(${PROJECT_NAME}
@@ -19,8 +20,9 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE "${PROJECT_SOURCE_DIR}/../import"
 	PRIVATE "${PROJECT_SOURCE_DIR}/../script"
 	PRIVATE "${PROJECT_SOURCE_DIR}/../physics"
+	PRIVATE "${PROJECT_SOURCE_DIR}/../renderer"
 	PRIVATE "${PROJECT_SOURCE_DIR}/../underworld"
 	PRIVATE "${PROJECT_SOURCE_DIR}/../ui"
 )
 
-target_link_libraries(${PROJECT_NAME} base import underworld ui)
+target_link_libraries(${PROJECT_NAME} base import underworld renderer ui)
