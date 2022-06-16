@@ -33,6 +33,7 @@
 #include "ConversationScreen.hpp"
 #include "Model3D.hpp"
 #include "physics/PhysicsModel.hpp"
+#include "physics/GeometryProvider.hpp"
 #include "ImageManager.hpp"
 
 /// time to fade in/out
@@ -90,6 +91,11 @@ void OriginalIngameScreen::Init()
    // load keymap
    m_keymap.Init(settings, m_game.GetResourceManager());
    RegisterKeymap(&m_keymap);
+
+   m_game.GetPhysicsModel().Init(
+      std::bind(
+         &OriginalIngameScreen::GetSurroundingTriangles, this,
+         std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
    // init images/subwindows
 
@@ -961,4 +967,49 @@ void OriginalIngameScreen::DoSavegameScreenshot(
    // set in savegames manager
    m_game.GetSavegamesManager().SetSaveScreenshot(
       xres, yres, screenshotRgbaData);
+}
+
+void OriginalIngameScreen::GetSurroundingTriangles(
+   unsigned int xpos, unsigned int ypos,
+   std::vector<Triangle3dTextured>& allTriangles)
+{
+   Uint8 xmin, xmax, ymin, ymax;
+
+   xmin = static_cast<Uint8>(xpos > 0 ? xpos - 1 : 0);
+   xmax = static_cast<Uint8>(xpos < 64 ? xpos + 1 : 64);
+   ymin = static_cast<Uint8>(ypos > 0 ? ypos - 1 : 0);
+   ymax = static_cast<Uint8>(ypos < 64 ? ypos + 1 : 64);
+
+   // tile triangles
+   Physics::GeometryProvider provider(m_game.GetGameLogic().GetCurrentLevel());
+
+   for (unsigned int x = xmin; x < xmax; x++)
+      for (unsigned int y = ymin; y < ymax; y++)
+         provider.GetTileTriangles(x, y, allTriangles);
+
+   // also collect triangles from 3d models and critter objects
+   {
+      const Underworld::ObjectList& objectList =
+         m_game.GetGameLogic().GetCurrentLevel().GetObjectList();
+
+      for (Uint8 x = xmin; x < xmax; x++)
+      {
+         for (Uint8 y = ymin; y < ymax; y++)
+         {
+            // get first object link
+            Uint16 link = objectList.GetListStart(x, y);
+            while (link != 0)
+            {
+               // collect triangles
+               Underworld::ObjectPtr object = objectList.GetObject(link);
+               if (object != NULL)
+               {
+                  m_game.GetRenderer().GetModel3DBoundingTriangles(x, y, *object, allTriangles);
+               }
+
+               link = objectList.GetObject(link)->GetObjectInfo().m_link;
+            }
+         }
+      }
+   }
 }

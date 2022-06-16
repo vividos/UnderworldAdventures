@@ -28,7 +28,6 @@
 #include "screens/StartSplashScreen.hpp"
 #include "import/Import.hpp"
 #include "import/GameStringsImporter.hpp"
-#include "physics/GeometryProvider.hpp"
 #include <ctime>
 #include <SDL2/SDL.h>
 
@@ -460,10 +459,6 @@ void Game::InitGame()
 
    m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 
-   m_physicsModel.Init(std::bind(
-      &Game::GetSurroundingTriangles, this,
-      std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-
    UaTrace("loading game strings ... ");
    Import::GameStringsImporter importer(GetGameStrings());
    importer.LoadDefaultStringsPakFile(GetResourceManager());
@@ -576,48 +571,6 @@ void Game::RemoveScreen()
    event.type = SDL_USEREVENT;
    event.user.code = gameEventDestroyScreen;
    SDL_PushEvent(&event);
-}
-
-void Game::GetSurroundingTriangles(unsigned int xpos,
-   unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles)
-{
-   Uint8 xmin, xmax, ymin, ymax;
-
-   xmin = static_cast<Uint8>(xpos > 0 ? xpos - 1 : 0);
-   xmax = static_cast<Uint8>(xpos < 64 ? xpos + 1 : 64);
-   ymin = static_cast<Uint8>(ypos > 0 ? ypos - 1 : 0);
-   ymax = static_cast<Uint8>(ypos < 64 ? ypos + 1 : 64);
-
-   // tile triangles
-   Physics::GeometryProvider provider(GetGameLogic().GetCurrentLevel());
-
-   for (unsigned int x = xmin; x < xmax; x++)
-      for (unsigned int y = ymin; y < ymax; y++)
-         provider.GetTileTriangles(x, y, allTriangles);
-
-   // also collect triangles from 3d models and critter objects
-   {
-      const Underworld::ObjectList& objectList = GetGameLogic().GetCurrentLevel().GetObjectList();
-      for (Uint8 x = xmin; x < xmax; x++)
-      {
-         for (Uint8 y = ymin; y < ymax; y++)
-         {
-            // get first object link
-            Uint16 link = objectList.GetListStart(x, y);
-            while (link != 0)
-            {
-               // collect triangles
-               Underworld::ObjectPtr object = objectList.GetObject(link);
-               if (object != NULL)
-               {
-                  GetRenderer().GetModel3DBoundingTriangles(x, y, *object, allTriangles);
-               }
-
-               link = objectList.GetObject(link)->GetObjectInfo().m_link;
-            }
-         }
-      }
-   }
 }
 
 void Game::ToggleFullscreen()

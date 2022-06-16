@@ -32,6 +32,7 @@
 #include "Underworld.hpp"
 #include "Math.hpp"
 #include "physics/PlayerPhysicsObject.hpp"
+#include "Triangle3d.hpp"
 
 /// game modes
 enum IngameGameMode
@@ -119,7 +120,7 @@ public:
    /// returns game interface; for controls
    virtual IGame& GetGameInterface() override { return m_game; }
 
-protected:
+private:
    /// suspends game resources while showing another screen
    void Suspend();
 
@@ -147,7 +148,11 @@ protected:
    /// takes a screenshot for savegame preview
    void DoSavegameScreenshot(unsigned int xres, unsigned int yres);
 
-protected:
+   /// returns triangles surrounding a tile on the current level
+   void GetSurroundingTriangles(unsigned int xpos,
+      unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles);
+
+private:
    // constants
 
    /// time to fade in/out

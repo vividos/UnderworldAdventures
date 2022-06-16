@@ -173,10 +173,6 @@ private:
    /// toggles fullscreen and windowed mode
    void ToggleFullscreen();
 
-   /// returns triangles surrounding a tile on the current level
-   void GetSurroundingTriangles(unsigned int xpos,
-      unsigned int ypos, std::vector<Triangle3dTextured>& allTriangles);
-
 private:
    /// game configuration
    Base::Settings m_settings;
