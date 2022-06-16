@@ -296,7 +296,7 @@ bool ConversationScreen::ProcessEvent(SDL_Event& event)
          // clear menu scroll
          m_menuScroll.ClearScroll();
 
-         m_waitCount = unsigned(s_answerWaitTime * m_game.GetTickRate());
+         m_waitCount = unsigned(s_answerWaitTime * GetTickRate());
       }
    }
 
@@ -326,7 +326,7 @@ bool ConversationScreen::ProcessEvent(SDL_Event& event)
             // clear menu scroll
             m_menuScroll.ClearScroll();
 
-            m_waitCount = unsigned(s_answerWaitTime * m_game.GetTickRate());
+            m_waitCount = unsigned(s_answerWaitTime * GetTickRate());
          }
       }
       else if (m_state == convScreenStateWaitEnd)

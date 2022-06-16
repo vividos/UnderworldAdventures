@@ -162,12 +162,12 @@ void CutsceneViewScreen::Draw()
 
       case 1: // fade in
          light = static_cast<Uint8>(255 * double(m_animationFadeCount) /
-            (s_fadeTime*m_game.GetTickRate()));
+            (s_fadeTime*GetTickRate()));
          break;
 
       case 2: // fade out
          light = 255 - static_cast<Uint8>(255 * double(m_animationFadeCount) /
-            (s_fadeTime*m_game.GetTickRate()));
+            (s_fadeTime*GetTickRate()));
          break;
       }
       glColor3ub(light, light, light);
@@ -192,12 +192,12 @@ void CutsceneViewScreen::Draw()
 
       case 1: // fade in
          light = static_cast<Uint8>(255 * double(m_textFadeCount) /
-            (s_fadeTime*m_game.GetTickRate()));
+            (s_fadeTime*GetTickRate()));
          break;
 
       case 2: // fade out
          light = 255 - static_cast<Uint8>(255 * double(m_textFadeCount) /
-            (s_fadeTime*m_game.GetTickRate()));
+            (s_fadeTime*GetTickRate()));
          break;
       }
       glColor3ub(light, light, light);
@@ -244,7 +244,7 @@ bool CutsceneViewScreen::ProcessEvent(SDL_Event& event)
 
 void CutsceneViewScreen::Tick()
 {
-   if (m_isEnded && m_animationFadeCount >= s_fadeTime * m_game.GetTickRate())
+   if (m_isEnded && m_animationFadeCount >= s_fadeTime * GetTickRate())
    {
       // we're finished
       m_game.RemoveScreen();
@@ -255,7 +255,7 @@ void CutsceneViewScreen::Tick()
    if (m_showAnimation && m_loopAnimation && !(m_animationFadeState == 1 || m_animationFadeState == 2))
    {
       // count up m_animationTickCount
-      m_animationTickCount += 1.0 / m_game.GetTickRate();
+      m_animationTickCount += 1.0 / GetTickRate();
 
       if (m_animationTickCount >= 1.0 / s_animationFramesPerSecond)
       {
@@ -282,7 +282,7 @@ void CutsceneViewScreen::Tick()
       ++m_animationFadeCount;
 
       // end of fade reached?
-      if (m_animationFadeCount >= s_fadeTime * m_game.GetTickRate())
+      if (m_animationFadeCount >= s_fadeTime * GetTickRate())
       {
          if (m_animationFadeState == 1)
             m_animationFadeState = 0;
@@ -297,7 +297,7 @@ void CutsceneViewScreen::Tick()
       ++m_textFadeCount;
 
       // end of fade reached?
-      if (m_textFadeCount >= s_fadeTime * m_game.GetTickRate())
+      if (m_textFadeCount >= s_fadeTime * GetTickRate())
       {
          if (m_textFadeState == 1)
             m_textFadeState = 0;
@@ -308,7 +308,7 @@ void CutsceneViewScreen::Tick()
 
 
    // calculate current ticktime
-   double ticktime = double(m_tickCount) / m_game.GetTickRate();
+   double ticktime = double(m_tickCount) / GetTickRate();
 
    // call lua "cuts_tick(ticktime)" function
    if (!m_isEnded)
@@ -425,7 +425,7 @@ void CutsceneViewScreen::DoAction()
    case 0: // cuts_finished
       m_isEnded = true;
       m_animationFadeCount = static_cast<unsigned int>(
-         s_fadeTime*m_game.GetTickRate()) + 1;
+         s_fadeTime*GetTickRate()) + 1;
       break;
 
    case 1: // cuts_set_string_block

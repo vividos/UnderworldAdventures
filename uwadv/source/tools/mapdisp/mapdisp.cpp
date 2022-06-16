@@ -158,7 +158,7 @@ private:
 private:
    // IGame virtual methods
 
-   virtual double GetTickRate() override
+   virtual double GetTickRate() const override
    {
       return 20.0;
    }

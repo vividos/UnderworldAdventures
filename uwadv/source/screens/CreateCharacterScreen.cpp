@@ -291,7 +291,7 @@ void CreateCharacterScreen::Tick()
    ImageScreen::Tick();
 
    if ((m_buttonGroupButtonType == buttonTimer) &&
-      (++m_countDownTickCount >= (m_game.GetTickRate() * m_countDownTime)))
+      (++m_countDownTickCount >= (GetTickRate() * m_countDownTime)))
    {
       m_countDownTickCount = 0;
       PressButton(0);

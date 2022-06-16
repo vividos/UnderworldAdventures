@@ -719,16 +719,16 @@ void OriginalIngameScreen::Tick()
    // only evaluate when the user is not in the options menu
    if (!IsFadeInProgress() && m_ingameMode != ingameModeOptions)
    {
-      m_game.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / m_game.GetTickRate());
+      m_game.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / GetTickRate());
 
-      double elapsedTime = 1.0 / m_game.GetTickRate();
+      double elapsedTime = 1.0 / GetTickRate();
       m_playerPhysics.RotateMove(elapsedTime);
       m_game.GetPhysicsModel().EvaluatePhysics(elapsedTime);
 
       m_tickCount++;
 
       // do renderer-specific tick processing
-      m_game.GetRenderer().Tick(m_game.GetTickRate());
+      m_game.GetRenderer().Tick(GetTickRate());
    }
 }
 

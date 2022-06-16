@@ -201,7 +201,7 @@ void StartMenuScreen::Tick()
    bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
    if (!isUw2)
    {
-      m_shiftCount += 1.0 / m_game.GetTickRate();
+      m_shiftCount += 1.0 / GetTickRate();
       if (m_shiftCount >= 1.0 / s_paletteShiftsPerSecond)
       {
          m_shiftCount -= 1.0 / s_paletteShiftsPerSecond;

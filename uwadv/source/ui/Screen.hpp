@@ -72,6 +72,9 @@ public:
    /// sets new mouse position; in real window coordinates
    void SetMousePos(unsigned int xpos, unsigned int ypos);
 
+   /// returns game tick rate, useful for animations
+   double GetTickRate() const;
+
 protected:
    /// list of all subwindows controlled by the screen
    std::vector<Window*> m_subWindows;

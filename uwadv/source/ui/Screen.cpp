@@ -192,3 +192,8 @@ void Screen::SetMousePos(unsigned int xpos, unsigned int ypos)
 {
    m_game.GetRenderWindow().SetMousePos(xpos, ypos);
 }
+
+double Screen::GetTickRate() const
+{
+   return m_game.GetTickRate();
+}

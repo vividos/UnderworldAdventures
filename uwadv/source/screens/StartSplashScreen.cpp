@@ -107,13 +107,13 @@ bool StartSplashScreen::ProcessEvent(SDL_Event& event)
          // first or second image
       case splashScreenShowFirstOpeningScreen:
       case splashScreenShowSecondOpeningScreen:
-         m_tickCount = unsigned(c_showTime * m_game.GetTickRate()) + 1;
+         m_tickCount = unsigned(c_showTime * GetTickRate()) + 1;
          handled = true;
          break;
 
       case splashScreenFadeinAnimation:
          m_stage = SplashScreenStage(m_stage + 1);
-         m_tickCount = unsigned(c_blendTime * m_game.GetTickRate()) - m_tickCount;
+         m_tickCount = unsigned(c_blendTime * GetTickRate()) - m_tickCount;
          UpdateForNextStage();
 
          StartFadein();
@@ -145,7 +145,7 @@ void StartSplashScreen::Tick()
    ImageScreen::Tick();
 
    m_tickCount++;
-   bool isShowTimeElapsed = m_tickCount >= c_showTime * m_game.GetTickRate();
+   bool isShowTimeElapsed = m_tickCount >= c_showTime * GetTickRate();
 
    bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
 
@@ -179,7 +179,7 @@ void StartSplashScreen::Tick()
    case splashScreenShowAnimation:
    case splashScreenFadeoutAnimation:
       // check if we have to do a new animation frame
-      m_animationCount += 1.0 / m_game.GetTickRate();
+      m_animationCount += 1.0 / GetTickRate();
       if (m_animationCount >= 1.0 / c_animationFrameRate)
       {
          // do next frame
@@ -216,7 +216,7 @@ void StartSplashScreen::Tick()
    // shift palette when uw2 animation is shown
    if (isUw2 && m_stage >= splashScreenFadeinAnimation && m_stage < splashScreenFadeoutFinished)
    {
-      m_shiftCount += 1.0 / m_game.GetTickRate();
+      m_shiftCount += 1.0 / GetTickRate();
       if (m_shiftCount >= 1.0 / c_paletteShiftsPerSecond)
       {
          m_shiftCount -= 1.0 / c_paletteShiftsPerSecond;

@@ -66,7 +66,7 @@ void AcknowledgementsScreen::Init()
    m_fadeoutImage.Update();
 
    // init fadeout
-   m_fader.Init(false, m_game.GetTickRate(), s_crossfadeTime);
+   m_fader.Init(false, GetTickRate(), s_crossfadeTime);
 
    SDL_ShowCursor(1);
 }
@@ -112,7 +112,7 @@ bool AcknowledgementsScreen::ProcessEvent(SDL_Event& event)
    case SDL_MOUSEBUTTONDOWN:
       // start crossfade immediately
       if (m_stage == 0)
-         m_tickCount = unsigned(m_game.GetTickRate()*s_showTime) + 1;
+         m_tickCount = unsigned(GetTickRate()*s_showTime) + 1;
       break;
 
    case SDL_KEYDOWN:
@@ -120,7 +120,7 @@ bool AcknowledgementsScreen::ProcessEvent(SDL_Event& event)
       switch (event.key.keysym.sym)
       {
       case SDLK_SPACE:
-         m_tickCount = unsigned(s_showTime * m_game.GetTickRate()) + 1;
+         m_tickCount = unsigned(s_showTime * GetTickRate()) + 1;
          break;
 
       case SDLK_RETURN:
@@ -143,7 +143,7 @@ bool AcknowledgementsScreen::ProcessEvent(SDL_Event& event)
 
 void AcknowledgementsScreen::Tick()
 {
-   if (m_stage == 0 && double(m_tickCount) / m_game.GetTickRate() >= s_showTime)
+   if (m_stage == 0 && double(m_tickCount) / GetTickRate() >= s_showTime)
    {
       // last frame? fade out and end
       if (m_currentFrame == 13)
@@ -158,7 +158,7 @@ void AcknowledgementsScreen::Tick()
       m_tickCount = 0;
 
       // reinit m_fader
-      m_fader.Init(false, m_game.GetTickRate(), s_crossfadeTime);
+      m_fader.Init(false, GetTickRate(), s_crossfadeTime);
 
       // copy old frame to fadeout image
       m_fadeoutImage.GetImage() = m_image.GetImage();
@@ -195,13 +195,13 @@ void AcknowledgementsScreen::FadeoutEnd()
 {
    // initiate fadeout
    if (m_stage == 1)
-      m_tickCount = unsigned(s_crossfadeTime * m_game.GetTickRate()) - m_tickCount;
+      m_tickCount = unsigned(s_crossfadeTime * GetTickRate()) - m_tickCount;
    else
       m_tickCount = 0;
    m_stage = 1;
 
    // reinit m_fader
-   m_fader.Init(false, m_game.GetTickRate(), s_crossfadeTime, m_tickCount);
+   m_fader.Init(false, GetTickRate(), s_crossfadeTime, m_tickCount);
 
    // copy last frame to fadeout image
    m_fadeoutImage.GetImage() = m_image.GetImage();
