@@ -27,7 +27,7 @@
 ImageScreen::ImageScreen(IGame& game, unsigned int paletteIndex, double fadeInOutTime)
    :Screen(game),
    m_fadeInOutTime(fadeInOutTime),
-   m_fadeState(0)
+   m_fadeState(fadeStateNotStartedFadein)
 {
    m_image.Init(game, 0, 0);
    m_image.Create(0, 0, 320, 200);
@@ -53,7 +53,7 @@ void ImageScreen::StartFadein()
 
    m_fader.Init(true, m_game.GetTickRate(), m_fadeInOutTime);
 
-   m_fadeState = 0;
+   m_fadeState = fadeStateFadein;
 }
 
 void ImageScreen::StartFadeout()
@@ -63,17 +63,22 @@ void ImageScreen::StartFadeout()
 
    m_fader.Init(false, m_game.GetTickRate(), m_fadeInOutTime);
 
-   m_fadeState = 2;
+   m_fadeState = fadeStateFadeout;
    OnFadeOutStarted();
 }
 
 bool ImageScreen::IsFadeInProgress() const
 {
-   return m_fadeState != 1 && m_fadeState != 3;
+   return m_fadeState == fadeStateFadein ||
+      m_fadeState == fadeStateFadeout;
 }
 
 Uint8 ImageScreen::GetCurentFadeAlphaValue() const
 {
+   if (m_fadeState == fadeStateNotStartedFadein ||
+      m_fadeState == fadeStateEndedFadeout)
+      return 0;
+
    if (!IsFadeInProgress())
       return 255;
 
@@ -104,8 +109,7 @@ void ImageScreen::Init()
    glDisable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-   m_fader.Init(true, m_game.GetTickRate(), m_fadeInOutTime);
-   m_fadeState = 0;
+   StartFadein();
 }
 
 void ImageScreen::Draw()
@@ -130,13 +134,13 @@ void ImageScreen::Draw()
 
 void ImageScreen::Tick()
 {
-   if ((m_fadeState == 0 || m_fadeState == 2) && m_fader.Tick())
+   if (IsFadeInProgress() && m_fader.Tick())
    {
-      m_fadeState++;
+      m_fadeState = ImageScreenFadeState(m_fadeState + 1);
 
-      if (m_fadeState == 3)
+      if (m_fadeState == fadeStateEndedFadeout)
          OnFadeOutEnded();
-      else if (m_fadeState == 1)
+      else if (m_fadeState == fadeStateShow)
          OnFadeInEnded();
    }
 }

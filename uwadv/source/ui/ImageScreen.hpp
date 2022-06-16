@@ -25,6 +25,16 @@
 #include "ImageQuad.hpp"
 #include "FadingHelper.hpp"
 
+/// state of fading in/out image screen
+enum ImageScreenFadeState
+{
+   fadeStateNotStartedFadein = 0,
+   fadeStateFadein = 1,
+   fadeStateShow = 2,
+   fadeStateFadeout = 3,
+   fadeStateEndedFadeout = 4,
+};
+
 /// \brief screen with image
 /// screen that provides an IndexedImage to draw 2D user interface on; also
 /// handles fading in and out
@@ -90,7 +100,7 @@ private:
    const double m_fadeInOutTime;
 
    /// fade in/out state
-   unsigned int m_fadeState;
+   ImageScreenFadeState m_fadeState;
 
    /// fading helper
    FadingHelper m_fader;
