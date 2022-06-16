@@ -21,18 +21,61 @@
 //
 #include "pch.hpp"
 #include "Tilemap3DEditorView.hpp"
+#include "DebugClient.hpp"
+#include "game/LevelEditor.hpp"
 
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
+
+LRESULT Tilemap3DEditorView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+   m_levelEditor.reset();
+
+   bHandled = false;
+   return 0;
+}
 
 void Tilemap3DEditorView::OnInit()
 {
 }
 
+void Tilemap3DEditorView::InitDebugWindow(IMainFrame* mainFrame)
+{
+   baseClass::InitDebugWindow(mainFrame);
+
+   CClientDC dc{ m_hWnd };
+   dc.wglMakeCurrent(m_hRC);
+
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
+
+   m_levelEditor = debugClient.CreateLevelEditor(m_hWnd);
+
+   debugClient.Lock(false);
+
+   dc.wglMakeCurrent(nullptr);
+}
+
 void Tilemap3DEditorView::OnRender()
 {
+   if (m_levelEditor == nullptr)
+      return;
+
+   DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
+   debugClient.Lock(true);
+
+   m_levelEditor->Render();
+
+   debugClient.Lock(false);
 }
 
 void Tilemap3DEditorView::OnResize(int cx, int cy)
 {
+   if (m_levelEditor == nullptr)
+      return;
+
+   CRect rc;
+   GetClientRect(&rc);
+
+   m_levelEditor->SetWindowSize(rc.Width(), rc.Height());
 }

@@ -23,6 +23,9 @@
 
 #include "resource.h"
 #include <AtlOpengl.h>
+#include <memory>
+
+class LevelEditor;
 
 /// 3D editor view for tilemap
 class Tilemap3DEditorView :
@@ -35,10 +38,19 @@ class Tilemap3DEditorView :
 private:
    BEGIN_MSG_MAP(thisClass)
       ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
+      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
       CHAIN_MSG_MAP(COpenGL<Tilemap3DEditorView>)
       CHAIN_MSG_MAP(baseClass)
       DEFAULT_REFLECTION_HANDLER()
    END_MSG_MAP()
+
+   /// message handler for the WM_DESTROY message
+   LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+   // ChildWindowBase virtual methods
+
+   /// initializes debug window
+   virtual void InitDebugWindow(IMainFrame* mainFrame) override;
 
 private:
    friend COpenGL<Tilemap3DEditorView>;
@@ -51,4 +63,7 @@ private:
 
    /// called when the reder window is resized
    void OnResize(int cx, int cy);
+
+   /// level editor instance
+   std::shared_ptr<LevelEditor> m_levelEditor;
 };
