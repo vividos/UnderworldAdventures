@@ -18,7 +18,6 @@
 //
 /// \file CutsceneViewScreen.cpp
 /// \brief cutscene view implementation
-/// \todo replace fading in/out with FadingHelper
 //
 #include "pch.hpp"
 #include "CutsceneViewScreen.hpp"

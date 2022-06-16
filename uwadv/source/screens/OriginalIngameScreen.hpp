@@ -25,7 +25,6 @@
 #include "IUserInterface.hpp"
 #include "Keymap.hpp"
 #include "MouseCursor.hpp"
-#include "FadingHelper.hpp"
 #include "ImageQuad.hpp"
 #include "TextScroll.hpp"
 #include "IngameControls.hpp"

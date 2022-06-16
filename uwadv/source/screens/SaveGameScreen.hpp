@@ -24,7 +24,6 @@
 #include "ImageScreen.hpp"
 #include "Savegame.hpp"
 #include "ImageQuad.hpp"
-#include "FadingHelper.hpp"
 #include "Font.hpp"
 #include "TextScroll.hpp"
 #include "TextEditWindow.hpp"

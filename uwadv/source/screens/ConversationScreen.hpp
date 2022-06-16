@@ -28,7 +28,6 @@
 #include "Conversation.hpp"
 #include "ConversationDebugger.hpp"
 #include "TextEditWindow.hpp"
-#include "FadingHelper.hpp"
 
 /// conv screen state values
 enum ConversationScreenState
