@@ -46,9 +46,6 @@ class IUserInterface;
 class IBasicGame
 {
 public:
-   /// returns game tickrate
-   virtual double GetTickRate() const = 0;
-
    /// pauses or unpauses game
    virtual bool PauseGame(bool pause) = 0;
 

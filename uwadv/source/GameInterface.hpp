@@ -58,6 +58,9 @@ enum GameEvents
 class IGame : public IBasicGame
 {
 public:
+   /// returns game tickrate
+   virtual double GetTickRate() const = 0;
+
    /// returns audio manager
    virtual Audio::AudioManager& GetAudioManager() = 0;
 
