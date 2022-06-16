@@ -5,7 +5,7 @@
 # CMakeList.txt: Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 
 # Configure C/C++
 enable_language(CXX C)
@@ -52,6 +52,10 @@ add_subdirectory("source/tools/xmi2mid")
 endif()
 
 add_subdirectory("uadata")
+
+if (ANDROID)
+	add_subdirectory("android")
+endif()
 
 install(
 	FILES
