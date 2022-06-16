@@ -239,6 +239,9 @@ public:
 
    bool Init(IDebugServer* pDebugInterface);
 
+   /// returns current game instance
+   IBasicGame& GetGameInstance();
+
    void Lock(bool locked);
 
    bool IsStudioMode();

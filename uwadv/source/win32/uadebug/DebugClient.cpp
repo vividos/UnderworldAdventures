@@ -435,6 +435,11 @@ bool DebugClient::Init(IDebugServer* pDebugInterface)
    return true;
 }
 
+IBasicGame& DebugClient::GetGameInstance()
+{
+   return m_debugInterface->GetGameInstance();
+}
+
 void DebugClient::Lock(bool locked)
 {
    m_debugInterface->Lock(locked);

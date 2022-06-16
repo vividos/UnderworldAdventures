@@ -67,6 +67,9 @@ public:
    /// inits debug server
    void Init();
 
+   /// returns game instance
+   virtual IBasicGame& GetGameInstance() override { return *m_game; }
+
    /// starts debugger client; returns if debugger was already running
    virtual bool StartDebugger(IBasicGame* game) override;
 
