@@ -46,6 +46,11 @@ void ImageScreen::UpdateImage()
    return m_image.Update();
 }
 
+void ImageScreen::SetFadeinComplete()
+{
+   m_fadeState = fadeStateShow;
+}
+
 void ImageScreen::StartFadein()
 {
    if (IsFadeInProgress())
@@ -119,7 +124,7 @@ void ImageScreen::Draw()
 
    glEnable(GL_BLEND);
 
-   Uint8 alpha = m_fader.GetFadeValue();
+   Uint8 alpha = GetCurentFadeAlphaValue();
    if (alpha != 0)
       glEnable(GL_BLEND);
 

@@ -74,6 +74,9 @@ protected:
    /// starts fade in, e.g. after the screen reappears
    void StartFadein();
 
+   /// instantly sets fade in as complete
+   void SetFadeinComplete();
+
    /// starts fading out the screen
    void StartFadeout();
 
