@@ -757,8 +757,7 @@ size_t DebugServer::GetGameString(size_t block,
 
 bool DebugServer::GetObjectListImagelist(size_t& numObjects, unsigned char* buffer, size_t size)
 {
-   ImageManager imageManager{ m_game->GetResourceManager() };
-   imageManager.Init();
+   ImageManager& imageManager = m_game->GetImageManager();
 
    std::vector<IndexedImage> imageList;
    imageManager.LoadList(imageList, "objects");

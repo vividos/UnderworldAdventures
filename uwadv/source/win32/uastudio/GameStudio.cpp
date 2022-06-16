@@ -155,6 +155,9 @@ void GameStudio::Init()
    // init savegames manager
    m_savegamesManager = std::make_unique<Base::SavegamesManager>(m_settings);
 
+   m_imageManager = std::make_unique<ImageManager>(*m_resourceManager);
+   m_imageManager->Init();
+
    // init game components; uw prefix and path is now known
    InitGame();
 
