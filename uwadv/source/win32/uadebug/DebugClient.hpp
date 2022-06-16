@@ -22,6 +22,7 @@
 #pragma once
 
 class IDebugServer;
+class LevelEditor;
 
 /// debug server message that is received by the client
 struct DebugClientMessage
@@ -275,6 +276,8 @@ public:
 
 
    // sub-interfaces
+
+   std::shared_ptr<LevelEditor> CreateLevelEditor(const void* windowHandle);
 
    DebugClientPlayerInterface GetPlayerInterface();
 

@@ -22,6 +22,7 @@
 #pragma once
 
 class IBasicGame;
+class LevelEditor;
 
 /// current debug server interface version
 const unsigned int c_debugServerInterfaceVersion = 1;
@@ -333,4 +334,7 @@ public:
 
    /// retrieves code debugger interface by debugger id
    virtual ICodeDebugger* GetCodeDebugger(unsigned int debuggerId) = 0;
+
+   /// creates a level editor for given window handle
+   virtual std::shared_ptr<LevelEditor> CreateLevelEditor(const void* windowHandle) = 0;
 };

@@ -545,6 +545,11 @@ void DebugClient::MoveLevel(unsigned int level, unsigned int level_insert_point)
    // TODO implement
 }
 
+std::shared_ptr<LevelEditor> DebugClient::CreateLevelEditor(const void* windowHandle)
+{
+   return m_debugInterface->CreateLevelEditor(windowHandle);
+}
+
 DebugClientPlayerInterface DebugClient::GetPlayerInterface()
 {
    DebugClientPlayerInterface playerInterface;

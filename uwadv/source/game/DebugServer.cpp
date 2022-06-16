@@ -27,6 +27,7 @@
 #include "GameStrings.hpp"
 #include "IndexedImage.hpp"
 #include "ImageManager.hpp"
+#include "LevelEditor.hpp"
 #include <algorithm>
 
 /// debugger lib context
@@ -797,6 +798,13 @@ ICodeDebugger* DebugServer::GetCodeDebugger(unsigned int debuggerId)
 
    iter = m_mapCodeDebugger.find(debuggerId);
    return (iter != m_mapCodeDebugger.end()) ? iter->second : NULL;
+}
+
+std::shared_ptr<LevelEditor> DebugServer::CreateLevelEditor(const void* windowHandle)
+{
+   return std::make_shared<LevelEditor>(
+      *m_game,
+      windowHandle);
 }
 
 void DebugServer::AddMessage(DebugServerMessage& msg)

@@ -28,6 +28,7 @@
 
 class IBasicGame;
 class DebuggerLibContext;
+class LevelEditor;
 
 /// debug server message that gets sent to client
 struct DebugServerMessage
@@ -174,6 +175,9 @@ private:
    void RemoveMessages(DebugServerMessageType messageType, unsigned int messageArg1);
 
    virtual ICodeDebugger* GetCodeDebugger(unsigned int debuggerId) override;
+
+   /// creates a level editor for given window handle
+   virtual std::shared_ptr<LevelEditor> CreateLevelEditor(const void* windowHandle) override;
 
 private:
    /// debug library context
