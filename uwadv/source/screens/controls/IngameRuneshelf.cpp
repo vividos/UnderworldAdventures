@@ -41,7 +41,7 @@ void IngameRuneshelf::UpdateRuneshelf()
    IndexedImage& img_shelf = GetImage();
    img_shelf.Clear(0);
 
-   Underworld::Runeshelf& runeshelf = m_parent.GetGameInterface().GetUnderworld().
+   Underworld::Runeshelf& runeshelf = m_gameInstance.GetUnderworld().
       GetPlayer().GetRuneshelf();
 
    size_t max = static_cast<unsigned int>(runeshelf.GetNumRunes() % 3);
@@ -64,7 +64,7 @@ bool IngameRuneshelf::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent.GetGameInterface().GetGameLogic().UserAction(userActionClickedRuneshelf);
+      m_gameInstance.GetGameLogic().UserAction(userActionClickedRuneshelf);
       return true;
    }
 

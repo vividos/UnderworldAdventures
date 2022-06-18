@@ -40,7 +40,7 @@ void IngamePowerGem::UpdateGem()
    unsigned int frame = 0;
 
    unsigned int power =
-      m_parent.GetGameInterface().GetGameLogic().GetAttackPower();
+      m_gameInstance.GetGameLogic().GetAttackPower();
 
    if (power > 0)
    {
@@ -69,7 +69,7 @@ void IngamePowerGem::Tick()
    /*
       // check if we have to update
       unsigned int power =
-         m_parent.GetGameInterface().GetUnderworld().GetAttackPower();
+         .GetUnderworld().GetAttackPower();
       if (power >= 100)
       {
          if (++m_maxPowerFrameIndex>3)

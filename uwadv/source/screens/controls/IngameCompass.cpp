@@ -73,7 +73,7 @@ void IngameCompass::Draw()
    // check if we have to reupload the image
 
    // calculate current angle and images
-   Underworld::Player& player = m_parent.GetGameInterface().GetUnderworld().
+   Underworld::Player& player = m_gameInstance.GetUnderworld().
       GetPlayer();
 
    double angle = fmod(-player.GetRotateAngle() + 90.0 + 360.0, 360.0);
@@ -98,7 +98,7 @@ bool IngameCompass::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent.GetGameInterface().GetGameLogic().UserAction(userActionClickedCompass);
+      m_gameInstance.GetGameLogic().UserAction(userActionClickedCompass);
       return true;
    }
 

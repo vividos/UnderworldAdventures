@@ -206,14 +206,14 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       if (buttonDown)
       {
          // start combat weapon drawback
-         m_parent.GetGameInterface().GetGameLogic().
+         m_gameInstance.GetGameLogic().
             UserAction(userActionCombatDrawBack,
                rely < 0.33 ? 0 : rely < 0.67 ? 1 : 2);
       }
       else
       {
          // end combat weapon drawback
-         m_parent.GetGameInterface().GetGameLogic().
+         m_gameInstance.GetGameLogic().
             UserAction(userActionCombatRelease, 0);
       }
    }
@@ -228,7 +228,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       bool is_object = true;
 
       Renderer& renderer = m_parent.GetGameInterface().GetRenderer();
-      if (!renderer.SelectPick(m_parent.GetGameInterface().GetUnderworld(),
+      if (!renderer.SelectPick(m_gameInstance.GetUnderworld(),
          x, y, tilex, tiley, is_object, id))
          return true;
 
@@ -240,7 +240,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
          if (is_object)
          {
             if (id != 0)
-               m_parent.GetGameInterface().GetGameLogic().
+               m_gameInstance.GetGameLogic().
                UserAction(userActionLookObject, id);
          }
          else
@@ -249,7 +249,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
             UaTrace("looking at wall/ceiling, tile=%02x/%02x, id=%04x\n",
                tilex, tiley, id);
 
-            m_parent.GetGameInterface().GetGameLogic().
+            m_gameInstance.GetGameLogic().
                UserAction(userActionLookWall, id);
          }
          break;
@@ -258,12 +258,12 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       case ingameModeUse:
          if (is_object)
          {
-            m_parent.GetGameInterface().GetGameLogic().
+            m_gameInstance.GetGameLogic().
                UserAction(userActionUseObject, id);
          }
          else
          {
-            m_parent.GetGameInterface().GetGameLogic().
+            m_gameInstance.GetGameLogic().
                UserAction(userActionUseWall, id);
          }
          break;
@@ -272,7 +272,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       case ingameModeGet:
          if (is_object)
          {
-            m_parent.GetGameInterface().GetGameLogic().
+            m_gameInstance.GetGameLogic().
                UserAction(userActionGetObject, id);
          }
          break;
@@ -281,7 +281,7 @@ bool Ingame3DView::MouseEvent(bool buttonClicked, bool leftButton,
       case ingameModeTalk:
          if (is_object)
          {
-            m_parent.GetGameInterface().GetGameLogic().
+            m_gameInstance.GetGameLogic().
                UserAction(userActionTalkObject, id);
          }
          break;

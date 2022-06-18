@@ -47,7 +47,7 @@ bool IngameGargoyleEyes::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent.GetGameInterface().GetGameLogic().UserAction(userActionClickedGargoyle);
+      m_gameInstance.GetGameLogic().UserAction(userActionClickedGargoyle);
       return true;
    }
 

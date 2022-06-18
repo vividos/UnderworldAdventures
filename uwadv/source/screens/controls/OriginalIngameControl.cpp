@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2021 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@
 
 OriginalIngameControl::OriginalIngameControl(OriginalIngameScreen& screen)
    :ImageWindow(screen),
-   m_parent(screen)
+   m_parent(screen),
+   m_gameInstance(screen.GetGameInterface())
 {
 }
 

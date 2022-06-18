@@ -42,4 +42,7 @@ public:
 protected:
    /// parent screen
    OriginalIngameScreen& m_parent;
+
+   /// reference to the game's instance
+   IBasicGame& m_gameInstance;
 };

@@ -71,7 +71,7 @@ bool IngameDragon::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent.GetGameInterface().GetGameLogic().UserAction(userActionClickedDragons);
+      m_gameInstance.GetGameLogic().UserAction(userActionClickedDragons);
       return true;
    }
 

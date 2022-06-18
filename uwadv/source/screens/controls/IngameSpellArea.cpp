@@ -31,7 +31,7 @@ void IngameSpellArea::Init(IBasicGame& game, unsigned int xpos,
    ImageWindow::Init(xpos, ypos, 51, 18);
 
    // load images 232..255; A-Z without X and Z
-   game.GetImageManager().LoadList(m_spellImages, "spells");
+   m_gameInstance.GetImageManager().LoadList(m_spellImages, "spells");
 }
 
 /// Updates the active spell area image.
@@ -63,7 +63,7 @@ bool IngameSpellArea::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent.GetGameInterface().GetGameLogic().UserAction(userActionClickedActiveSpell);
+      m_gameInstance.GetGameLogic().UserAction(userActionClickedActiveSpell);
       return true;
    }
 

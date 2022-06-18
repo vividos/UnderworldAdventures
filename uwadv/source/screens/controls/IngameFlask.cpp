@@ -66,8 +66,7 @@ void IngameFlask::Init(IBasicGame& game, unsigned int xpos,
 
 void IngameFlask::Draw()
 {
-   Underworld::Player& player = m_parent.GetGameInterface().GetUnderworld().
-      GetPlayer();
+   Underworld::Player& player = m_gameInstance.GetUnderworld().GetPlayer();
    m_isPoisoned = player.GetAttribute(Underworld::attrPoisoned) != 0;
 
    unsigned int curval = player.GetAttribute(
@@ -99,7 +98,7 @@ bool IngameFlask::MouseEvent(bool buttonClicked, bool leftButton,
 {
    if (buttonClicked && !buttonDown)
    {
-      m_parent.GetGameInterface().GetGameLogic().UserAction(
+      m_gameInstance.GetGameLogic().UserAction(
          m_isVitalityFlask ? userActionClickedVitalityFlash : userActionClickedManaFlask);
 
       return true;
