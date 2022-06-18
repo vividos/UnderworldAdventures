@@ -43,7 +43,7 @@ void MapViewScreen::Init()
    ImageScreen::Init();
 
    // init mouse cursor
-   m_mouseCursor.Init(m_game, 0);
+   m_mouseCursor.Init(m_gameInstance, 0);
    m_mouseCursor.Show(true);
    RegisterWindow(&m_mouseCursor);
 
@@ -51,7 +51,7 @@ void MapViewScreen::Init()
    RegisterWindow(&m_upButton);
    RegisterWindow(&m_downButton);
 
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
    if (!isUw2)
    {
       m_upButton.Create(290, 0, 30, 22);
@@ -63,7 +63,7 @@ void MapViewScreen::Init()
       m_downButton.Create(284, 168, 36, 32);
    }
 
-   m_displayedLevel = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
+   m_displayedLevel = m_gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
    DisplayLevelMap(m_displayedLevel);
 
    // start audio track "maps & legends" for map
@@ -108,7 +108,7 @@ bool MapViewScreen::ProcessEvent(SDL_Event& event)
 
 void MapViewScreen::UpDownLevel(bool up)
 {
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    if (!isUw2)
    {
@@ -130,19 +130,19 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 {
    IndexedImage& image = GetImage();
 
-   ImageManager& imageManager = m_game.GetImageManager();
+   ImageManager& imageManager = m_gameInstance.GetImageManager();
 
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    if (!isUw2)
       imageManager.Load(image, "data/blnkmap.byt", 0, 1, imageByt);
    else
-      m_game.GetImageManager().LoadFromArk(image, "data/byt.ark", 0, 1);
+      m_gameInstance.GetImageManager().LoadFromArk(image, "data/byt.ark", 0, 1);
 
-   const Underworld::Level& level = m_game.GetUnderworld().GetLevelList().GetLevel(levelIndex);
+   const Underworld::Level& level = m_gameInstance.GetUnderworld().GetLevelList().GetLevel(levelIndex);
    const Underworld::Tilemap& tilemap = level.GetTilemap();
 
-   UI::AutomapGenerator generator{ m_game.GetResourceManager(), imageManager, tilemap };
+   UI::AutomapGenerator generator{ m_gameInstance.GetResourceManager(), imageManager, tilemap };
 
    generator.DrawLevelNumber(image, levelIndex, level.GetLevelName());
    generator.DrawTiles(image);
@@ -159,7 +159,7 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 
    generator.DrawMapNotes(image, level.GetMapNotes());
 
-   const Underworld::Player& player = m_game.GetUnderworld().GetPlayer();
+   const Underworld::Player& player = m_gameInstance.GetUnderworld().GetPlayer();
 
    size_t playerLevel = player.GetAttribute(Underworld::attrMapLevel);
    bool showPlayerPin = playerLevel == levelIndex;

@@ -59,7 +59,7 @@ OriginalIngameScreen::OriginalIngameScreen(IGame& game)
    m_view3d(*this),
    m_powerGem(*this),
    m_moveArrows(*this),
-   m_playerPhysics(m_game.GetUnderworld().GetPlayer(), m_game.GetSettings().GetBool(Base::settingUwadvFeatures))
+   m_playerPhysics(m_gameInstance.GetUnderworld().GetPlayer(), m_gameInstance.GetSettings().GetBool(Base::settingUwadvFeatures))
 {
    ImageScreen::SetClearDrawBuffer(false);
 }
@@ -82,17 +82,17 @@ void OriginalIngameScreen::Init()
    m_fadeoutAction = ingameActionNone;
    m_fadeoutParameter = 0;
 
-   m_game.GetImageManager().LoadList(m_inventoryObjectImages, "objects");
+   m_gameInstance.GetImageManager().LoadList(m_inventoryObjectImages, "objects");
 
    Notify(notifyLevelChange);
 
-   Base::Settings& settings = m_game.GetSettings();
+   Base::Settings& settings = m_gameInstance.GetSettings();
 
    // load keymap
-   m_keymap.Init(settings, m_game.GetResourceManager());
+   m_keymap.Init(settings, m_gameInstance.GetResourceManager());
    RegisterKeymap(&m_keymap);
 
-   m_game.GetPhysicsModel().Init(
+   m_gameInstance.GetPhysicsModel().Init(
       std::bind(
          &OriginalIngameScreen::GetSurroundingTriangles, this,
          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -103,7 +103,7 @@ void OriginalIngameScreen::Init()
    {
       if (settings.GetGameType() == Base::gameUw2)
       {
-         m_game.GetImageManager().LoadFromArk(m_backgroundImage, "data/byt.ark", 4, 0);
+         m_gameInstance.GetImageManager().LoadFromArk(m_backgroundImage, "data/byt.ark", 4, 0);
       }
       else
       {
@@ -114,7 +114,7 @@ void OriginalIngameScreen::Init()
          if (settings.GetBool(Base::settingUw1IsUwdemo))
             mainscreenname = "data/dmain.byt";
 
-         m_game.GetImageManager().Load(m_backgroundImage,
+         m_gameInstance.GetImageManager().Load(m_backgroundImage,
             mainscreenname, 0, 0, imageByt);
       }
 
@@ -127,16 +127,16 @@ void OriginalIngameScreen::Init()
    }
 
    // init 3d view window
-   m_view3d.Init(m_game, 54, 20);
+   m_view3d.Init(m_gameInstance, 54, 20);
    RegisterWindow(&m_view3d);
 
    m_game.GetViewport().SetViewport3D(52, 19, 172, 112);
 
-   m_fadeout3dViewImage.Init(m_game, 52, 19);
+   m_fadeout3dViewImage.Init(m_gameInstance, 52, 19);
    m_fadeout3dViewImage.Create(52, 19, 172, 112);
 
    // init compass
-   m_compass.Init(m_game, 112, 131);
+   m_compass.Init(m_gameInstance, 112, 131);
    RegisterWindow(&m_compass);
 
    // init textscroll
@@ -144,10 +144,10 @@ void OriginalIngameScreen::Init()
       unsigned int scrollwidth = 290;
 
       // adjust scroll width for uw_demo
-      if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+      if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
          scrollwidth = 218;
 
-      m_textScroll.Init(m_game, 15, 169, scrollwidth, 30, 42);
+      m_textScroll.Init(m_gameInstance, 15, 169, scrollwidth, 30, 42);
       //m_textScroll.init(m_game, 11,169, 299,29, 42);
       m_textScroll.SetColorCode(colorCodeBlack);
 
@@ -161,36 +161,36 @@ void OriginalIngameScreen::Init()
    }
 
    // runeshelf
-   m_runeShelf.Init(m_game, 176, 138);
+   m_runeShelf.Init(m_gameInstance, 176, 138);
    m_runeShelf.UpdateRuneshelf();
    RegisterWindow(&m_runeShelf);
 
    // active spells
-   m_spellArea.Init(m_game, 52, 136);
+   m_spellArea.Init(m_gameInstance, 52, 136);
    m_spellArea.UpdateSpellArea();
    RegisterWindow(&m_spellArea);
 
    // vitality/mana flasks
-   m_vitalityFlask.Init(m_game, 248, 125);
+   m_vitalityFlask.Init(m_gameInstance, 248, 125);
    RegisterWindow(&m_vitalityFlask);
 
-   m_manaFlask.Init(m_game, 284, 125);
+   m_manaFlask.Init(m_gameInstance, 284, 125);
    RegisterWindow(&m_manaFlask);
 
    // gargoyle eyes
-   m_gargoyleEyes.Init(m_game, 128, 4);
+   m_gargoyleEyes.Init(m_gameInstance, 128, 4);
    m_gargoyleEyes.UpdateEyes();
    RegisterWindow(&m_gargoyleEyes);
 
    // left and right side dragons
-   m_leftDragon.Init(m_game, 36, 65);
+   m_leftDragon.Init(m_gameInstance, 36, 65);
    RegisterWindow(&m_leftDragon);
 
-   m_rightDragon.Init(m_game, 204, 65);
+   m_rightDragon.Init(m_gameInstance, 204, 65);
    RegisterWindow(&m_rightDragon);
 
    // init command buttons
-   m_commandButtons.Init(m_game, 0, 0); // buttons are self-repositioning
+   m_commandButtons.Init(m_gameInstance, 0, 0); // buttons are self-repositioning
    RegisterWindow(&m_commandButtons);
 
    // init panel
@@ -198,16 +198,16 @@ void OriginalIngameScreen::Init()
    RegisterWindow(&m_panel);
 
    // init powergem
-   m_powerGem.Init(m_game, 4, 139);
+   m_powerGem.Init(m_gameInstance, 4, 139);
    m_powerGem.UpdateGem();
    RegisterWindow(&m_powerGem);
 
    // init move arrows
-   m_moveArrows.Init(m_game, 107, 154);
+   m_moveArrows.Init(m_gameInstance, 107, 154);
    RegisterWindow(&m_moveArrows);
 
    // init mouse cursor
-   m_mouseCursor.Init(m_game, 0);
+   m_mouseCursor.Init(m_gameInstance, 0);
    m_mouseCursor.Show(true);
 
    RegisterWindow(&m_mouseCursor);
@@ -222,18 +222,18 @@ void OriginalIngameScreen::Suspend()
    m_game.GetRenderWindow().Clear();
    m_game.GetRenderWindow().SwapBuffers();
 
-   m_game.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
+   m_gameInstance.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
 
-   m_game.GetGameLogic().RegisterUserInterface(nullptr);
+   m_gameInstance.GetGameLogic().RegisterUserInterface(nullptr);
 }
 
 void OriginalIngameScreen::Resume()
 {
    UaTrace("resuming orig. ingame user interface\n");
 
-   m_game.GetGameLogic().RegisterUserInterface(this);
+   m_gameInstance.GetGameLogic().RegisterUserInterface(this);
 
-   m_game.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
+   m_gameInstance.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
 
    if (m_fadeoutAction == ingameActionConversation)
    {
@@ -272,7 +272,7 @@ void OriginalIngameScreen::Draw()
       m_game.GetRenderer().SetupFor3D(m_viewOffset);
 
       // render a const world
-      m_game.GetRenderer().RenderUnderworld(m_game.GetUnderworld());
+      m_game.GetRenderer().RenderUnderworld(m_gameInstance.GetUnderworld());
    }
 
    // render 2d user interface
@@ -316,7 +316,7 @@ bool OriginalIngameScreen::ProcessEvent(SDL_Event& event)
 
 void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
 {
-   Underworld::Player& pl = m_game.GetUnderworld().GetPlayer();
+   Underworld::Player& pl = m_gameInstance.GetUnderworld().GetPlayer();
    IngameGameMode lastIngameMode = m_ingameMode;
 
    switch (key)
@@ -521,14 +521,14 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
          if (keyDown)
          {
             // start combat weapon drawback
-            m_game.GetGameLogic().UserAction(userActionCombatDrawBack,
+            m_gameInstance.GetGameLogic().UserAction(userActionCombatDrawBack,
                key == Base::keyCombatBash ? 0 :
                key == Base::keyCombatSlash ? 1 : 2);
          }
          else
          {
             // end combat weapon drawback
-            m_game.GetGameLogic().UserAction(userActionCombatRelease, 0);
+            m_gameInstance.GetGameLogic().UserAction(userActionCombatRelease, 0);
          }
       }
       break;
@@ -600,7 +600,7 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
 
       if (m_ingameMode != ingameModeFight)
       {
-         /*bool ret = */m_game.GetGameLogic().UserAction(userActionCombatEnter);
+         /*bool ret = */m_gameInstance.GetGameLogic().UserAction(userActionCombatEnter);
          //if (ret)
          {
             m_commandButtons.SelectButton(4);
@@ -637,17 +637,17 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
 
    case Base::keySpecialCastSpell:
       if (!keyDown)
-         m_game.GetGameLogic().UserAction(userActionClickedActiveSpell);
+         m_gameInstance.GetGameLogic().UserAction(userActionClickedActiveSpell);
       break;
 
    case Base::keySpecialUseTrack:
       if (!keyDown)
-         m_game.GetGameLogic().UserAction(userActionTrackCreatures);
+         m_gameInstance.GetGameLogic().UserAction(userActionTrackCreatures);
       break;
 
    case Base::keySpecialSleep:
       if (!keyDown)
-         m_game.GetGameLogic().UserAction(userActionSleep);
+         m_gameInstance.GetGameLogic().UserAction(userActionSleep);
       break;
 
       // quicksave key
@@ -661,7 +661,7 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
 
       // quickload key
    case Base::keySpecialQuickload:
-      if (keyDown && m_game.GetSavegamesManager().IsQuicksaveAvail())
+      if (keyDown && m_gameInstance.GetSavegamesManager().IsQuicksaveAvail())
       {
          PrintScroll("\\0quickloading...");
          ScheduleAction(ingameActionQuickload, false);
@@ -687,7 +687,7 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       // "debugger" key
    case Base::keyUaDebug:
       if (keyDown)
-         m_game.GetDebugger().StartDebugger(&m_game);
+         m_gameInstance.GetDebugger().StartDebugger(&m_gameInstance);
       break;
 
       // exit screen key
@@ -713,7 +713,7 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
    // leaving fight mode?
    if (lastIngameMode != m_ingameMode && lastIngameMode == ingameModeFight)
    {
-      m_game.GetGameLogic().UserAction(userActionCombatLeave);
+      m_gameInstance.GetGameLogic().UserAction(userActionCombatLeave);
    }
 }
 
@@ -725,11 +725,11 @@ void OriginalIngameScreen::Tick()
    // only evaluate when the user is not in the options menu
    if (!IsFadeInProgress() && m_ingameMode != ingameModeOptions)
    {
-      m_game.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / GetTickRate());
+      m_gameInstance.GetGameLogic().EvaluateUnderworld(double(m_tickCount) / GetTickRate());
 
       double elapsedTime = 1.0 / GetTickRate();
       m_playerPhysics.RotateMove(elapsedTime);
-      m_game.GetPhysicsModel().EvaluatePhysics(elapsedTime);
+      m_gameInstance.GetPhysicsModel().EvaluatePhysics(elapsedTime);
 
       m_tickCount++;
 
@@ -798,10 +798,10 @@ void OriginalIngameScreen::DoAction(IngameAction action)
 
       // quickloading
    case ingameActionQuickload:
-      if (m_game.GetSavegamesManager().IsQuicksaveAvail())
+      if (m_gameInstance.GetSavegamesManager().IsQuicksaveAvail())
       {
-         Base::Savegame sg = m_game.GetSavegamesManager().LoadQuicksaveSavegame();
-         m_game.GetUnderworld().Load(sg);
+         Base::Savegame sg = m_gameInstance.GetSavegamesManager().LoadQuicksaveSavegame();
+         m_gameInstance.GetUnderworld().Load(sg);
          PrintScroll("quickloading done.");
       }
       break;
@@ -811,13 +811,13 @@ void OriginalIngameScreen::DoAction(IngameAction action)
    {
       // set player infos
       Base::SavegameInfo info;
-      Underworld::Player& pl = m_game.GetUnderworld().GetPlayer();
+      Underworld::Player& pl = m_gameInstance.GetUnderworld().GetPlayer();
       pl.FillSavegamePlayerInfos(info);
-      info.m_gamePrefix = m_game.GetSettings().GetString(Base::settingGamePrefix);
+      info.m_gamePrefix = m_gameInstance.GetSettings().GetString(Base::settingGamePrefix);
 
-      Base::Savegame sg = m_game.GetSavegamesManager().SaveQuicksaveSavegame(info);
+      Base::Savegame sg = m_gameInstance.GetSavegamesManager().SaveQuicksaveSavegame(info);
 
-      m_game.GetUnderworld().Save(sg);
+      m_gameInstance.GetUnderworld().Save(sg);
       PrintScroll("quicksaving done.");
    }
    break;
@@ -920,7 +920,7 @@ void OriginalIngameScreen::Notify(UserInterfaceNotification notify,
       break;
 
    case notifyLevelChange:
-      m_game.GetRenderer().PrepareLevel(m_game.GetUnderworld().GetCurrentLevel());
+      m_game.GetRenderer().PrepareLevel(m_gameInstance.GetUnderworld().GetCurrentLevel());
       break;
 
    case notifySelectTarget:
@@ -962,10 +962,10 @@ void OriginalIngameScreen::DoSavegameScreenshot(
    m_game.GetRenderer().TakeSavegameScreenshot(
       xres, yres,
       screenshotRgbaData,
-      m_game.GetUnderworld());
+      m_gameInstance.GetUnderworld());
 
    // set in savegames manager
-   m_game.GetSavegamesManager().SetSaveScreenshot(
+   m_gameInstance.GetSavegamesManager().SetSaveScreenshot(
       xres, yres, screenshotRgbaData);
 }
 
@@ -981,7 +981,7 @@ void OriginalIngameScreen::GetSurroundingTriangles(
    ymax = static_cast<Uint8>(ypos < 64 ? ypos + 1 : 64);
 
    // tile triangles
-   Physics::GeometryProvider provider(m_game.GetGameLogic().GetCurrentLevel());
+   Physics::GeometryProvider provider(m_gameInstance.GetGameLogic().GetCurrentLevel());
 
    for (unsigned int x = xmin; x < xmax; x++)
       for (unsigned int y = ymin; y < ymax; y++)
@@ -990,7 +990,7 @@ void OriginalIngameScreen::GetSurroundingTriangles(
    // also collect triangles from 3d models and critter objects
    {
       const Underworld::ObjectList& objectList =
-         m_game.GetGameLogic().GetCurrentLevel().GetObjectList();
+         m_gameInstance.GetGameLogic().GetCurrentLevel().GetObjectList();
 
       for (Uint8 x = xmin; x < xmax; x++)
       {

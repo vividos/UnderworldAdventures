@@ -59,7 +59,7 @@ void StartSplashScreen::Init()
    UaTrace("start splash screen started\n");
 
    // start intro midi music
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    m_game.GetAudioManager().StartMusicTrack(
       !isUw2 ? Audio::musicUw1_Introduction : Audio::musicUw2_LabyrinthOfWorldsTheme,
@@ -70,8 +70,8 @@ void StartSplashScreen::Init()
    SetFadeinComplete();
 
    // leave out first two screens when we have savegames
-   if (!m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo) &&
-      m_game.GetSavegamesManager().GetSavegamesCount() > 0)
+   if (!m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo) &&
+      m_gameInstance.GetSavegamesManager().GetSavegamesCount() > 0)
    {
       UaTrace("skipping splash images (savegames are available)\n");
 
@@ -126,7 +126,7 @@ bool StartSplashScreen::ProcessEvent(SDL_Event& event)
          m_tickCount = 0;
 
          // fade out music when we have the demo (ingame starts after this)
-         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+         if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
             m_game.GetAudioManager().FadeoutMusic(static_cast<int>(c_blendTime * 1000));
 
          StartFadeout();
@@ -147,14 +147,14 @@ void StartSplashScreen::Tick()
    m_tickCount++;
    bool isShowTimeElapsed = m_tickCount >= c_showTime * GetTickRate();
 
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    switch (m_stage)
    {
    case splashScreenShowFirstOpeningScreen:
       if (isShowTimeElapsed)
       {
-         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+         if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
             m_stage = SplashScreenStage(m_stage + 2);
          else
             m_stage = SplashScreenStage(m_stage + 1);
@@ -241,14 +241,14 @@ void StartSplashScreen::OnFadeInEnded()
 void StartSplashScreen::OnFadeOutEnded()
 {
    // start next screen
-   if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+   if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
    {
       // when we have the demo, we immediately go to the ingame screen
 
       // load and init new game
-      Import::LoadUnderworld(m_game.GetSettings(), m_game.GetResourceManager(), m_game.GetUnderworld());
+      Import::LoadUnderworld(m_gameInstance.GetSettings(), m_gameInstance.GetResourceManager(), m_gameInstance.GetUnderworld());
 
-      m_game.GetScripting().InitNewGame();
+      m_gameInstance.GetScripting().InitNewGame();
 
       m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
       return;
@@ -259,7 +259,7 @@ void StartSplashScreen::OnFadeOutEnded()
 
 void StartSplashScreen::UpdateForNextStage()
 {
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    switch (m_stage)
    {
@@ -268,26 +268,26 @@ void StartSplashScreen::UpdateForNextStage()
       if (!isUw2)
       {
          const char* firstImageName = "data/pres1.byt";
-         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+         if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
             firstImageName = "data/presd.byt";
 
          // load image, palette 5
-         m_game.GetImageManager().Load(GetImage(),
+         m_gameInstance.GetImageManager().Load(GetImage(),
             firstImageName, 0, 5, imageByt);
       }
       else
       {
-         m_game.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 6, 5);
+         m_gameInstance.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 6, 5);
       }
 
       // demo game?
       if (!isUw2 &&
-         m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+         m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
       {
          // write a string under the demo title
          Font font;
          IndexedImage tempImage;
-         font.Load(m_game.GetResourceManager(), fontBig);
+         font.Load(m_gameInstance.GetResourceManager(), fontBig);
          font.CreateString(tempImage, "Underworld Adventures", 198);
 
          double scale = 0.9;
@@ -306,12 +306,12 @@ void StartSplashScreen::UpdateForNextStage()
 
       if (!isUw2)
       {
-         m_game.GetImageManager().Load(GetImage(),
+         m_gameInstance.GetImageManager().Load(GetImage(),
             "data/pres2.byt", 0, 5, imageByt);
       }
       else
       {
-         m_game.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 7, 5);
+         m_gameInstance.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 7, 5);
       }
 
       UpdateImage();
@@ -324,7 +324,7 @@ void StartSplashScreen::UpdateForNextStage()
       m_animationCount = 0.0;
       m_tickCount = 0;
 
-      m_currentCutscene.Load(m_game.GetResourceManager(), "cuts/cs011.n01", GetImage());
+      m_currentCutscene.Load(m_gameInstance.GetResourceManager(), "cuts/cs011.n01", GetImage());
       m_currentCutscene.GetFrame(GetImage(), m_currentFrame);
       UpdateImage();
 

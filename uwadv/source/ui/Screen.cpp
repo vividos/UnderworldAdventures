@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,9 @@
 #include "RenderWindow.hpp"
 
 Screen::Screen(IGame& gameInterface)
-   :m_game(gameInterface), m_screenKeymap(NULL)
+   :m_game(gameInterface),
+   m_gameInstance(gameInterface),
+   m_screenKeymap(nullptr)
 {
 }
 

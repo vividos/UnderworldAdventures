@@ -48,24 +48,24 @@ void StartMenuScreen::Init()
 
    UaTrace("start menu screen started\n");
 
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    // load background image
    if (!isUw2)
    {
-      m_game.GetImageManager().Load(GetImage(), "data/opscr.byt", 0, 2, imageByt);
+      m_gameInstance.GetImageManager().Load(GetImage(), "data/opscr.byt", 0, 2, imageByt);
       GetImage().ClonePalette();
    }
    else
    {
-      m_game.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 5, 0);
+      m_gameInstance.GetImageManager().LoadFromArk(GetImage(), "data/byt.ark", 5, 0);
    }
 
    // load button graphics
-   m_game.GetImageManager().LoadList(m_buttonImages, "opbtn", 0, 8, 2);
+   m_gameInstance.GetImageManager().LoadList(m_buttonImages, "opbtn", 0, 8, 2);
 
    // set up mouse cursor
-   m_mouseCursor.Init(m_game, 0);
+   m_mouseCursor.Init(m_gameInstance, 0);
    m_mouseCursor.Show(true);
 
    RegisterWindow(&m_mouseCursor);
@@ -82,14 +82,14 @@ void StartMenuScreen::Resume()
    UpdateImage();
 
    // set other flags/values
-   m_isJourneyOnwardAvailable = m_game.GetSavegamesManager().GetSavegamesCount() > 0;
+   m_isJourneyOnwardAvailable = m_gameInstance.GetSavegamesManager().GetSavegamesCount() > 0;
    m_selectedArea = -1;
    m_shiftCount = 0.0;
    m_reuploadImage = true;
 
    if (m_game.GetAudioManager().IsMusicFadeoutOrStopped())
    {
-      bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+      bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
       m_game.GetAudioManager().StartMusicTrack(
          !isUw2 ? Audio::musicUw1_Introduction : Audio::musicUw2_LabyrinthOfWorldsTheme,
@@ -198,7 +198,7 @@ void StartMenuScreen::Tick()
    ImageScreen::Tick();
 
    // uw1: do palette shifting
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
    if (!isUw2)
    {
       m_shiftCount += 1.0 / GetTickRate();

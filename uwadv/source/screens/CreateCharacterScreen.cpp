@@ -108,29 +108,29 @@ void CreateCharacterScreen::Init()
    m_game.GetRenderer().SetupForUserInterface();
 
    // get a pointer to to current player
-   m_player = &(m_game.GetUnderworld().GetPlayer());
+   m_player = &(m_gameInstance.GetUnderworld().GetPlayer());
 
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
    if (!isUw2)
    {
-      m_game.GetImageManager().Load(m_backgroundImage, "data/chargen.byt", 0, 3, imageByt);
+      m_gameInstance.GetImageManager().Load(m_backgroundImage, "data/chargen.byt", 0, 3, imageByt);
    }
    else
    {
-      m_game.GetImageManager().LoadFromArk(m_backgroundImage, "data/byt.ark", 1, 0);
+      m_gameInstance.GetImageManager().LoadFromArk(m_backgroundImage, "data/byt.ark", 1, 0);
    }
 
-   m_game.GetImageManager().LoadList(m_buttonImages, "chrbtns", 0, 0, 3);
+   m_gameInstance.GetImageManager().LoadList(m_buttonImages, "chrbtns", 0, 0, 3);
 
    // init text
-   m_font.Load(m_game.GetResourceManager(), fontCharacterGeneration);
+   m_font.Load(m_gameInstance.GetResourceManager(), fontCharacterGeneration);
 
    GetImage() = m_backgroundImage;
    UpdateImage();
 
    // init mouse cursor
-   m_mouseCursor.Init(m_game);
+   m_mouseCursor.Init(m_gameInstance);
    m_mouseCursor.Show(true);
 
    RegisterWindow(&m_mouseCursor);
@@ -304,12 +304,12 @@ void CreateCharacterScreen::OnFadeOutEnded()
    {
       // load initial game
       Import::LoadUnderworld(
-         m_game.GetSettings(),
-         m_game.GetResourceManager(),
-         m_game.GetUnderworld());
+         m_gameInstance.GetSettings(),
+         m_gameInstance.GetResourceManager(),
+         m_gameInstance.GetUnderworld());
 
       // init new game
-      m_game.GetScripting().InitNewGame();
+      m_gameInstance.GetScripting().InitNewGame();
 
       // start original game
       m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
@@ -325,11 +325,11 @@ void CreateCharacterScreen::InitLuaScript()
    bool hasError = false;
 
    // load lua interface script for constants
-   if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/uwinterface"))
+   if (!LuaScripting::LoadScript(m_lua, m_gameInstance.GetSettings(), m_gameInstance.GetResourceManager(), "uw1/scripts/uwinterface"))
       hasError = true;
 
    // load lua cutscene script
-   if (!LuaScripting::LoadScript(m_lua, m_game.GetSettings(), m_game.GetResourceManager(), "uw1/scripts/createchar"))
+   if (!LuaScripting::LoadScript(m_lua, m_gameInstance.GetSettings(), m_gameInstance.GetResourceManager(), "uw1/scripts/createchar"))
       hasError = true;
 
    // starts character creation
@@ -389,7 +389,7 @@ void CreateCharacterScreen::DoAction()
       m_highlightTextColor = static_cast<unsigned int>(lua_tonumber(L, 5));
 
       // set different highlight color when features are enabled
-      if (m_game.GetSettings().GetBool(Base::settingUwadvFeatures))
+      if (m_gameInstance.GetSettings().GetBool(Base::settingUwadvFeatures))
          m_highlightTextColor = 162; // orange, palette #3
 
       size_t ic = lua_rawlen(L, 6);
@@ -570,7 +570,7 @@ unsigned int CreateCharacterScreen::DrawNumber(unsigned int num, int x, int y, u
 unsigned int CreateCharacterScreen::DrawText(int stringNumber, int x, int y, int xalign, unsigned char color, int customStringBlock)
 {
    std::string text =
-      m_game.GetGameStrings().GetString(
+      m_gameInstance.GetGameStrings().GetString(
          customStringBlock > -1 ? customStringBlock : m_stringBlock,
          stringNumber);
 

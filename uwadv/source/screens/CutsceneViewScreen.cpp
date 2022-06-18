@@ -54,7 +54,7 @@ void CutsceneViewScreen::Init()
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
    // determine cutscene type
-   Base::Settings& settings = m_game.GetSettings();
+   Base::Settings& settings = m_gameInstance.GetSettings();
    {
       std::string cutsntype(settings.GetString(Base::settingCutsceneNarration));
 
@@ -96,7 +96,7 @@ void CutsceneViewScreen::Init()
    // init lua scripting
 
    // get a new lua state
-   m_lua.Init(&m_game);
+   m_lua.Init(&m_gameInstance);
 
    // register C functions
    lua_register(m_lua.GetLuaState(), "cuts_do_action", cuts_do_action);
@@ -124,7 +124,7 @@ void CutsceneViewScreen::Init()
    }
 
    // init subtitle text
-   m_bigFont.Load(m_game.GetResourceManager(), fontBig);
+   m_bigFont.Load(m_gameInstance.GetResourceManager(), fontBig);
 }
 
 void CutsceneViewScreen::Destroy()
@@ -405,7 +405,7 @@ void CutsceneViewScreen::CreateTextImage(const std::string& str)
    unsigned int starty = 200 - 5 - m_textImage.GetImage().GetYRes();
 
    // init after new creation
-   m_textImage.Init(m_game, startx, starty);
+   m_textImage.Init(m_gameInstance, startx, starty);
 
    // upload texture
    m_textImage.Update();
@@ -448,7 +448,7 @@ void CutsceneViewScreen::DoAction()
       if (m_canShowText)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L, -1));
-         CreateTextImage(m_game.GetGameStrings().GetString(m_stringBlock, strnum));
+         CreateTextImage(m_gameInstance.GetGameStrings().GetString(m_stringBlock, strnum));
          m_textFadeState = 1; // fade in
          m_textFadeCount = 0;
          m_isShowingText = true;
@@ -468,7 +468,7 @@ void CutsceneViewScreen::DoAction()
       if (m_canShowText)
       {
          unsigned int strnum = static_cast<unsigned int>(lua_tonumber(L, -1));
-         CreateTextImage(m_game.GetGameStrings().GetString(m_stringBlock, strnum));
+         CreateTextImage(m_gameInstance.GetGameStrings().GetString(m_stringBlock, strnum));
          m_isShowingText = true;
          m_textFadeState = 0;
       }
@@ -489,8 +489,8 @@ void CutsceneViewScreen::DoAction()
       animname.append(lua_tostring(L, -1));
 
       // load animation
-      m_cutsceneAnimation.Load(m_game.GetResourceManager(), animname.c_str(), m_image.GetImage());
-      m_image.Init(m_game, 0, 0);
+      m_cutsceneAnimation.Load(m_gameInstance.GetResourceManager(), animname.c_str(), m_image.GetImage());
+      m_image.Init(m_gameInstance, 0, 0);
       m_showAnimation = true;
       m_loopAnimation = true;
       m_currentFrame = 0;

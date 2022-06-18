@@ -108,20 +108,21 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
 {
    m_panelParent = panelParent;
    IGame& game = m_panelParent->GetGameInterface();
+   IBasicGame& gameInstance = m_panelParent->GetGameInterface();
 
    m_panelType = panelInventory;
-   m_useFemaleArmor = game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) != 0;
+   m_useFemaleArmor = gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) != 0;
    m_tickRate = game.GetTickRate();
    m_startScrollableStatsArea = 0;
    m_isPanelRotating = false;
    m_panelRotateAngle = 0.0;
-   m_useOldStyleRotation = !game.GetSettings().GetBool(Base::settingUwadvFeatures);
+   m_useOldStyleRotation = !gameInstance.GetSettings().GetBool(Base::settingUwadvFeatures);
 
    m_inventorySlotStart = 0;
    m_checkDragging = false;
 
    // load image lists
-   ImageManager& imageManager = game.GetImageManager();
+   ImageManager& imageManager = gameInstance.GetImageManager();
 
    imageManager.LoadList(m_panelBackgroundImages, "panels", 0, 3);
    imageManager.LoadList(m_chainImages, "chains");
@@ -134,8 +135,8 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
    imageManager.LoadList(m_inventoryObjectImages, "objects");
 
    // load fonts
-   m_statsFont.Load(game.GetResourceManager(), fontItalic);
-   m_inventoryWeightFont.Load(game.GetResourceManager(), fontNormal);
+   m_statsFont.Load(gameInstance.GetResourceManager(), fontItalic);
+   m_inventoryWeightFont.Load(gameInstance.GetResourceManager(), fontNormal);
 
    // create image
    GetImage().Create(85, 116);
@@ -144,13 +145,13 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
    ImageQuad::Init(game, xpos, ypos);
 
    {
-      m_chainsTopImage.Init(game, xpos + 37, ypos - 4);
+      m_chainsTopImage.Init(gameInstance, xpos + 37, ypos - 4);
       m_chainsTopImage.GetImage().Create(10, 4);
-      m_chainsTopImage.GetImage().SetPalette(game.GetImageManager().GetPalette(0));
+      m_chainsTopImage.GetImage().SetPalette(gameInstance.GetImageManager().GetPalette(0));
 
-      m_chainsBottomImage.Init(game, xpos + 37, ypos + 114);
+      m_chainsBottomImage.Init(gameInstance, xpos + 37, ypos + 114);
       m_chainsBottomImage.GetImage().Create(10, 18);
-      m_chainsBottomImage.GetImage().SetPalette(game.GetImageManager().GetPalette(0));
+      m_chainsBottomImage.GetImage().SetPalette(gameInstance.GetImageManager().GetPalette(0));
 
       UpdateChains();
    }

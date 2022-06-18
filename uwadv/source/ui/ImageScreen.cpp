@@ -32,7 +32,7 @@ ImageScreen::ImageScreen(IGame& game, unsigned int paletteIndex, double fadeInOu
    m_image.Init(game, 0, 0);
    m_image.Create(0, 0, 320, 200);
 
-   Palette256Ptr palette = game.GetImageManager().GetPalette(paletteIndex);
+   Palette256Ptr palette = m_gameInstance.GetImageManager().GetPalette(paletteIndex);
    m_image.GetImage().SetPalette(palette);
 }
 

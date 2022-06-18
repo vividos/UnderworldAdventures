@@ -41,8 +41,8 @@ ConversationScreen::ConversationScreen(IGame& game,
    Uint16 convObjectPos)
    :ImageScreen(game, 0, s_fadeTime),
    m_convObjectPos(convObjectPos),
-   m_codeVM(game.GetGameLogic()),
-   m_convDebugger(game.GetGameLogic(), m_codeVM)
+   m_codeVM(m_gameInstance.GetGameLogic()),
+   m_convDebugger(m_gameInstance.GetGameLogic(), m_codeVM)
 {
 }
 
@@ -54,7 +54,7 @@ void ConversationScreen::Init()
    UaTrace("talking to npc at object pos %u, ", m_convObjectPos);
 
    // get npc object to talk to
-   Underworld::ObjectPtr obj = m_game.GetGameLogic().
+   Underworld::ObjectPtr obj = m_gameInstance.GetGameLogic().
       GetCurrentLevel().GetObjectList().GetObject(m_convObjectPos);
 
    Underworld::NpcObject& npcObj = obj->GetNpcObject();
@@ -73,31 +73,31 @@ void ConversationScreen::Init()
    // init renderer
    m_game.GetRenderer().SetupForUserInterface();
 
-   m_normalFont.Load(m_game.GetResourceManager(), fontNormal);
+   m_normalFont.Load(m_gameInstance.GetResourceManager(), fontNormal);
 
    // background image
    {
       IndexedImage& image = GetImage();
 
-      bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+      bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
       if (!isUw2)
       {
          const char* mainscreenname = "data/main.byt";
 
          // replace name when using uw_demo
-         if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+         if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
             mainscreenname = "data/dmain.byt";
 
-         m_game.GetImageManager().Load(image, mainscreenname, 0, 0, imageByt);
+         m_gameInstance.GetImageManager().Load(image, mainscreenname, 0, 0, imageByt);
       }
       else
       {
-         m_game.GetImageManager().LoadFromArk(image, "data/byt.ark", 2, 0);
+         m_gameInstance.GetImageManager().LoadFromArk(image, "data/byt.ark", 2, 0);
       }
 
       std::vector<IndexedImage> converseImages;
-      m_game.GetImageManager().LoadList(converseImages, "converse");
+      m_gameInstance.GetImageManager().LoadList(converseImages, "converse");
 
       image.FillRect(43, 0, 190, 47, 1);
 
@@ -106,15 +106,15 @@ void ConversationScreen::Init()
       image.PasteImage(converseImages[0], 139, 0);
 
       // names
-      std::string name1 = m_game.GetGameStrings().GetString(7, 16 + convslot);
+      std::string name1 = m_gameInstance.GetGameStrings().GetString(7, 16 + convslot);
 
-      Underworld::Player& player = m_game.GetUnderworld().GetPlayer();
+      Underworld::Player& player = m_gameInstance.GetUnderworld().GetPlayer();
       std::string name2 = player.GetName();
 
       if (convslot == 0)
       {
          // generic conversation
-         name1 = m_game.GetGameStrings().GetString(4, npcObj.GetObjectInfo().m_itemID);
+         name1 = m_gameInstance.GetGameStrings().GetString(4, npcObj.GetObjectInfo().m_itemID);
 
          std::string::size_type pos;
          pos = name1.find('_');
@@ -145,7 +145,7 @@ void ConversationScreen::Init()
       {
          // portrait is in "charhead.gr"
          std::vector<IndexedImage> imgs_charhead;
-         m_game.GetImageManager().LoadList(imgs_charhead, "charhead");
+         m_gameInstance.GetImageManager().LoadList(imgs_charhead, "charhead");
 
          image.PasteImage(imgs_charhead[convslot - 1], 45, 11);
       }
@@ -153,7 +153,7 @@ void ConversationScreen::Init()
       {
          // portrait is in "genheads.gr"
          std::vector<IndexedImage> imgs_genheads;
-         m_game.GetImageManager().LoadList(imgs_genheads, "genhead");
+         m_gameInstance.GetImageManager().LoadList(imgs_genheads, "genhead");
 
          unsigned int gen_head = npcObj.GetObjectInfo().m_itemID - 64;
          if (gen_head > 59) gen_head = 0;
@@ -162,7 +162,7 @@ void ConversationScreen::Init()
       }
 
       std::vector<IndexedImage> imgs_playerheads;
-      m_game.GetImageManager().LoadList(imgs_playerheads, "heads");
+      m_gameInstance.GetImageManager().LoadList(imgs_playerheads, "heads");
 
       unsigned int appearance = player.GetAttribute(Underworld::attrAppearance) +
          (player.GetAttribute(Underworld::attrGender) == 0 ? 0 : 5);
@@ -183,20 +183,20 @@ void ConversationScreen::Init()
    // adjust scroll width for uw_demo
    unsigned int scrollWidth = 289;
 
-   if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+   if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
       scrollWidth = 218;
 
    // init text scrolls
-   m_conversationScroll.Init(m_game, 58, 51, 161, 81, 42);
+   m_conversationScroll.Init(m_gameInstance, 58, 51, 161, 81, 42);
    m_conversationScroll.SetColorCode(colorCodeBlack);
    RegisterWindow(&m_conversationScroll);
 
-   m_menuScroll.Init(m_game, 15, 169, scrollWidth, 30, 42);
+   m_menuScroll.Init(m_gameInstance, 15, 169, scrollWidth, 30, 42);
    m_menuScroll.SetColorCode(colorCodeBlack);
    RegisterWindow(&m_menuScroll);
 
    // init mouse cursor
-   m_mouseCursor.Init(m_game, 0);
+   m_mouseCursor.Init(m_gameInstance, 0);
    m_mouseCursor.Show(true);
    RegisterWindow(&m_mouseCursor);
 
@@ -204,18 +204,18 @@ void ConversationScreen::Init()
    // init conversation code virtual machine
    {
       // load code into vm
-      Import::LoadConvCode(m_codeVM, m_game.GetSettings(), m_game.GetResourceManager(),
+      Import::LoadConvCode(m_codeVM, m_gameInstance.GetSettings(), m_gameInstance.GetResourceManager(),
          "data/cnv.ark", static_cast<Uint16>(convslot));
 
       // get local strings
       // note: convslot is used to load strings, not the strblock value set in
       // conv header
-      std::vector<std::string> localStrings = m_game.GetGameStrings().GetStringBlock(m_codeVM.GetStringBlock());
+      std::vector<std::string> localStrings = m_gameInstance.GetGameStrings().GetStringBlock(m_codeVM.GetStringBlock());
 
-      size_t level = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
+      size_t level = m_gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
       m_codeVM.Init(level, m_convObjectPos, this, localStrings);
 
-      m_convDebugger.Init(m_game.GetDebugger());
+      m_convDebugger.Init(m_gameInstance.GetDebugger());
    }
 
    m_state = convScreenStateFadeIn;
@@ -225,11 +225,11 @@ void ConversationScreen::Init()
    // uw1: start audio track "maps & legends" for conversations
    size_t musicTrack = Audio::musicUw1_MapsAndLegends;
 
-   bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
    if (isUw2)
    {
       // depending on the underworld level, play different tracks
-      size_t level = m_game.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
+      size_t level = m_gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
 
       musicTrack = Audio::musicUw2_Sewers; // 0..4
       if (level >= 8 && level < 16) musicTrack = Audio::musicUw2_PrisonTower;
@@ -590,7 +590,7 @@ Uint16 ConversationScreen::ExternalFunc(const char* the_funcname,
       m_menuScroll.ClearScroll();
 
       // init text edit
-      m_textEdit.Init(m_game, m_menuScroll.GetXPos() + 1, m_menuScroll.GetYPos() + 1,
+      m_textEdit.Init(m_gameInstance, m_menuScroll.GetXPos() + 1, m_menuScroll.GetYPos() + 1,
          m_menuScroll.GetWidth(), 42, 1, 46, ">");
 
       m_state = convScreenStateTextInput;
@@ -600,7 +600,7 @@ Uint16 ConversationScreen::ExternalFunc(const char* the_funcname,
       Uint16 arg = stack.At(argpos--);
       arg = stack.At(arg);
 
-      result_register = m_game.GetUnderworld().GetPlayer().GetQuestFlags().GetFlag(arg);
+      result_register = m_gameInstance.GetUnderworld().GetPlayer().GetQuestFlags().GetFlag(arg);
 
       UaTrace("get_quest[%u] = %u\n", arg, result_register);
    }
@@ -612,7 +612,7 @@ Uint16 ConversationScreen::ExternalFunc(const char* the_funcname,
       Uint16 arg2 = stack.At(argpos);
       arg2 = stack.At(arg2);
 
-      m_game.GetUnderworld().GetPlayer().GetQuestFlags().SetFlag(arg2, arg1);
+      m_gameInstance.GetUnderworld().GetPlayer().GetQuestFlags().SetFlag(arg2, arg1);
 
       UaTrace("set_quest[%u] = %u\n", arg2, arg1);
    }

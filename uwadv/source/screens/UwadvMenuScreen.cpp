@@ -44,7 +44,7 @@ void UwadvMenuScreen::Init()
    glEnable(GL_TEXTURE_2D);
 
    // load texture
-   Base::SDL_RWopsPtr rwops = m_game.GetResourceManager().GetResourceFile("uwadv-loading.png");
+   Base::SDL_RWopsPtr rwops = m_gameInstance.GetResourceManager().GetResourceFile("uwadv-loading.png");
 
    if (rwops != NULL)
    {
@@ -94,7 +94,7 @@ void UwadvMenuScreen::Tick()
    if (!m_isRendered)
       return;
 
-   Base::Settings& settings = m_game.GetSettings();
+   Base::Settings& settings = m_gameInstance.GetSettings();
 
    // set game prefix to use
    std::string prefix("uw1");
@@ -108,7 +108,7 @@ void UwadvMenuScreen::Tick()
    settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
    // now that we know the generic uw path, we can init the whole game stuff
-   m_game.InitGame();
+   m_gameInstance.InitGame();
 
    m_game.ReplaceScreen(new StartSplashScreen(m_game), false);
 }

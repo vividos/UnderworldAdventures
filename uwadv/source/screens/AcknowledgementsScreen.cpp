@@ -50,13 +50,13 @@ void AcknowledgementsScreen::Init()
    m_currentFrame = 0;
 
    // init cutscene quad
-   m_ackCutscene.Load(m_game.GetResourceManager(), "cuts/cs012.n01", m_image.GetImage());
-   m_image.Init(m_game, 0, 0);
+   m_ackCutscene.Load(m_gameInstance.GetResourceManager(), "cuts/cs012.n01", m_image.GetImage());
+   m_image.Init(m_gameInstance, 0, 0);
    m_ackCutscene.GetFrame(m_image.GetImage(), m_currentFrame);
    m_image.Update();
 
    // init fadeout image
-   m_fadeoutImage.Init(m_game, 0, 0);
+   m_fadeoutImage.Init(m_gameInstance, 0, 0);
    {
       IndexedImage& img = m_fadeoutImage.GetImage();
 

@@ -338,12 +338,12 @@ void SaveGameScreen::Init()
    m_isEditingDescription = false;
    m_pressedButton = saveGameButtonNone;
 
-   if (m_game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+   if (m_gameInstance.GetSettings().GetBool(Base::settingUw1IsUwdemo))
    {
       // we only have the uw_demo, and no character screen
-      m_buttonFont.Load(m_game.GetResourceManager(), fontNormal);
+      m_buttonFont.Load(m_gameInstance.GetResourceManager(), fontNormal);
 
-      m_game.GetImageManager().LoadList(m_facesImages, "bodies", 0, 0);
+      m_gameInstance.GetImageManager().LoadList(m_facesImages, "bodies", 0, 0);
 
       // init background image
       IndexedImage& img = GetImage();
@@ -366,25 +366,25 @@ void SaveGameScreen::Init()
    else
    {
       // normal uw1 game
-      m_buttonFont.Load(m_game.GetResourceManager(), fontCharacterGeneration);
+      m_buttonFont.Load(m_gameInstance.GetResourceManager(), fontCharacterGeneration);
 
-      m_game.GetImageManager().LoadList(m_facesImages, "chrbtns", 17, 0, 3);
+      m_gameInstance.GetImageManager().LoadList(m_facesImages, "chrbtns", 17, 0, 3);
 
       // scan for savegames
-      m_game.GetSavegamesManager().Rescan();
+      m_gameInstance.GetSavegamesManager().Rescan();
 
       // load background image
       IndexedImage temp_back;
 
-      bool isUw2 = m_game.GetSettings().GetGameType() == Base::gameUw2;
+      bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
 
       if (!isUw2)
       {
-         m_game.GetImageManager().Load(temp_back, "data/chargen.byt", 0, 3, imageByt);
+         m_gameInstance.GetImageManager().Load(temp_back, "data/chargen.byt", 0, 3, imageByt);
       }
       else
       {
-         m_game.GetImageManager().LoadFromArk(temp_back, "data/byt.ark", 1, 0);
+         m_gameInstance.GetImageManager().LoadFromArk(temp_back, "data/byt.ark", 1, 0);
       }
 
       // prepare background image
@@ -426,7 +426,7 @@ void SaveGameScreen::Init()
    // init info area
    m_infoAreaImage.GetImage().Create(128, 105);
    m_infoAreaImage.GetImage().SetPalette(GetImage().GetPalette());
-   m_infoAreaImage.Init(m_game, 160 + 16, 8);
+   m_infoAreaImage.Init(m_gameInstance, 160 + 16, 8);
    RegisterWindow(&m_infoAreaImage);
 
    // init savegames list
@@ -435,7 +435,7 @@ void SaveGameScreen::Init()
    RegisterWindow(&m_savegamesList);
 
    // init mouse cursor
-   m_mouseCursor.Init(m_game, 10);
+   m_mouseCursor.Init(m_gameInstance, 10);
    m_mouseCursor.Show(true);
 
    RegisterWindow(&m_mouseCursor);
@@ -549,7 +549,7 @@ void SaveGameScreen::OnFadeOutEnded()
    case saveGameButtonLoad:
    {
       UaTrace("loading saved game, filename %s\n",
-         m_game.GetSavegamesManager().GetSavegameFilename(
+         m_gameInstance.GetSavegamesManager().GetSavegameFilename(
             m_savegamesList.GetSelectedSavegame()).c_str());
 
       // clear screen; loading takes a while
@@ -557,10 +557,10 @@ void SaveGameScreen::OnFadeOutEnded()
       m_game.GetRenderWindow().SwapBuffers();
 
       // load savegame
-      Base::Savegame sg = m_game.GetSavegamesManager().GetSavegameFromFile(
-         m_game.GetSavegamesManager().GetSavegameFilename(
+      Base::Savegame sg = m_gameInstance.GetSavegamesManager().GetSavegameFromFile(
+         m_gameInstance.GetSavegamesManager().GetSavegameFilename(
             m_savegamesList.GetSelectedSavegame()).c_str());
-      m_game.GetUnderworld().Load(sg);
+      m_gameInstance.GetUnderworld().Load(sg);
 
       // next screen
       if (m_calledFromStartMenu)
@@ -595,7 +595,7 @@ void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
       // check if user tries to load the "new slot" entry
       if (m_savegamesList.GetSelectedSavegame() == -1 ||
          static_cast<size_t>(m_savegamesList.GetSelectedSavegame()) >=
-         m_game.GetSavegamesManager().GetSavegamesCount())
+         m_gameInstance.GetSavegamesManager().GetSavegamesCount())
          break;
 
       // fade out and do action
@@ -608,7 +608,7 @@ void SaveGameScreen::PressButton(SaveGameButtonId buttonId)
    case saveGameButtonRefresh:
    {
       // refresh list
-      m_game.GetSavegamesManager().Rescan();
+      m_gameInstance.GetSavegamesManager().Rescan();
       m_savegamesList.UpdateList();
    }
    break;
@@ -636,11 +636,11 @@ void SaveGameScreen::UpdateInfo()
    infoImage.Clear(0);
 
    if (selectedSavegameItemIndex >= 0 &&
-      static_cast<size_t>(selectedSavegameItemIndex) < m_game.GetSavegamesManager().GetSavegamesCount())
+      static_cast<size_t>(selectedSavegameItemIndex) < m_gameInstance.GetSavegamesManager().GetSavegamesCount())
    {
       // get savegame infos
       Base::SavegameInfo info;
-      m_game.GetSavegamesManager().GetSavegameInfo(selectedSavegameItemIndex, info);
+      m_gameInstance.GetSavegamesManager().GetSavegameInfo(selectedSavegameItemIndex, info);
 
       // show infos
       IndexedImage tempImage;
@@ -654,13 +654,13 @@ void SaveGameScreen::UpdateInfo()
       tempImage.Clear();
 
       // gender
-      std::string text(m_game.GetGameStrings().GetString(2, info.m_gender + 9));
+      std::string text(m_gameInstance.GetGameStrings().GetString(2, info.m_gender + 9));
       m_buttonFont.CreateString(tempImage, text, textColor);
       infoImage.PasteImage(tempImage, 2, 13, true);
       tempImage.Clear();
 
       // profession
-      text = m_game.GetGameStrings().GetString(2, info.m_profession + 23);
+      text = m_gameInstance.GetGameStrings().GetString(2, info.m_profession + 23);
       m_buttonFont.CreateString(tempImage, text, textColor);
       infoImage.PasteImage(tempImage, 125 - tempImage.GetXRes(), 13, true);
 
@@ -668,7 +668,7 @@ void SaveGameScreen::UpdateInfo()
       for (unsigned int i = 0; i < 4; i++)
       {
          // text
-         text = m_game.GetGameStrings().GetString(2, i + 17);
+         text = m_gameInstance.GetGameStrings().GetString(2, i + 17);
          m_buttonFont.CreateString(tempImage, text, textColor);
          infoImage.PasteImage(tempImage, 75, 42 + i * 17, true);
 
@@ -726,7 +726,7 @@ void SaveGameScreen::AskForSavegameDescription()
    // ask for a savegame name
    std::string savegameName;
 
-   Base::SavegamesManager& sgmgr = m_game.GetSavegamesManager();
+   Base::SavegamesManager& sgmgr = m_gameInstance.GetSavegamesManager();
 
    // select new slot when no savegame was selected
    int selectedSavegameItemIndex = m_savegamesList.GetSelectedSavegame();
@@ -745,7 +745,7 @@ void SaveGameScreen::AskForSavegameDescription()
    unsigned int ypos = selectedSavegameItemIndex * (height + 1) + 13 + 2;
 
    // init text edit window
-   m_textEdit.Init(m_game, 19, ypos, 119, 162, 1, 73,
+   m_textEdit.Init(m_gameInstance, 19, ypos, 119, 162, 1, 73,
       "", savegameName.c_str(), false);
 
    m_isEditingDescription = true;
@@ -756,10 +756,10 @@ void SaveGameScreen::SaveGameToDisk()
    // set up savegame info
    Base::SavegameInfo info;
    info.m_title = m_textEdit.GetText();
-   info.m_gamePrefix = m_game.GetSettings().GetString(Base::settingGamePrefix);
-   m_game.GetUnderworld().GetPlayer().FillSavegamePlayerInfos(info);
+   info.m_gamePrefix = m_gameInstance.GetSettings().GetString(Base::settingGamePrefix);
+   m_gameInstance.GetUnderworld().GetPlayer().FillSavegamePlayerInfos(info);
 
-   Base::SavegamesManager& sgmgr = m_game.GetSavegamesManager();
+   Base::SavegamesManager& sgmgr = m_gameInstance.GetSavegamesManager();
 
    // saving over existing game?
    int selectedSavegameItemIndex = m_savegamesList.GetSelectedSavegame();
@@ -770,7 +770,7 @@ void SaveGameScreen::SaveGameToDisk()
 
       // saving over selected game
       Base::Savegame sg = sgmgr.SaveSavegame(info, selectedSavegameItemIndex);
-      m_game.GetUnderworld().Save(sg);
+      m_gameInstance.GetUnderworld().Save(sg);
    }
    else
    {
@@ -778,7 +778,7 @@ void SaveGameScreen::SaveGameToDisk()
 
       // saving to new slot
       Base::Savegame sg = sgmgr.SaveSavegame(info);
-      m_game.GetUnderworld().Save(sg);
+      m_gameInstance.GetUnderworld().Save(sg);
    }
 
    sgmgr.Rescan();
