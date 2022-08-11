@@ -12,8 +12,6 @@ echo Copying thirdparty files and manuals to %OUTDIR%
 mkdir %OUTDIR% 2> nul
 mkdir %OUTDIR%\tools 2> nul
 
-copy SDL2_mixer-2.0.4\lib\x86\*.dll %OUTDIR%
-
 copy ..\win32\uadebug\thirdparty\scintilla\lib\Scintilla.dll %OUTDIR%
 copy ..\win32\uadebug\thirdparty\scintilla\lib\Lexilla.dll %OUTDIR%
 copy ..\win32\uadebug\thirdparty\scintilla\lib\lua.properties %OUTDIR%

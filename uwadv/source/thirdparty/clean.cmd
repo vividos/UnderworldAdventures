@@ -7,16 +7,6 @@ REM
 
 set OUTDIR=%1
 
-del %OUTDIR%libFLAC-8.dll 2> nul
-del %OUTDIR%libmodplug-1.dll 2> nul
-del %OUTDIR%libmpg123-0.dll 2> nul
-del %OUTDIR%libogg-0.dll 2> nul
-del %OUTDIR%libopus-0.dll 2> nul
-del %OUTDIR%libopusfile-0.dll 2> nul
-del %OUTDIR%libvorbis-0.dll 2> nul
-del %OUTDIR%libvorbisfile-3.dll 2> nul
-del %OUTDIR%SDL2_mixer.dll 2> nul
-
 del %OUTDIR%\Scintilla.dll 2> nul
 del %OUTDIR%\Lexilla.dll 2> nul
 del %OUTDIR%\lua.properties 2> nul
