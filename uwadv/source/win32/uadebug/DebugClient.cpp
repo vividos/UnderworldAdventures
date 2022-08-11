@@ -167,6 +167,9 @@ std::map<unsigned int, LPCTSTR> g_tilemapNames[2] =
       { 65, _T("Ethereal Void Blue EVB") },
       { 66, _T("Ethereal Void Yellow EVY") },
       { 67, _T("Ethereal Void Purple EVP") },
+
+      // https://www.ttlg.com/forums/showthread.php?t=131926
+      { 69, _T("Secret Level") },
    }
 };
 
