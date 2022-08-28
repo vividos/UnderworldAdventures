@@ -92,7 +92,7 @@ Table of Contents
 1  Introduction
 
    This file tries to collect all file formats and data structures used in the
-   game Ultima Underworld 1. It origined from the "uw-specs.txt" file that I
+   game Ultima Underworld 1. It originated from the "uw-specs.txt" file that I
    found with "The System Shock Hack Project" (TSSHP). System Shock uses
    almost the same data structures for the game and Jim decided to support the
    underworldly games, too. With the start of the Underworld Adventures
@@ -652,7 +652,7 @@ Table of Contents
 
 3.2.2  Compressed bitmaps (type 08, type 06)
 
-   Compressed bitmaps are stored with a run length length encoding and a
+   Compressed bitmaps are stored with a run length encoding and a
    lookup table. The wordsize used for a certain bitmap is determined by the
    type.
 
@@ -662,7 +662,7 @@ Table of Contents
    If the size of the compressed image is given in words, the number of bytes
    are calculated as
 
-      bytecount = (wordcount * wordssize + 7) / 8
+      bytecount = (wordcount * wordsize + 7) / 8
 
    The bytes of the compressed image are treated as a bit stream, starting
    at the most significant bit of byte 0.
@@ -678,7 +678,7 @@ Table of Contents
    special count interpretation for repeat records below.
 
    For every record, first there is a count to retrieve. A count is a single
-   number made up from a variable number of words. The alorithm to determine
+   number made up from a variable number of words. The algorithm to determine
    a count is as follows:
    Get a word.
 
@@ -687,7 +687,7 @@ Table of Contents
    If it is not 0, it is a count. Otherwise, get two more words,
    w1 and w2. The count is:
 
-      c = (w1 << 4) | n2
+      c = (w1 << 4) | w2
 
    If the count is still zero, take another three words, and calculate the
    count:
@@ -708,19 +708,19 @@ Table of Contents
 
    As there is no point in repeating a nibble <3 times, there are some
    special meanings for count:
-   1: skip this record, the next one is a run record again. may be used at
+   1: skip this record, the next one is a run record again. May be used at
       the beginning of a file, when it should start with a run rather than
       a repeat.
-   2: multiple repeats. get another count, and process 'count' times a
+   2: multiple repeats. Get another count, and process 'count' times a
       repeat record.
 
    Note that there are cases where the decompression yields a greater number
-   of words than would be neccessary to display the image.
+   of words than would be necessary to display the image.
 
    The resulting words make up the atom map for a given image. This atom map
    is then translated, byte by byte, from their value range of 16 (4 bit) or
    32 (5 bit) to full 8 bit using the corresponding atom to fragment maps.
-   These maps are also sometimes refered to a auxiliary palettes in this
+   These maps are also sometimes referred to a auxiliary palettes in this
    document.
 
 3.3  Bitmaps
@@ -916,12 +916,12 @@ Table of Contents
       cr04   "wiza"       5         yellow male mage
       cr05 * "spider"     3         giant, wolf, dread spider
       cr06   "gazer"      1         gazer
-      cr07   "troll"      3         troll, fereal troll, great troll
+      cr07   "troll"      3         troll, feral troll, great troll
       cr10   "femwiz"     4         female mage
       cr11 * "slug"       2         flesh slug, acid slug
       cr12   "fire"       2         fire elemental
       cr13   "ghoul"      3         ghoul, dark ghoul
-      cr14   "demon"      1         Slasher of the Veils
+      cr14   "demon"      1         Slasher of Veils
       cr15 * "ghost"      4         ghost, dire ghost
       cr16 * "graygob"    2         gray goblin
       cr17   "reaper"     1         reaper
@@ -1206,17 +1206,17 @@ Table of Contents
       }
 
    The .n00 files are special, as they are not following the .anm format, but
-   contain animiation control instructions.
+   contain animation control instructions.
 
    The file consists of variable length entries, starting with an Int16 frame
    number, an Int16 command and a variable number of command arguments,
    depending on the command. In uw1 there are 0x0f commands, and uw2 extends
    them to 0x1f commands.
 
-   The following commands are used. The command names are not offical and
+   The following commands are used. The command names are not official and
    invented for this document.
 
-     Int16  name      args  meaining
+     Int16  name      args  meaning
       0000  show-text  2    displays text arg[1] with color arg[0]
       0001  set-flag   0    sets some flag to 0
       0002  no-op      2    no-op, arguments are ignored
@@ -1248,7 +1248,7 @@ Table of Contents
    Ultima Underworld 2 extends the .n00 file commands with another set of
    commands:
 
-     Int16  name      args  meaining
+     Int16  name      args  meaning
       0010  ????       *    unknown, not used in uw2
       0011  ????       *    unknown, not used in uw2
       0012  no-op2     4    does nothing, not used in uw2
@@ -1271,7 +1271,7 @@ Table of Contents
 
    The existing 0005 command is slightly changed:
 
-     Int16  name      args  meaining
+     Int16  name      args  meaning
       0005  ????       0    unknown
 
    The existing 0008 "open-file" command is extended: When arg[0] == 0x03e4
@@ -1328,10 +1328,10 @@ Table of Contents
 
    Weapons.cm:
    -----------
-   This file stores two aux 16-color pallettes for the attack animation
+   This file stores two aux 16-color palettes for the attack animation
    frames. These are needed to tint the weapon attack frames according to the
    skin color of the selected character. I haven't checked, but probably one
-   of these match the "standard" aux pallette used for the .gr files...
+   of these match the "standard" aux palette used for the .gr files...
 
 
 3.9   XFER.DAT Transparencies
@@ -1518,7 +1518,7 @@ Table of Contents
    described in chapter 4.3.
 
    Entry 0 is never allocated and is used to test against item links of value
-   0. Entry 1 is partly used to store the player's informations, e.g.
+   0. Entry 1 is partly used to store the player's information, e.g.
    direction or in-tile x/y positions.
 
    Each object entry has a "general object info" block consisting of 4 Int16
@@ -1731,7 +1731,7 @@ Table of Contents
 
    The following was observed in Underworld 2.
    The automap contains one byte per tile, in the same order as the
-   level tilemap. A valid value in the low nybble means the tile is displayed
+   level tilemap. A valid value in the low nibble means the tile is displayed
    on the map. Valid values are the same as tile types:
             SOLID    0x0
             CLEAR    0x1
@@ -1748,7 +1748,7 @@ Table of Contents
             SLOPE_W  0x9
    Other values are considered undiscovered
 
-   The high nybble contains a modifier on how to display the tile:
+   The high nibble contains a modifier on how to display the tile:
             DEFAULT  0x0
             DOOR     0x1
             TELEPORT 0x3
@@ -1856,7 +1856,7 @@ Table of Contents
    0c00    intro cutscene text
    0c01    ending cutscene text
    0c02    tyball cutscene text
-   0c03    arial cuscene text (?)
+   0c03    arial cutscene text (?)
    0c18    dream cutscene 1 text "arrived"
    0c19    dream cutscene 2 text "talismans"
    0c1a-0c21  garamon cutscene texts
@@ -1887,12 +1887,12 @@ Table of Contents
    index      ID    size
        0    0001     512    technical stuff, number text conversion
        1    0002     512    character generation
-       2    0003     512    books, scrolls. readable items
+       2    0003     512    books, scrolls. Readable items
        3    0004     512    item names
        4    0005     512    item condition
        5    0006     512    light levels, spell friendly names, spell effects
        6    0007     512    barter quality, npc names, monster internal names
-       7    0008     512    wall labels, tombs. readable stuff in the world
+       7    0008     512    wall labels, tombs. Readable stuff in the world
        8    0009     512    game state messages: vision, door state
        9    000a     512    descriptions of textures/decals
       10    0018     512    debug/console strings
@@ -1926,6 +1926,7 @@ Table of Contents
    Objects (or items) are grouped by type. Here's a short overview of all
    object groups:
 
+   item_id    description
    0000-001f  Weapons and missiles
    0020-003f  Armour and clothing
    0040-007f  Monsters
@@ -2005,7 +2006,7 @@ Table of Contents
          the lock object is associated with a door or portcullis and
          determines the lock state and the lock ID. bit 9 of the flags
          indicates if the lock is locked (1) or unlocked (0). the lower 6 bits
-         of the "link/special" field determines the lock ID. when unlocking a
+         of the "link/special" field determines the lock ID. When unlocking a
          door with a key, the lock ID must match the key ID on the key.
 
    0110  a_picture of Tom
@@ -2025,11 +2026,11 @@ Table of Contents
    0140  a_door (and up to 014f)
          if bit 1 of the "owner" field is set, the door is spiked. if the
          "sp_link" field points to a_lock object, the door is locked.
-         0146 is a portcullis and 0147 is a secret door. doors from 0148
+         0146 is a portcullis and 0147 is a secret door. Doors from 0148
          to 014f are the open versions of the closed doors.
-         the textures for the doors come from the 6 bytes at the end of the
+         The textures for the doors come from the 6 bytes at the end of the
          texture mapping info from lev.ark.
-         the "doordir" bit determines in which direction the door swings open.
+         The "doordir" bit determines in which direction the door swings open.
          Doors are rendered using two 3D models, one for the frame and one for
          the door. It appears that the frame uses the wall texture of the tile
          in which the door is located. The frame also seems to change the color
@@ -2109,8 +2110,8 @@ Table of Contents
          game strings block 0008. the texture used is determined from
          "tmobj.gr", image "flags" + 20 (?).
 
-         the plaque description printed when looking at it is determined by
-         the "flags" field. text printed is from strings block 8, 368 + flags
+         The plaque description printed when looking at it is determined by
+         the "flags" field. Text printed is from strings block 8, 368 + flags
 
    0167  a_bed [uw2]
          3D object. The "owner" field determines the colour of the sheets and
@@ -2214,15 +2215,15 @@ Table of Contents
 
    0187  a_create object trap
          creates a new object using the object referenced by the "quantity"
-         field as a template. the object is created only when a random number
+         field as a template. The object is created only when a random number
          between 0 and 3f is greater than the "quality" field value.
 
    0188  a_door trap
-         opens or shuts a door when set off. the trigger "target" coords
-         determine the tile with the door to open/close. if the door
-         has an "a_lock" object associated, it is deleted. if there is no
+         opens or shuts a door when set off. The trigger "target" coords
+         determine the tile with the door to open/close. If the door
+         has an "a_lock" object associated, it is deleted. If there is no
          lock, a new lock is created, using the template lock linked to by the
-         "sp_link" field. as the door points to a lock, there can't be another
+         "sp_link" field. As the door points to a lock, there can't be another
          trigger associated with it.
 
     the "quality" value decides if a door trap only opens, closes or
@@ -2247,7 +2248,7 @@ Table of Contents
    018c  an_inventory trap
          the trap searches for an item in the inventory; when it is found, the
          sp_link'ed trigger is set off. the item_id is given by
-         ("quality" << 5) | "owner". additionally, the zpos value must be != 0
+         ("quality" << 5) | "owner". Additionally, the zpos value must be != 0
          to enable the trap.
 
    018d  a_set variable trap
@@ -2259,7 +2260,7 @@ Table of Contents
           owner   3..7     (bit 5 of "owner" seems not to be used)
           quality 8..13
 
-         the "zpos" field determines which variable to set. if zpos is 0, a
+         the "zpos" field determines which variable to set. If zpos is 0, a
          bit-field is modified and the index value indicates which bit to
          modify. the "heading" field determines the operation to perform:
 
@@ -2279,10 +2280,10 @@ Table of Contents
 
    018e  a_check variable trap
          the "value" from the set variable trap (018d) is also used here.
-         the trap checks a range of variables, starting from "zpos" and of
-         length "heading". if "xpos" is not 0, the variable values in range
+         The trap checks a range of variables, starting from "zpos" and of
+         length "heading". If "xpos" is not 0, the variable values in range
          are added; if it is 0, the lower 3 bits of every variable value are
-         shifted into the resulting value. here's some meta-C code to show
+         shifted into the resulting value. Here's some meta-C code to show
          how the check works:
 
          bool check_variable_trap(zpos,heading,value)
@@ -2299,7 +2300,7 @@ Table of Contents
                }
             }
 
-            return di != value
+            return cmp != value
          }
 
          The trigger associated with the trap is set off when the resulting
@@ -3675,8 +3676,8 @@ is just a no-op, or it would crash the conversation virtual machine.
      00BE     ??? seems to define 2 shades
      00CE     define texture-mapped face, same as 00B4
      00D2     define texture mapped face (shorthand) (similar to 00A0)
-     00D4     define vertex gouraud shading values
-     00D6     turn on on gouraud shading
+     00D4     define vertex Gouraud shading values
+     00D6     turn on on Gouraud shading
 
    The same list as above, sorted by node ID and including the number of
    arguments each node takes (=argc); var means a variable number of
@@ -3722,8 +3723,8 @@ is just a no-op, or it would crash the conversation virtual machine.
      00BE     2      ??? seems to define 2 shades
      00CE     var    same as 007E (?)
      00D2     4      shorthand textured face definition (similar to 00A0)
-     00D4     var    define vertex gouraud shading values
-     00D6     0      turn on on gouraud shading
+     00D4     var    define vertex Gouraud shading values
+     00D6     0      turn on on Gouraud shading
 
    Here's a detailed description of all nodes, sorted after functionality:
 
@@ -3918,7 +3919,7 @@ is just a no-op, or it would crash the conversation virtual machine.
 
    Shading/Coloring nodes
    ----------------------
-     00D4   define vertex gouraud shading values
+     00D4   define vertex Gouraud shading values
             Build a table of shading information for each vertex.
             Note that the list generated by this command doesn't
             always have the same size as the vertex table.
@@ -3934,8 +3935,8 @@ is just a no-op, or it would crash the conversation virtual machine.
                                and so on; if nvert is odd, read another empty
                                byte to have 16 bit word align
 
-     00D6   turn on on gouraud shading
-            switches on gouraud shading. The following faces use
+     00D6   turn on on Gouraud shading
+            switches on Gouraud shading. The following faces use
             the color definitions set with the "define vertex shading values"
             (00D4) command
 
@@ -3964,7 +3965,7 @@ is just a no-op, or it would crash the conversation virtual machine.
 
      002E   ??? seems to influence shading for the next face [uw2]
             This node influences how the next face is drawn. I'm not sure what
-            it does exactly, but I'm sure that it switches gouraud shading off
+            it does exactly, but I'm sure that it switches Gouraud shading off
             (and possibly some other mode on)
             It's used quite a lot in the Lotus Turbo Esprit model and only
             once in the table model (with data=0). Other than that it's not
@@ -4157,7 +4158,7 @@ is just a no-op, or it would crash the conversation virtual machine.
                   bits 6..7: no. of active spells
    0060   Int8    various plot flags
    0061   Int8    unknown
-   0062   Int8    MiscQuestVars? drunkeness level in lower hex digit (?)
+   0062   Int8    MiscQuestVars? drunkenness level in lower hex digit (?)
    0063   Int8    bits 4..7: light level
    0064   Int8    character class details
                   bit 0: hand left/right
@@ -4376,7 +4377,7 @@ is just a no-op, or it would crash the conversation virtual machine.
       E: could not write     (4000h)
       F: resource/internal problem
 
-   Here's a list of all possible error codes and their occurance
+   Here's a list of all possible error codes and their occurence
 
    B001  couldn't alloc memory for "data/strings.pak"
    D002  couldn't read "data/strings.pak"
@@ -4415,7 +4416,7 @@ is just a no-op, or it would crash the conversation virtual machine.
       SPxx.VOC     sound effect
       UWxx.VOC     guardian laughter
 
-   There are numours discussions of VOC files freely available on the net.
+   There are numerous discussions of VOC files freely available on the net.
    For a complete discussion of the format google it, look at
    http://www.wotsit.org/ or whatever. Here is the short version as used by
    Underworld 2:
