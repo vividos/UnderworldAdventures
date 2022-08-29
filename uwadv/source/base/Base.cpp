@@ -27,6 +27,9 @@
 #ifdef HAVE_WIN32
 #include <Windows.h> // for OutputDebugStringA
 #endif
+#ifdef HAVE_ANDROID
+#include <android/log.h>
+#endif
 
 /// delete function for SDL_RWops shared ptr
 static void SDL_RWopsDeletor(SDL_RWops* rwops)
@@ -82,6 +85,12 @@ int UaTracePrintf(const char* format, ...)
    char buffer[512];
    vsnprintf(buffer, sizeof(buffer), format, args);
    OutputDebugStringA(buffer);
+   va_end(args);
+#endif
+
+#ifdef HAVE_ANDROID
+   va_start(args, format);
+   __android_log_vprint(ANDROID_LOG_INFO, "uwadv", format, args);
    va_end(args);
 #endif
 

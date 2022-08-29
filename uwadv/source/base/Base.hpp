@@ -36,6 +36,7 @@
 /// \def HAVE_LINUX    Linux is used as target system
 /// \def HAVE_MINGW    MinGW32 development/runtime environment
 /// \def HAVE_MACOSX   MacOS X development/runtime environment
+/// \def HAVE_ANDROID  Android platform
 
 #ifdef _MSC_VER
 #define HAVE_MSVC _MSC_VER
@@ -65,6 +66,10 @@
 
 #ifdef BEOS
 #define HAVE_BEOS
+#endif
+
+#ifdef __ANDROID__
+#define HAVE_ANDROID
 #endif
 
 
