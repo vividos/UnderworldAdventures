@@ -14,6 +14,9 @@ cmake_minimum_required(VERSION 3.20)
 project(uwadv_android_apk NONE
 	 VERSION 0.11.0)
 
+add_subdirectory("app/src/main/cpp")
+
 add_custom_command(OUTPUT uwadv.apk
 	 COMMAND "./gradlew.bat buildDebug"
+	 DEPENDS "uwadv_android"
 	 COMMENT "Building Android .apk file")
