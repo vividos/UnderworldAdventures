@@ -525,7 +525,7 @@ CString DebugClient::GetLevelName(unsigned int level) const
    if (IsLevelEmpty(level))
       return _T("empty");
 
-   bool isUw2 = true;
+   bool isUw2 = m_debugInterface->GetGameInstance().GetSettings().GetGameType() == Base::gameUw2;
    const std::map<unsigned int, LPCTSTR>& tilemapNames =
       g_tilemapNames[isUw2 ? 1 : 0];
 
