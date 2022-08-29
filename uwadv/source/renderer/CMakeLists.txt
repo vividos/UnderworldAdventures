@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME} STATIC
 	"Texture.cpp" "Texture.hpp"
 	"TextureManager.cpp" "TextureManager.hpp"
 	"UnderworldRenderer.cpp" "UnderworldRenderer.hpp"
+	"VertexBufferObject.cpp" "VertexBufferObject.hpp"
 	"Viewport.cpp" "Viewport.hpp")
 
 target_include_directories(${PROJECT_NAME}

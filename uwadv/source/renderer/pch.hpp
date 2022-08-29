@@ -25,4 +25,6 @@
 #include "Base.hpp"
 #include "Math.hpp"
 #include "Triangle3d.hpp"
+
+#define GL_GLEXT_PROTOTYPES
 #include <SDL2/SDL_opengl.h>

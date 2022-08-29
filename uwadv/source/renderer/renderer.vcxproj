@@ -65,6 +65,7 @@
     <ClCompile Include="PolygonTessellator.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VertexBufferObject.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +86,7 @@
     <ClInclude Include="PolygonTessellator.hpp" />
     <ClInclude Include="RenderWindow.hpp" />
     <ClInclude Include="Texture.hpp" />
+    <ClInclude Include="VertexBufferObject.hpp" />
     <ClInclude Include="Viewport.hpp" />
   </ItemGroup>
   <ItemGroup>
