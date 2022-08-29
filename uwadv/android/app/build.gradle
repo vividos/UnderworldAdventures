@@ -37,3 +37,16 @@ android {
 
 dependencies {
 }
+
+task copyExternalSharedObjects(type: Copy) {
+    from ('../../output/build/android-arm64-v8a-debug/vcpkg_installed/arm64-android-dynamic/lib/') {
+        include 'libSDL2.so', 'libSDL2_mixer.so'
+    }
+    into 'src/main/jniLibs/arm64-v8a'
+}
+
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn(copyExternalSharedObjects)
+}
+
+clean.dependsOn 'cleanCopyExternalSharedObjects'
