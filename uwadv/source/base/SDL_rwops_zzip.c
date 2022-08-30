@@ -44,13 +44,23 @@ static int _zzip_close(SDL_RWops *context)
     return 0;
 }
 
+static Sint64 _zzip_size(SDL_RWops* context)
+{
+   if (!context) return -1;
+
+   ZZIP_STAT stat = { 0 };
+   int ret = zzip_file_stat(SDL_RWOPS_ZZIP_FILE(context), &stat);
+
+   return ret == 0 ? stat.st_size : -1;
+}
+
 SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
 {
     register SDL_RWops* rwops;
     register ZZIP_FILE* zzip_file;
 
     if (! strchr (mode, 'r'))
-	return SDL_RWFromFile(file, mode);
+      return SDL_RWFromFile(file, mode);
 
     zzip_file = zzip_fopen (file, mode);
     if (! zzip_file) return 0;
@@ -59,6 +69,8 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
     if (! rwops) { errno=ENOMEM; zzip_close (zzip_file); return 0; }
 
     SDL_RWOPS_ZZIP_DATA(rwops) = zzip_file;
+    rwops->type = SDL_RWOPS_MEMORY_RO;
+    rwops->size = _zzip_size;
     rwops->read = _zzip_read;
     rwops->write = _zzip_write;
     rwops->seek = _zzip_seek;
