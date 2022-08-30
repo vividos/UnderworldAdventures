@@ -10,6 +10,7 @@ navigate the document.
 [2.2 Microsoft Visual Studio on Windows](#2-2-microsoft-visual-studio-on-windows)<br/>
 [2.3 CMake on Windows, Linux and macOS](#2-3-cmake-on-windows-linux-and-macos)<br/>
 [2.4 Visual Studio Code](#2-4-visual-studio-code)<br/>
+[2.5 Android app using Android Studio](#2-5-android-app-using-android-studio)<br/>
 
 [3. Developing Underworld Adventures](#3-developing-underworld-adventures)<br/>
 [3.1 Code guidelines](#3-1-code-guidelines)<br/>
@@ -142,6 +143,49 @@ To compile the project, you can choose the following in the lower status bar:
 
 Then press the `Build" button on the lower status bar to compile the chosen
 project.
+
+# 2.5 Android app using Android Studio
+
+Underworld Adventures has (experimental) Android project files that can be
+used to build an Android app. There are several manual steps to do to get this
+running.
+
+1. First, you need to install the Android Studio, from:
+   https://developer.android.com/studio/
+
+   Be sure to install the Android SDK and the Android NDK as well. At the time
+   of writing, I used the NDK Version 24 and installed the Android 12 (S) SDK.
+
+2. In order to use the Android SDK in CMake files, you need to set the
+   environment variable `ANDROID_NDK_HOME`.
+
+3. The CMake project files use `vcpkg` to get sources for external libraries.
+   Set up vcpkg by getting the Git repository and bootstrap it for your
+   platform: https://vcpkg.io/en/getting-started.html
+
+4. vcpkg uses Ninja on some platforms, so it's a good idea to also download
+   Ninja and install it into a location and add it to the PATH variable:
+   https://ninja-build.org/
+
+5. To use vcpkg in the CMake project files, you need to set the environment
+   variable `VCPKG_ROOT` to the root folder of the vcpkg Git repository.
+
+6. Since Android Studio's CMake integration doesn't know about vcpkg's
+   Manifest mode (specifying all dependent libraries in the `vcpkg.json`
+   file), the C++ parts of the project are compiled outside of Android Studio.
+
+To build the Android app, you can either use CMake on the command line and
+specify the `android-arm64-v8a-debug` preset from the `CMakePresets.json`
+file. The build target `uwadv_android_apk` builds the `uwadv_android` target
+first, which in turn builds all of the uwadv's static libraries, all using the
+vcpkg custom triplet `arm64-android-dynamic`. The shared object
+`libuwadv_android.so` as well as `libSDL2.so` and `libSDL2_mixer.so` are
+copied into the Android Studio (or rather Gradle Wrapper) project and the
+build creates an `.apk` file that can be deployed to an actual device.
+
+When on Windows, you can also use the `BuildAndroid.cmd`, which sets
+`ANDROID_NDK_HOME` and `VCPKG_ROOT` for you and invokes the cmake build.
+
 
 ## 3. Developing Underworld Adventures
 
