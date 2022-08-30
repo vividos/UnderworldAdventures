@@ -69,7 +69,7 @@ SDL_RWops *SDL_RWFromZZIP(const char* file, const char* mode)
     if (! rwops) { errno=ENOMEM; zzip_close (zzip_file); return 0; }
 
     SDL_RWOPS_ZZIP_DATA(rwops) = zzip_file;
-    rwops->type = SDL_RWOPS_MEMORY_RO;
+    rwops->type = SDL_RWOPS_UNKNOWN;
     rwops->size = _zzip_size;
     rwops->read = _zzip_read;
     rwops->write = _zzip_write;
