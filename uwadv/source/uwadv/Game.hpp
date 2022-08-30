@@ -110,6 +110,9 @@ public:
    }
 
    // IGame methods
+   virtual IBasicGame& GetGameInstance() override { return *this; }
+   virtual const IBasicGame& GetConstGameInstance() const override { return *this; }
+
    virtual void InitGame() override;
    virtual void DoneGame() override;
    virtual Audio::AudioManager& GetAudioManager() override

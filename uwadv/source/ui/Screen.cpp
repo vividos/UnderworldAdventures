@@ -26,7 +26,7 @@
 
 Screen::Screen(IGame& gameInterface)
    :m_game(gameInterface),
-   m_gameInstance(gameInterface),
+   m_gameInstance(gameInterface.GetGameInstance()),
    m_screenKeymap(nullptr)
 {
 }

@@ -26,7 +26,7 @@
 OriginalIngameControl::OriginalIngameControl(OriginalIngameScreen& screen)
    :ImageWindow(screen),
    m_parent(screen),
-   m_gameInstance(screen.GetGameInterface())
+   m_gameInstance(screen.GetGameInterface().GetGameInstance())
 {
 }
 

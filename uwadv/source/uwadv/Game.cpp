@@ -433,7 +433,7 @@ void Game::InitGame()
 
    // try to load %prefix%/game.cfg
    {
-      GameConfigLoader cfgloader(*this, &m_scripting);
+      GameConfigLoader cfgloader{ GetGameInstance(), &m_scripting };
 
       Base::SDL_RWopsPtr gameConfig = m_resourceManager->GetResourceFile(gameConfigFilename.c_str());
 
@@ -455,7 +455,7 @@ void Game::InitGame()
    m_imageManager = std::make_unique<ImageManager>(GetResourceManager());
    m_imageManager->Init();
 
-   m_renderer.InitGame(*this);
+   m_renderer.InitGame(GetGameInstance());
 
    m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
 

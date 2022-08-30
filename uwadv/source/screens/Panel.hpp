@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -47,6 +47,9 @@ public:
 
    /// returns game interface
    virtual IGame& GetGameInterface() = 0;
+
+   /// returns game instance
+   virtual IBasicGame& GetGameInstance() = 0;
 };
 
 

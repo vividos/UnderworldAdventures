@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
 {
    m_panelParent = panelParent;
    IGame& game = m_panelParent->GetGameInterface();
-   IBasicGame& gameInstance = m_panelParent->GetGameInterface();
+   IBasicGame& gameInstance = game.GetGameInstance();
 
    m_panelType = panelInventory;
    m_useFemaleArmor = gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) != 0;
@@ -142,7 +142,7 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
    GetImage().Create(85, 116);
    GetImage().SetPalette(imageManager.GetPalette(0));
 
-   ImageQuad::Init(game, xpos, ypos);
+   ImageQuad::Init(gameInstance, xpos, ypos);
 
    {
       m_chainsTopImage.Init(gameInstance, xpos + 37, ypos - 4);
@@ -265,7 +265,7 @@ bool Panel::MouseEvent(bool buttonClicked, bool leftButton,
          // check item dragging
          if (m_checkDragging && m_draggedItemArea != static_cast<unsigned int>(area))
          {
-            Underworld::Inventory& inventory = m_panelParent->GetGameInterface().
+            Underworld::Inventory& inventory = m_panelParent->GetGameInstance().
                GetUnderworld().GetPlayer().GetInventory();
 
             if (inventory.GetFloatingObjectPos() == Underworld::c_inventorySlotNoItem)
@@ -388,7 +388,7 @@ void Panel::UpdatePanel()
 
 void Panel::UpdateChains()
 {
-   const Base::Settings& settings = m_panelParent->GetGameInterface().GetSettings();
+   const Base::Settings& settings = m_panelParent->GetGameInstance().GetSettings();
    bool isUw2 = settings.GetGameType() == Base::gameUw2;
 
    unsigned int maxChainImage = isUw2 ? 4 : 8;
@@ -416,9 +416,9 @@ void Panel::UpdateInventory()
 {
    IndexedImage& img = GetImage();
 
-   Underworld::Inventory& inventory = m_panelParent->GetGameInterface().
+   Underworld::Inventory& inventory = m_panelParent->GetGameInstance().
       GetUnderworld().GetPlayer().GetInventory();
-   Underworld::Player& player = m_panelParent->GetGameInterface().
+   Underworld::Player& player = m_panelParent->GetGameInstance().
       GetUnderworld().GetPlayer();
 
    // background image
@@ -441,7 +441,7 @@ void Panel::UpdateInventory()
       m_useFemaleArmor = female;
 
       m_paperdollArmorImages.clear();
-      m_panelParent->GetGameInterface().GetImageManager().
+      m_panelParent->GetGameInstance().GetImageManager().
          LoadList(m_paperdollArmorImages, m_useFemaleArmor ? "armor_f" : "armor_m");
    }
 
@@ -536,8 +536,8 @@ void Panel::UpdateInventory()
 
    // inventory weight
    {
-      unsigned int strength = m_panelParent->GetGameInterface().GetUnderworld().GetPlayer().GetAttribute(Underworld::attrStrength);
-      unsigned int inventoryWeight = m_panelParent->GetGameInterface().GetGameLogic().GetInventoryWeight();
+      unsigned int strength = m_panelParent->GetGameInstance().GetUnderworld().GetPlayer().GetAttribute(Underworld::attrStrength);
+      unsigned int inventoryWeight = m_panelParent->GetGameInstance().GetGameLogic().GetInventoryWeight();
       unsigned int leftWeight = strength * 2 - inventoryWeight;
 
       std::ostringstream buffer;
@@ -553,10 +553,10 @@ void Panel::UpdateStats()
 {
    IndexedImage& img = GetImage();
 
-   Underworld::Player& player = m_panelParent->GetGameInterface().
+   Underworld::Player& player = m_panelParent->GetGameInstance().
       GetUnderworld().GetPlayer();
 
-   GameStrings& gameStrings = m_panelParent->GetGameInterface().
+   GameStrings& gameStrings = m_panelParent->GetGameInstance().
       GetGameStrings();
 
    img.PasteImage(m_panelBackgroundImages[2], 1, 1);
@@ -635,7 +635,7 @@ void Panel::UpdateRunebag()
    IndexedImage& img = GetImage();
    img.PasteImage(m_panelBackgroundImages[1], 1, 1);
 
-   Underworld::Runebag& runebag = m_panelParent->GetGameInterface().
+   Underworld::Runebag& runebag = m_panelParent->GetGameInstance().
       GetUnderworld().GetPlayer().GetRunebag();
 
    for (unsigned int i = 0; i < 24; i++)
@@ -650,7 +650,7 @@ void Panel::OnInventoryClick(bool buttonDown, bool leftButton,
    PanelInventoryAreaId area =
       static_cast<PanelInventoryAreaId>(the_area);
 
-   Underworld::Inventory& inventory = m_panelParent->GetGameInterface().
+   Underworld::Inventory& inventory = m_panelParent->GetGameInstance().
       GetUnderworld().GetPlayer().GetInventory();
 
    // check scroll up/down buttons
@@ -786,7 +786,7 @@ void Panel::OnInventoryClick(bool buttonDown, bool leftButton,
       return;
    }
 
-   IScripting& scripting = m_panelParent->GetGameInterface().GetScripting();
+   IScripting& scripting = m_panelParent->GetGameInstance().GetScripting();
 
    // perform left/right click action
    if (leftButton)
@@ -805,7 +805,7 @@ void Panel::OnInventoryClick(bool buttonDown, bool leftButton,
 
 void Panel::UpdateCursorImage()
 {
-   Underworld::Inventory& inventory = m_panelParent->GetGameInterface().
+   Underworld::Inventory& inventory = m_panelParent->GetGameInstance().
       GetUnderworld().GetPlayer().GetInventory();
 
    Uint16 cursorObject = 0;

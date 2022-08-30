@@ -157,6 +157,8 @@ private:
 
 private:
    // IGame virtual methods
+   virtual IBasicGame& GetGameInstance() override { return *this; }
+   virtual const IBasicGame& GetConstGameInstance() const override { return *this; }
 
    virtual double GetTickRate() const override
    {

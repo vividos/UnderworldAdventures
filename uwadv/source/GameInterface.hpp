@@ -58,6 +58,11 @@ enum GameEvents
 class IGame : public IBasicGame
 {
 public:
+   /// returns game instance
+   virtual IBasicGame& GetGameInstance() = 0;
+   /// returns game instance; const version
+   virtual const IBasicGame& GetConstGameInstance() const = 0;
+
    /// returns game tickrate
    virtual double GetTickRate() const = 0;
 
