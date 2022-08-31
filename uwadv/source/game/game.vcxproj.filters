@@ -17,6 +17,9 @@
     <ClCompile Include="GameConfigLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BasicGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="DebugServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -29,6 +32,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameConfigLoader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DebugServer.hpp">

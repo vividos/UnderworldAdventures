@@ -55,7 +55,7 @@ enum GameEvents
 
 
 /// game interface class
-class IGame : public IBasicGame
+class IGame
 {
 public:
    /// returns game instance

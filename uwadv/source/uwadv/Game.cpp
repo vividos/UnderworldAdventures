@@ -66,9 +66,7 @@ Game::Game()
    :MainGameLoop("Underworld Adventures", false),
 #endif
    m_tickRate(20),
-   m_screenToDestroy(NULL),
-   m_scripting(NULL),
-   m_isPaused(false)
+   m_screenToDestroy(NULL)
 {
    printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
@@ -79,19 +77,13 @@ Game::Game()
 
 void Game::Init()
 {
-   UaTrace("initializing game ...\n\n");
-
-   // init files manager; settings are loaded here, too
-   Base::LoadSettings(m_settings);
-   m_resourceManager = std::make_unique<Base::ResourceManager>(m_settings);
-
    // find out selected screen resolution
    {
       // predefined is 640x480
       m_width = 640;
       m_height = 480;
 
-      std::string screen_res(m_settings.GetString(Base::settingScreenResolution));
+      std::string screen_res{ GetSettings().GetString(Base::settingScreenResolution) };
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
@@ -207,7 +199,7 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
          m_initAction = 2;
 
          std::string customGamePrefix{ argv[i + 1] };
-         m_settings.SetValue(Base::settingGamePrefix, customGamePrefix);
+         GetSettings().SetValue(Base::settingGamePrefix, customGamePrefix);
       }
       break;
 
@@ -232,20 +224,7 @@ void Game::Run()
 
    case 1: // load savegame
    {
-      UaTrace("loading savegame from file %s\n", m_savegameName.c_str());
-
-      Base::Savegame sg = m_savegamesManager->GetSavegameFromFile(m_savegameName.c_str());
-
-      // set game prefix
-      std::string gamePrefix = sg.GetSavegameInfo().m_gamePrefix;
-      m_settings.SetValue(Base::settingGamePrefix, gamePrefix);
-
-      m_settings.SetValue(Base::settingUnderworldPath,
-         m_settings.GetString(gamePrefix == "uw1" ? Base::settingUw1Path : Base::settingUw2Path));
-
-      InitGame();
-
-      GetUnderworld().Load(sg);
+      BasicGame::LoadSavegame(m_savegameName);
 
       // immediately start game
       ReplaceScreen(new OriginalIngameScreen(*this), false);
@@ -255,20 +234,9 @@ void Game::Run()
    case 2: // start custom game
    {
       std::string customGamePrefix =
-         m_settings.GetString(Base::settingGamePrefix);
+         GetSettings().GetString(Base::settingGamePrefix);
 
-      // set prefix
-      UaTrace("starting custom game, with prefix %s\n",
-         customGamePrefix.c_str());
-
-      if (customGamePrefix == "uw2")
-      {
-         m_settings.SetGameType(Base::gameUw2);
-         m_settings.SetValue(Base::settingUnderworldPath,
-            m_settings.GetString(Base::settingUw2Path));
-      }
-
-      InitGame();
+      BasicGame::InitCustomGame(customGamePrefix);
 
       if (customGamePrefix == "uw2")
       {
@@ -312,9 +280,6 @@ void Game::OnTick(bool& resetTickTimer)
 
       resetTickTimer = true;
    }
-
-   // do server side debug processing
-   m_debugServer.Tick();
 }
 
 void Game::OnRender()
@@ -347,13 +312,6 @@ void Game::Done()
    SDL_Quit();
 }
 
-bool Game::PauseGame(bool pause)
-{
-   bool oldPaused = m_isPaused;
-   m_isPaused = pause;
-   return oldPaused;
-}
-
 void Game::InitSDL()
 {
    // output SDL version number
@@ -366,7 +324,7 @@ void Game::InitSDL()
    m_renderWindow = std::make_unique<RenderWindow>(
       m_width, m_height,
       "Underworld Adventures",
-      m_settings.GetBool(Base::settingFullscreen));
+      GetSettings().GetBool(Base::settingFullscreen));
 
 #ifdef WIN32
    m_renderWindow->SetWindowIcon(IDI_ICON);
@@ -416,94 +374,13 @@ void Game::OnEvent(SDL_Event& event)
 
 void Game::InitGame()
 {
-   // rescan, with proper underworld path
-   m_resourceManager->Rescan(m_settings);
-
-   std::string prefix{ m_settings.GetString(Base::settingGamePrefix) };
-
-   UaTrace("initializing game; prefix: %s\n", prefix.c_str());
-
-   // load game config file
-   std::string gameConfigFilename(prefix);
-   gameConfigFilename.append("/game.cfg");
-
-   m_savegamesManager = std::make_unique<Base::SavegamesManager>(m_settings);
-   m_savegamesManager->SetNewGamePrefix(prefix.c_str());
-   m_savegamesManager->Rescan();
-
-   // try to load %prefix%/game.cfg
-   {
-      GameConfigLoader cfgloader{ GetGameInstance(), &m_scripting };
-
-      Base::SDL_RWopsPtr gameConfig = m_resourceManager->GetResourceFile(gameConfigFilename.c_str());
-
-      // no game.cfg found? too bad ...
-      if (gameConfig == NULL)
-      {
-         std::string text("could not find game.cfg for game prefix ");
-         text.append(prefix.c_str());
-         throw Base::Exception(text.c_str());
-      }
-
-      Base::TextFile textFile(gameConfig);
-      cfgloader.Load(textFile);
-   }
-
-   UaTrace("using generic uw-path: %s\n",
-      m_settings.GetString(Base::settingUnderworldPath).c_str());
-
-   m_imageManager = std::make_unique<ImageManager>(GetResourceManager());
-   m_imageManager->Init();
+   BasicGame::InitGame();
 
    m_renderer.InitGame(GetGameInstance());
 
-   m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
-
-   UaTrace("loading game strings ... ");
-   Import::GameStringsImporter importer(GetGameStrings());
-   importer.LoadDefaultStringsPakFile(GetResourceManager());
-   UaTrace("done\n\n");
-
-   Import::ImportProperties(GetResourceManager(), GetGameLogic().GetObjectProperties());
-   Import::ImportItemCombineEntries(GetResourceManager(), GetGameLogic().GetUnderworld().GetPlayer().GetInventory());
-
    m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
 
-   m_debugServer.Init();
-
-   // load language specific .pak file
-   {
-      UaTrace("loading language-specific strings ... ");
-
-      std::string langpak_name(prefix);
-      langpak_name.append("/lang.pak");
-
-      Base::SDL_RWopsPtr rwops = m_resourceManager->GetResourceFile(langpak_name.c_str());
-      if (rwops != NULL)
-      {
-         Import::GameStringsImporter gamestringsImporter(GetGameStrings());
-         gamestringsImporter.LoadStringsPakFile(rwops);
-
-         UaTrace("language \"%s\"\n",
-            GetGameStrings().GetString(0x0a00, 0).c_str());
-      }
-      else
-         UaTrace("not available\n");
-   }
-
    m_resetTickTimer = true;
-}
-
-void Game::DoneGame()
-{
-   m_debugServer.Shutdown();
-
-   if (m_scripting != NULL)
-   {
-      m_scripting->Done();
-      delete m_scripting;
-      m_scripting = NULL;
-   }
 }
 
 void Game::PopScreen()
@@ -575,8 +452,8 @@ void Game::RemoveScreen()
 
 void Game::ToggleFullscreen()
 {
-   bool isFullscreen = !m_settings.GetBool(Base::settingFullscreen);
-   m_settings.SetValue(Base::settingFullscreen, isFullscreen);
+   bool isFullscreen = !GetSettings().GetBool(Base::settingFullscreen);
+   GetSettings().SetValue(Base::settingFullscreen, isFullscreen);
 
    m_renderWindow->SetFullscreen(isFullscreen);
 }

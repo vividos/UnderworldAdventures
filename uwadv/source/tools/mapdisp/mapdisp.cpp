@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@
 #include "ImageManager.hpp"
 #include "LevelList.hpp"
 #include "LevelImporter.hpp"
+#include "game/BasicGame.hpp"
 #include "MainGameLoop.hpp"
 #include "RenderOptions.hpp"
 #include "RenderWindow.hpp"
@@ -47,6 +48,7 @@
 
 /// map display class
 class MapDisplay :
+   public BasicGame,
    public MainGameLoop,
    public IGame
 {
@@ -56,8 +58,6 @@ public:
       :MainGameLoop("Underworld Adventures: Map Display", true),
       m_renderWindow(800, 600, "Underworld Adventures: Map Display", false),
       m_viewport(m_renderWindow),
-      m_resourceManager(m_settings),
-      m_imageManager(m_resourceManager),
       m_currentLevel(0),
       m_showAllMaps(false),
       m_cameraPos(80.0, -64.0, 2000.0),
@@ -115,15 +115,6 @@ private:
    static void WriteTgaFile(const char* filename, unsigned int xres, unsigned int yres, Uint32* data);
 
 private:
-   /// settings
-   Base::Settings m_settings;
-
-   /// resource manager
-   Base::ResourceManager m_resourceManager;
-
-   /// image manager
-   ImageManager m_imageManager;
-
    /// list of levels
    Underworld::LevelList m_levelList;
 
@@ -165,67 +156,9 @@ private:
       return 20.0;
    }
 
-   virtual bool PauseGame(bool pause) override
-   {
-      return false;
-   }
-
-   virtual Base::Settings& GetSettings() override
-   {
-      return m_settings;
-   }
-
-   virtual Base::ResourceManager& GetResourceManager() override
-   {
-      return m_resourceManager;
-   }
-
-   virtual Base::SavegamesManager& GetSavegamesManager() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual IScripting& GetScripting() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual IDebugServer& GetDebugger() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual GameStrings& GetGameStrings() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual Underworld::Underworld& GetUnderworld() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual Underworld::GameLogic& GetGameLogic() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual void InitGame() override
-   {
-   }
-
-   virtual void DoneGame() override
-   {
-   }
-
    virtual Audio::AudioManager& GetAudioManager() override
    {
       throw std::runtime_error("object not available");
-   }
-
-   virtual ImageManager& GetImageManager() override
-   {
-      return m_imageManager;
    }
 
    virtual Renderer& GetRenderer() override
@@ -239,11 +172,6 @@ private:
    }
 
    virtual Viewport& GetViewport() override
-   {
-      throw std::runtime_error("object not available");
-   }
-
-   virtual Physics::PhysicsModel& GetPhysicsModel() override
    {
       throw std::runtime_error("object not available");
    }

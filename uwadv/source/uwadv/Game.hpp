@@ -22,25 +22,17 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include "base/Settings.hpp"
-#include "base/ResourceManager.hpp"
 #include "ui/Screen.hpp"
 #include "audio/Audio.hpp"
-#include "ui/IndexedImage.hpp"
-#include "ui/ImageManager.hpp"
 #include "renderer/RenderWindow.hpp"
 #include "renderer/Viewport.hpp"
 #include "renderer/Renderer.hpp"
-#include "script/IScripting.hpp"
-#include "underworld/GameLogic.hpp"
-#include "GameInterface.hpp"
+#include "game/BasicGame.hpp"
 #include "MainGameLoop.hpp"
-#include "game/DebugServer.hpp"
-#include "GameStrings.hpp"
-#include "physics/PhysicsModel.hpp"
 
 /// main game class
 class Game :
+   public BasicGame,
    public MainGameLoop,
    public IGame
 {
@@ -62,67 +54,23 @@ public:
    /// cleans up all stuff
    void Done();
 
-   // IBasicGame methods
+   // virtual BasicGame methods
+
+   virtual void InitGame() override;
+
+   // virtual IGame methods
+
+   virtual IBasicGame& GetGameInstance() override { return *this; }
+   virtual const IBasicGame& GetConstGameInstance() const override { return *this; }
+
    virtual double GetTickRate() const override
    {
       return m_tickRate;
    }
 
-   virtual bool PauseGame(bool pause) override;
-   virtual Base::Settings& GetSettings() override
-   {
-      return m_settings;
-   }
-
-   virtual Base::ResourceManager& GetResourceManager() override
-   {
-      return *m_resourceManager.get();
-   }
-
-   virtual Base::SavegamesManager& GetSavegamesManager() override
-   {
-      return *m_savegamesManager.get();
-   }
-
-   virtual IScripting& GetScripting() override
-   {
-      return *m_scripting;
-   }
-
-   virtual IDebugServer& GetDebugger() override
-   {
-      return m_debugServer;
-   }
-
-   virtual GameStrings& GetGameStrings() override
-   {
-      return m_gameLogic->GetGameStrings();
-   }
-
-   virtual Underworld::Underworld& GetUnderworld() override
-   {
-      return m_gameLogic->GetUnderworld();
-   }
-
-   virtual Underworld::GameLogic& GetGameLogic() override
-   {
-      return *m_gameLogic;
-   }
-
-   // IGame methods
-   virtual IBasicGame& GetGameInstance() override { return *this; }
-   virtual const IBasicGame& GetConstGameInstance() const override { return *this; }
-
-   virtual void InitGame() override;
-   virtual void DoneGame() override;
    virtual Audio::AudioManager& GetAudioManager() override
    {
       return *m_audioManager.get();
-   }
-
-   virtual ImageManager& GetImageManager() override
-   {
-      return *m_imageManager;
    }
 
    virtual Renderer& GetRenderer() override
@@ -140,11 +88,6 @@ public:
    {
       UaAssert(m_viewport != nullptr);
       return *m_viewport.get();
-   }
-
-   virtual Physics::PhysicsModel& GetPhysicsModel() override
-   {
-      return m_physicsModel;
    }
 
    virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) override;
@@ -177,12 +120,6 @@ private:
    void ToggleFullscreen();
 
 private:
-   /// game configuration
-   Base::Settings m_settings;
-
-   /// resource files manager
-   std::unique_ptr<Base::ResourceManager> m_resourceManager;
-
    /// render window
    std::unique_ptr<RenderWindow> m_renderWindow;
 
@@ -197,9 +134,6 @@ private:
 
    /// controls how many ticks per second are done
    const unsigned int m_tickRate;
-
-   /// indicates if the game is currently paused
-   bool m_isPaused;
 
    /// action to carry out after init
    /*! actions: 0=normal game start, 1=load savegame, 2=load custom game */
@@ -220,28 +154,9 @@ private:
    /// audio manager object
    std::unique_ptr<Audio::AudioManager> m_audioManager;
 
-   /// savegames manager
-   std::unique_ptr<Base::SavegamesManager> m_savegamesManager;
-
-   /// image manager
-   std::unique_ptr<ImageManager> m_imageManager;
-
    /// renderer class
    Renderer m_renderer;
 
-   /// scripting class
-   IScripting* m_scripting;
-
-   /// game logic object
-   /// underworld object
-   std::unique_ptr<Underworld::GameLogic> m_gameLogic;
-
-   /// Physics model for the game
-   Physics::PhysicsModel m_physicsModel;
-
    /// screen queued to destroy
    Screen* m_screenToDestroy;
-
-   /// underworld debugger - server side
-   DebugServer m_debugServer;
 };

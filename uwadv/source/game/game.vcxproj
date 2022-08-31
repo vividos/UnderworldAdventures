@@ -49,6 +49,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BasicGame.cpp" />
     <ClCompile Include="DebugServer.cpp" />
     <ClCompile Include="GameConfigLoader.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
@@ -58,6 +59,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicGame.hpp" />
     <ClInclude Include="DebugServer.hpp" />
     <ClInclude Include="GameConfigLoader.hpp" />
     <ClInclude Include="LevelEditor.hpp" />
