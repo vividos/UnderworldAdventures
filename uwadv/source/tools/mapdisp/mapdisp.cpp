@@ -310,14 +310,14 @@ bool MapDisplay::Init()
 
 void MapDisplay::LoadLevels()
 {
-   m_settings.SetValue(Base::settingUnderworldPath, "./");
+   GetSettings().SetValue(Base::settingUnderworldPath, "./");
 
-   m_resourceManager.DetectGameType(m_settings);
+   GetResourceManager().DetectGameType(GetSettings());
 
-   m_imageManager.Init();
+   GetImageManager().Init();
 
-   Import::LevelImporter importer{ m_resourceManager };
-   importer.LoadLevels(m_settings, m_levelList);
+   Import::LevelImporter importer{ GetResourceManager() };
+   importer.LoadLevels(GetSettings(), m_levelList);
 
    m_renderer = std::make_unique<UnderworldRenderer>(*this);
 

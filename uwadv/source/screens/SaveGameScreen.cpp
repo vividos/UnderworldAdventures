@@ -76,12 +76,12 @@ void SaveGameButton::Init(SaveGameScreen* screen,
 
    Font m_normalFont;
 
-   if (game.GetSettings().GetBool(Base::settingUw1IsUwdemo))
+   if (game.GetGameInstance().GetSettings().GetBool(Base::settingUw1IsUwdemo))
    {
       // uw_demo only
       m_buttonImages.resize(3);
       m_buttonImages[0].Create(c_buttonWidth, 16);
-      m_buttonImages[0].SetPalette(game.GetImageManager().GetPalette(3));
+      m_buttonImages[0].SetPalette(game.GetGameInstance().GetImageManager().GetPalette(3));
 
       m_buttonImages[2] = m_buttonImages[1] = m_buttonImages[0];
 
@@ -89,14 +89,14 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       DrawImageEdges(m_buttonImages[1], 0, 0, c_buttonWidth, 16, false);
       DrawImageEdges(m_buttonImages[2], 0, 0, c_buttonWidth, 16, true);
 
-      m_normalFont.Load(game.GetResourceManager(), fontButtons);
+      m_normalFont.Load(game.GetGameInstance().GetResourceManager(), fontButtons);
 
       Base::String::Uppercase(buttonText);
    }
    else
    {
       // load buttons (unpressed/pressed)
-      game.GetImageManager().LoadList(m_buttonImages, "chrbtns", 0, 3, 3);
+      game.GetGameInstance().GetImageManager().LoadList(m_buttonImages, "chrbtns", 0, 3, 3);
 
       // shorten button images according to button width
       IndexedImage& button0 = m_buttonImages[0];
@@ -108,7 +108,7 @@ void SaveGameButton::Init(SaveGameScreen* screen,
       IndexedImage& button2 = m_buttonImages[2];
       button2.PasteRect(button2, 66, 0, 1, 16, c_buttonWidth - 1, 0);
 
-      m_normalFont.Load(game.GetResourceManager(), fontCharacterGeneration);
+      m_normalFont.Load(game.GetGameInstance().GetResourceManager(), fontCharacterGeneration);
    }
 
    {
@@ -194,7 +194,7 @@ void SaveGamesList::Init(SaveGameScreen* screen,
    IGame& game, unsigned int xpos, unsigned int ypos,
    bool showNewSavegameEntry)
 {
-   m_savegamesManager = &game.GetSavegamesManager();
+   m_savegamesManager = &game.GetGameInstance().GetSavegamesManager();
    m_screen = screen;
    m_showNewSavegameEntry = showNewSavegameEntry;
 
@@ -202,7 +202,7 @@ void SaveGamesList::Init(SaveGameScreen* screen,
    m_selectedSavegameItemIndex = -1;
 
    // load font
-   m_normalFont.Load(game.GetResourceManager(), fontNormal);
+   m_normalFont.Load(game.GetGameInstance().GetResourceManager(), fontNormal);
 
    ImageWindow::Init(xpos, ypos, 119, 126);
 
