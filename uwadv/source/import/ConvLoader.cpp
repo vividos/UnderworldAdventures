@@ -211,7 +211,6 @@ void Import::LoadConvCodeImportedFunctions(Conv::CodeVM& vm, Base::File& file)
 
       default:
          throw Base::Exception("unknown import type in conv imports list");
-         break;
       }
    }
 }
