@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file .hpp
+/// \file WrlLexer.hpp
 /// \brief lexical analyzer class
 ///
 /// defines a class for lexical analyzing a vrml 97 file (extension .wrl). the
