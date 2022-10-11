@@ -2,7 +2,7 @@
 <!--
 
  Underworld Adventures - an Ultima Underworld remake project
- Copyright (c) 2005,2006,2019 Underworld Adventures Team
+ Copyright (c) 2005,2006,2019,2022 Underworld Adventures Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -133,37 +133,6 @@
 
       <Component Id="Sdl2MixerDll">
         <File Id="Sdl2MixerDll" Name="SDL2_mixer.dll" Source="$(var.OutputFolder)SDL2_mixer.dll" />
-      </Component>
-
-      <Component Id="LibFlac8Dll">
-        <File Id="LibFlac8Dll" Name="libFLAC-8.dll" Source="$(var.OutputFolder)libFLAC-8.dll" />
-      </Component>
-
-      <Component Id="LibModplug1Dll">
-        <File Id="LibModplug1Dll" Name="libmodplug-1.dll" Source="$(var.OutputFolder)libmodplug-1.dll" />
-      </Component>
-
-      <Component Id="LibMpg1230Dll">
-        <File Id="LibMpg1230Dll" Name="libmpg123-0.dll" Source="$(var.OutputFolder)libmpg123-0.dll" />
-      </Component>
-      <Component Id="LibOgg0Dll">
-        <File Id="LibOgg0Dll" Name="libogg-0.dll" Source="$(var.OutputFolder)libogg-0.dll" />
-      </Component>
-
-      <Component Id="LibOpus0Dll">
-        <File Id="LibOpus0Dll" Name="libopus-0.dll" Source="$(var.OutputFolder)libopus-0.dll" />
-      </Component>
-
-      <Component Id="LibOpusFile0Dll">
-        <File Id="LibOpusFile0Dll" Name="libopusfile-0.dll" Source="$(var.OutputFolder)libopusfile-0.dll" />
-      </Component>
-
-      <Component Id="LibVorbis0Dll">
-        <File Id="LibVorbis0Dll" Name="libvorbis-0.dll" Source="$(var.OutputFolder)libvorbis-0.dll" />
-      </Component>
-
-      <Component Id="LibVorbisFile0Dll">
-        <File Id="LibVorbisFile0Dll" Name="libvorbisfile-3.dll" Source="$(var.OutputFolder)libvorbisfile-3.dll" />
       </Component>
 
       <Component Id="UnderworldAdventuresStudioApp">
