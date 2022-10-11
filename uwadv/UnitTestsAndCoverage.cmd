@@ -1,13 +1,13 @@
 @echo off
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019-2020 Underworld Adventures Team
+REM Copyright (c) 2019-2022 Underworld Adventures Team
 REM
 REM Runs Unit Tests and collects coverage information
 REM
 
 REM set this to your Visual Studio installation folder
-set VSINSTALL=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community
+set VSINSTALL=%ProgramFiles%\Microsoft Visual Studio\2022\Community
 
 REM set this to your OpenCppCoverage folder
 set OPENCPPCOVERAGE=C:\Projekte\Tools\OpenCppCoverage\

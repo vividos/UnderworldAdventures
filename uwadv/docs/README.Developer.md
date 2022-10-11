@@ -74,7 +74,7 @@ folder.
 ### 2.2 Microsoft Visual Studio on Windows
 
 Underworld Adventures can be compiled using the latest Visual Studio version
-from Microsoft. As of writing this document, Visual Studio 2019 is the
+from Microsoft. As of writing this document, Visual Studio 2022 is the
 current version. Any later version should also work. Either Community or
 Professional version should work. Install the "Desktop development with C++"
 workload.
@@ -136,7 +136,7 @@ To compile the project, you can choose the following in the lower status bar:
 
 - build variant: One of Debug, Release, MinSizeRel and RelWithDebInfo
 - active kit: A compiler kit installed on your computer, e.g. an installed
-  Visual Studio 2019, a gcc or Clang compiler or other kits.
+  Visual Studio 2022, a gcc or Clang compiler or other kits.
 - default build target: Specifies the static library or executable to build.
   Any folder name that has a `CMakeFiles.txt` file can be used. Choose `uwadv`
   for the main executable, or e.g. `ALL_BUILD` to build all CMake projects.

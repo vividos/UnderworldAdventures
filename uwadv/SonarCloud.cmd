@@ -7,7 +7,7 @@ REM Runs SonarCloud analysis build
 REM
 
 REM set this to your Visual Studio installation folder
-set VSINSTALL=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community
+set VSINSTALL=%ProgramFiles%\Microsoft Visual Studio\2022\Community
 
 REM set this to your SonarQube tools folder
 set SONARQUBE=C:\Projekte\Tools\SonarQube

@@ -10,7 +10,7 @@
             "name": "windows-x64-debug",
             "displayName": "Windows x64 Debug",
             "description": "Compile for x64 processor under Windows",
-            "generator": "Visual Studio 16 2019",
+            "generator": "Visual Studio 17 2022",
             "toolset": "host=x64",
             "architecture": "x64",
             "binaryDir": "${sourceDir}/output/build/${presetName}",
@@ -26,7 +26,7 @@
             "description": "Compile for ARM64 processor under Android",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/output/build/${presetName}",
-            "cacheVariables": { 
+            "cacheVariables": {
                 "CMAKE_MAKE_PROGRAM": "Ninja",
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/output/install/${presetName}",
