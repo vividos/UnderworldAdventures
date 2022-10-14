@@ -31,7 +31,7 @@ static size_t _zzip_read(SDL_RWops *context, void *ptr, size_t size, size_t maxn
 
 static size_t _zzip_write(SDL_RWops *context, const void *ptr, size_t size, size_t num)
 {
-    (context); (ptr); (size); (num);
+    (void)context; (void)ptr; (void)size; (void)num;
     return 0; /* ignored */
 }
 
