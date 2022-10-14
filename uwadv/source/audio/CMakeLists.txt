@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.8)
 project(audio)
 
 # Confiure SDL2_mixer
-find_package(sdl2-mixer REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
@@ -40,7 +40,7 @@ target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE "${PROJECT_SOURCE_DIR}/../base")
 
-target_link_libraries(${PROJECT_NAME} base SDL2::SDL2_mixer)
+target_link_libraries(${PROJECT_NAME} base SDL2_mixer::SDL2_mixer)
 
 if (WIN32)
 	target_link_libraries(${PROJECT_NAME} winmm.lib)
