@@ -14,6 +14,7 @@ configuration: AppVeyor
 
 cache:
   - C:\Users\appveyor\AppData\Local\vcpkg\archives -> appveyor.yml
+  - C:\projects\underworldadventures\uwadv\vcpkg_installed -> appveyor.yml
 
 before_build:
   - ps: uwadv\Patch-BuildVersion.ps1 -version $env:appveyor_build_version
