@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2022 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 //
 #include "pch.hpp"
 #include "LuaSourceWindow.hpp"
+#include "Path.hpp"
 
 LRESULT LuaSourceWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -42,14 +43,15 @@ LRESULT LuaSourceWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 void LuaSourceWindow::UpdateFilename()
 {
-   CFilename fileName(m_filename);
-   CString filename = fileName.GetFilename();
+   CString filename = Base::Path::FilenameAndExt(
+      CStringA{ m_filename }.GetString())
+      .c_str();
 
    if (IsModified())
       filename += _T("*");
 
    CString titleText(_T("Lua Source File - "));
-   titleText += fileName.Get();
+   titleText += filename;
 
    SetTitle(titleText);
    SetTabText(filename);
