@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 
 /// map display class
 class MapDisplay :
-   public BasicGame,
    public MainGameLoop,
    public IGame
 {
@@ -115,6 +114,9 @@ private:
    static void WriteTgaFile(const char* filename, unsigned int xres, unsigned int yres, Uint32* data);
 
 private:
+   /// game instance to display the underworld
+   BasicGame m_gameInstance;
+
    /// list of levels
    Underworld::LevelList m_levelList;
 
@@ -148,8 +150,8 @@ private:
 
 private:
    // IGame virtual methods
-   virtual IBasicGame& GetGameInstance() override { return *this; }
-   virtual const IBasicGame& GetConstGameInstance() const override { return *this; }
+   virtual IBasicGame& GetGameInstance() override { return m_gameInstance; }
+   virtual const IBasicGame& GetConstGameInstance() const override { return m_gameInstance; }
 
    virtual double GetTickRate() const override
    {
@@ -238,16 +240,18 @@ bool MapDisplay::Init()
 
 void MapDisplay::LoadLevels()
 {
-   GetSettings().SetValue(Base::settingUnderworldPath, "./");
+   IBasicGame& gameInstance = GetGameInstance();
 
-   GetResourceManager().DetectGameType(GetSettings());
+   gameInstance.GetSettings().SetValue(Base::settingUnderworldPath, "./");
 
-   GetImageManager().Init();
+   gameInstance.GetResourceManager().DetectGameType(gameInstance.GetSettings());
 
-   Import::LevelImporter importer{ GetResourceManager() };
-   importer.LoadLevels(GetSettings(), m_levelList);
+   gameInstance.GetImageManager().Init();
 
-   m_renderer = std::make_unique<UnderworldRenderer>(*this);
+   Import::LevelImporter importer{ gameInstance.GetResourceManager() };
+   importer.LoadLevels(gameInstance.GetSettings(), m_levelList);
+
+   m_renderer = std::make_unique<UnderworldRenderer>(gameInstance);
 
    PrepareLevel(0);
 }
