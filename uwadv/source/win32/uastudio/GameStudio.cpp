@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2004,2005,2019,2022 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 
 /// Underworld Adventures studio
 class GameStudio :
-   public BasicGame,
    public IUserInterface
 {
 public:
@@ -71,32 +70,36 @@ public:
    {
       UaTrace("ShowMap\n");
    }
+
+private:
+   /// game instance to run the game studio on
+   BasicGame m_gameInstance;
 };
 
 
 void GameStudio::Init()
 {
    // set uw1 as path
-   Base::Settings& settings = GetSettings();
+   Base::Settings& settings = m_gameInstance.GetSettings();
    settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
 
    std::string gamePrefix{ "uw1" };
    settings.SetValue(Base::settingGamePrefix, gamePrefix);
 
-   BasicGame::InitNewGame();
+   m_gameInstance.InitNewGame();
 
-   GetGameLogic().RegisterUserInterface(this);
+   m_gameInstance.GetGameLogic().RegisterUserInterface(this);
 
-   PauseGame(true);
+   m_gameInstance.PauseGame(true);
 
-   GetDebugger().StartDebugger(this);
+   m_gameInstance.GetDebugger().StartDebugger(&m_gameInstance);
 }
 
 void GameStudio::Done()
 {
-   GetGameLogic().RegisterUserInterface(nullptr);
+   m_gameInstance.GetGameLogic().RegisterUserInterface(nullptr);
 
-   DoneGame();
+   m_gameInstance.DoneGame();
 
    SDL_Quit();
 }
@@ -105,7 +108,7 @@ void GameStudio::Run()
 {
    UaTrace("\nuastudio main loop started\n");
 
-   BasicGame::RunStandalone();
+   m_gameInstance.RunStandalone();
 
    UaTrace("uastudio main loop ended\n\n");
 }
