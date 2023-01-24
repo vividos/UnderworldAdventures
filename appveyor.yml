@@ -29,7 +29,9 @@ build:
   verbosity: minimal
 
 after_build:
-- cmd: cd C:\projects\underworldadventures\uwadv\output\bin\Release && "c:\Program Files\7-Zip\7z.exe" a -r -x!pdb\ -x!hacking.exe -x!unittest.* -x!*.exp -x!*.lib ..\..\..\..\uwadv-%appveyor_build_version%.zip *.*
+  - cmd: |
+      cd %APPVEYOR_BUILD_FOLDER%\uwadv\output\bin\Release
+      "c:\Program Files\7-Zip\7z.exe" a -r -x!pdb\ -x!hacking.exe -x!unittest.* -x!*.exp -x!*.lib ..\..\..\..\uwadv-%appveyor_build_version%.zip *.*
 
 artifacts:
 - path: uwadv-*.zip
