@@ -340,7 +340,8 @@ uwadv/CoverageReport/
 uwadv/cppcheck/cppcheck.txt
 uwadv/doxygen/doxygen-warnings.txt
 uwadv/.sonarqube/
-uwadv/bw-output/
+uwadv/.bw-output/
+uwadv/.sonar-cache/
 /uwadv/source/win32/uadebug/res/Ribbon.bml
 /uwadv/source/win32/uadebug/res/Ribbon.h
 /uwadv/source/win32/uadebug/res/Ribbon.rc

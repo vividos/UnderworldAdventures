@@ -29,17 +29,18 @@ REM
 REM Build using SonarQube scanner for MSBuild
 REM
 rmdir .\.sonarqube /s /q 2> nul
-rmdir .\bw-output /s /q 2> nul
+rmdir .\.bw-output /s /q 2> nul
+mkdir .\.sonar-cache 2> nul
 
 SonarScanner.MSBuild.exe begin ^
     /k:"UnderworldAdventures" ^
     /v:"0.11" ^
-    /d:"sonar.cfamily.build-wrapper-output=%CD%\bw-output" ^
-    /d:"sonar.cfamily.threads=4" ^
-    /d:"sonar.cfamily.cache.enabled=true" ^
-    /d:"sonar.cfamily.cache.path=%CD%\.sonarqube\cache" ^
-    /d:"sonar.coverageReportPaths=%CD%\CoverageReport-SonarQube.xml" ^
+    /d:"sonar.cfamily.build-wrapper-output=%CD%\.bw-output" ^
     /d:"sonar.host.url=https://sonarcloud.io" ^
+    /d:"sonar.cfamily.threads=4" ^
+    /d:"sonar.cfamily.analysisCache.mode=fs " ^
+    /d:"sonar.cfamily.analysisCache.path=.sonar-cache" ^
+    /d:"sonar.coverageReportPaths=%CD%\CoverageReport-SonarQube.xml" ^
     /o:"vividos-github" ^
     /d:"sonar.login=%SONARLOGIN%" ^
     /d:sonar.cs.vstest.reportsPaths="%CD%\TestResults\*.trx"
@@ -48,7 +49,9 @@ if errorlevel 1 goto end
 REM
 REM Rebuild Release|Win32
 REM
-build-wrapper-win-x86-64.exe --out-dir bw-output msbuild uwadv.sln /m /property:Configuration=SonarCloud,Platform=Win32 /target:Restore;Rebuild
+build-wrapper-win-x86-64.exe ^
+   --out-dir .bw-output ^
+   msbuild uwadv.sln /m /property:Configuration=SonarCloud,Platform=Win32 /target:Restore;Rebuild
 
 REM
 REM Run unit tests
