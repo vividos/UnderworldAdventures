@@ -9,7 +9,7 @@
     "sdl2",
     {
       "name": "sdl2-mixer",
-      "features": [ "mpg123", "libvorbis", "opusfile" ]
+      "features": [ "mpg123", "opusfile" ]
     },
     {
       "name": "lua",
