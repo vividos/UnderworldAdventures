@@ -28,6 +28,25 @@
 #include "AutomapGenerator.hpp"
 #include <functional>
 
+/// coordinates for gem click areas, in order of uw2 maps (first castle, then
+/// prison tower, etc.); tuple values are xpos, ypos, width, height
+static std::array<
+   std::tuple<unsigned int, unsigned int, unsigned int, unsigned int>,
+   9> g_gemCoordinates =
+{
+   {
+      { 268, 69, 21, 23}, // center
+      { 270, 58, 17, 11}, // N
+      { 287, 58, 13, 13, }, // NE
+      { 289, 71, 11, 19, }, // E
+      { 287, 90, 13, 13, }, // SE
+      { 270, 92, 17, 11, }, // S
+      { 257, 90, 13, 13, }, // SW
+      { 257, 71, 11, 19, }, // W
+      { 257, 58, 13, 13, }, // NW
+   }
+};
+
 MapViewScreen::MapViewScreen(IGame& gameInterface)
    :ImageScreen(gameInterface, 0, 0.5),
    m_displayedLevel((size_t)-1),
@@ -78,6 +97,23 @@ void MapViewScreen::Init()
       m_downButton.Create(284, 168, 36, 32);
       m_eraseButton.Create(264, 109, 29, 26);
       m_closeButton.Create(255, 118, 48, 28);
+
+      for (unsigned int gemIndex = 0; gemIndex < SDL_TABLESIZE(g_gemCoordinates); gemIndex++)
+      {
+         auto gemClickArea = std::make_shared<ClickArea>(*this,
+            std::bind(&MapViewScreen::OnGemClicked, this, gemIndex));
+
+         const auto& gemCoordTuple = g_gemCoordinates[gemIndex];
+
+         gemClickArea->Create(
+            std::get<0>(gemCoordTuple),
+            std::get<1>(gemCoordTuple),
+            std::get<2>(gemCoordTuple),
+            std::get<3>(gemCoordTuple));
+
+         m_uw2GemClickAreas.push_back(gemClickArea);
+         RegisterWindow(gemClickArea.get());
+      }
    }
 
    m_displayedLevel = m_gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrMapLevel);
@@ -242,6 +278,43 @@ void MapViewScreen::UpDownLevel(bool up)
    }
 }
 
+void MapViewScreen::OnGemClicked(unsigned int gemIndex)
+{
+   UaTrace("clicked on map gem %u\n", gemIndex);
+
+   unsigned int currentLevel = m_gameInstance.GetUnderworld()
+      .GetPlayer().GetAttribute(Underworld::attrMapLevel);
+
+   // back to the castle
+   if (gemIndex == 0)
+   {
+      if (currentLevel < 8)
+         m_displayedLevel = currentLevel;
+      else
+         m_displayedLevel = 0;
+
+      DisplayLevelMap(m_displayedLevel);
+      return;
+   }
+
+   // check if gem is accessible
+   Uint16 worldFlags = m_game.GetGameInstance().GetUnderworld()
+      .GetPlayer().GetQuestFlags().GetFlag(130);
+
+   Uint16 worldBit = 1 << (gemIndex - 1);
+   if ((worldFlags & worldBit) == 0)
+      return; // world not available yet
+
+   unsigned int levelStart = gemIndex * 8;
+
+   bool isSameWorld = (levelStart / 8) == (currentLevel / 8);
+   m_displayedLevel = isSameWorld
+      ? currentLevel
+      : levelStart;
+
+   DisplayLevelMap(m_displayedLevel);
+}
+
 void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 {
    IndexedImage& image = GetImage();
@@ -272,6 +345,10 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
    }
 
    generator.DrawUpDownArrows(image, upArrow, downArrow);
+
+   if (isUw2)
+      generator.DrawUw2MapGem(image, levelIndex,
+         m_gameInstance.GetUnderworld().GetPlayer());
 
    generator.DrawMapNotes(image, level.GetMapNotes());
 

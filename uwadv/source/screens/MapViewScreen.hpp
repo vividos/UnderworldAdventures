@@ -59,6 +59,9 @@ private:
    /// changes the displayed level up or down
    void UpDownLevel(bool up);
 
+   /// called when one of the gem areas has been clicked
+   void OnGemClicked(unsigned int gemIndex);
+
    /// displays level map with given index
    void DisplayLevelMap(size_t levelIndex);
 
@@ -106,6 +109,9 @@ private:
 
    /// close button click area
    ClickArea m_closeButton;
+
+   /// the uw2 gem click areas
+   std::vector<std::shared_ptr<ClickArea>> m_uw2GemClickAreas;
 
    /// text edit window
    std::shared_ptr<TextEditWindow> m_textEditWindow;
