@@ -48,6 +48,13 @@ void MouseCursor::SetType(unsigned int type)
 {
    if (type < m_cursorImages.size())
       SetCustom(m_cursorImages[type]);
+
+   m_offsetX = m_offsetY = 0;
+   if (type == 12) // the map editing quill
+   {
+      m_offsetX = 21;
+      m_offsetY = -8;
+   }
 }
 
 void MouseCursor::SetCustom(IndexedImage& cursorImage)
@@ -112,6 +119,9 @@ bool MouseCursor::ProcessEvent(SDL_Event& event)
 
       m_windowXPos -= m_windowWidth / 2.0;
       m_windowYPos += m_windowHeight / 2.0;
+
+      m_windowXPos += m_offsetX;
+      m_windowYPos += m_offsetY;
    }
 
    return false;

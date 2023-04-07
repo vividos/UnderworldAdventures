@@ -71,4 +71,10 @@ protected:
 
    /// indicates if mouse cursor is drawn using smooth (filtered) pixels
    bool m_smoothUI = false;
+
+   /// X offset from the center of the image to mouse position
+   int m_offsetX = 0;
+
+   /// Y offset from the center of the image to mouse position
+   int m_offsetY = 0;
 };
