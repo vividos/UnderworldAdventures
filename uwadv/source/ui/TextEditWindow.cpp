@@ -131,13 +131,13 @@ bool TextEditWindow::ProcessEvent(SDL_Event& event)
       // only consider the first character in english
       char ch = event.text.text[0];
 
+      if (m_uppercase)
+         ch = toupper(ch);
+
       // check typeable keys
       if (ch >= SDLK_SPACE && ch <= SDLK_z &&
          m_font.IsCharAvailable(ch))
       {
-         if (m_uppercase)
-            ch = toupper(ch);
-
          // add to text and update
          m_text.insert(m_cursorPos, 1, ch);
          m_cursorPos++;
