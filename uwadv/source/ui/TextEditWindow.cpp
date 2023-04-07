@@ -31,7 +31,7 @@ void TextEditWindow::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos, unsigned int width, Uint8 backgroundColor,
    Uint8 prefixColor, Uint8 textColor,
    const char* prefixText, const char* startText, bool border,
-   FontId fontId)
+   FontId fontId, unsigned int paletteIndex)
 {
    // init variables
    m_backgroundColor = backgroundColor;
@@ -55,7 +55,7 @@ void TextEditWindow::Init(IBasicGame& game, unsigned int xpos,
    // init image
    IndexedImage& image = GetImage();
    image.Create(width, m_font.GetCharHeight() + 1 + (border ? 2 : 0));
-   image.SetPalette(game.GetImageManager().GetPalette(0));
+   image.SetPalette(game.GetImageManager().GetPalette(paletteIndex));
 
    ImageQuad::Init(game, xpos, ypos);
 
