@@ -24,7 +24,7 @@
 #include "Renderer.hpp"
 #include "ImageManager.hpp"
 
-/// \brief Does image quad initialisation; Window::create() is called and needed
+/// \brief Does image quad initialisation; Window::Create() is called and needed
 /// texture(s) are init'ed. When there's no palette for the image yet, palette
 /// 0 is retrieved and set.
 /// The method is virtual and can be derived to do window/control specific

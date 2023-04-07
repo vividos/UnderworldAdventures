@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ class ImageQuad : public Window
 public:
    /// ctor
    ImageQuad()
-      :m_hasBorder(false)
    {
    }
 
@@ -64,16 +63,16 @@ public:
    virtual void Destroy() override;
    virtual void Draw() override;
 
-protected:
+private:
    /// the image to draw
    IndexedImage m_image;
 
    /// indicates if image has border
-   bool m_hasBorder;
+   bool m_hasBorder = false;
 
    /// image quad texture
    Texture m_texture;
 
    /// indicates if images are drawn using smooth (filtered) pixels
-   bool m_smoothUI;
+   bool m_smoothUI = false;
 };
