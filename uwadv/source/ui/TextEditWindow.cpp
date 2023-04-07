@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2004,2019 Underworld Adventures Team
+// Copyright (c) 2004,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,7 +30,8 @@ TextEditWindow::~TextEditWindow()
 void TextEditWindow::Init(IBasicGame& game, unsigned int xpos,
    unsigned int ypos, unsigned int width, Uint8 backgroundColor,
    Uint8 prefixColor, Uint8 textColor,
-   const char* prefixText, const char* startText, bool border)
+   const char* prefixText, const char* startText, bool border,
+   FontId fontId)
 {
    // init variables
    m_backgroundColor = backgroundColor;
@@ -39,9 +40,10 @@ void TextEditWindow::Init(IBasicGame& game, unsigned int xpos,
    m_prefix = prefixText;
    m_text = startText;
    m_border = border;
+   m_uppercase = fontId == fontSmall;
    m_cursorPos = m_text.size();
 
-   m_font.Load(game.GetResourceManager(), fontNormal);
+   m_font.Load(game.GetResourceManager(), fontId);
 
    // adjust widths when having a border
    if (border)
@@ -71,10 +73,14 @@ void TextEditWindow::UpdateText()
 
    if (m_border)
    {
-      /// \todo border
-      image.FillRect(0, 0, image.GetXRes(), 1, 1);
-      image.FillRect(0, image.GetYRes() - 1, image.GetXRes(), 1, 1);
+      // draw border
+      unsigned int xend = image.GetXRes()/* - 1*/;
+      unsigned int yend = image.GetYRes()/* - 1*/;
+      image.FillRect(0, 0, xend, yend, m_borderColor);
+      image.FillRect(1, 1, xend - 2, yend - 2, m_backgroundColor);
    }
+
+   unsigned int padding = m_border ? 2 : 1;
 
    // prefix text
    IndexedImage tempImage;
@@ -83,7 +89,7 @@ void TextEditWindow::UpdateText()
       m_font.CreateString(tempImage, m_prefix, m_prefixColor);
 
       image.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(),
-         m_border ? 2 : 1, m_border ? 2 : 1, true);
+         padding, padding, true);
    }
 
    unsigned int prefix_xpos = tempImage.GetXRes();
@@ -93,11 +99,11 @@ void TextEditWindow::UpdateText()
    {
       m_font.CreateString(tempImage, m_text, m_textColor);
 
-      image.PasteImage(tempImage, prefix_xpos + (m_border ? 2 : 1), m_border ? 2 : 1, true);
+      image.PasteImage(tempImage, prefix_xpos + padding, padding, true);
    }
 
    // cursor image pos
-   std::string posText(m_text.c_str(), m_cursorPos);
+   std::string posText{ m_text.c_str(), m_cursorPos };
    unsigned int cursorPosX = m_font.CalcLength(posText);
 
    // draw cursor
@@ -115,24 +121,33 @@ bool TextEditWindow::ProcessEvent(SDL_Event& event)
 {
    bool handled = false;
 
+   unsigned int previousCursorPos = m_cursorPos;
+
    // check event type
    switch (event.type)
    {
-   case SDL_KEYDOWN:
-      // check typeable keys
+   case SDL_TEXTINPUT:
    {
-      // TODO use SDL_TEXTINPUT event instead
-      char ch = event.key.keysym.sym;
+      // only consider the first character in english
+      char ch = event.text.text[0];
 
-      if (ch >= SDLK_SPACE && ch <= SDLK_z)
+      // check typeable keys
+      if (ch >= SDLK_SPACE && ch <= SDLK_z &&
+         m_font.IsCharAvailable(ch))
       {
+         if (m_uppercase)
+            ch = toupper(ch);
+
          // add to text and update
          m_text.insert(m_cursorPos, 1, ch);
          m_cursorPos++;
 
          handled = true;
       }
+      break;
+   }
 
+   case SDL_KEYDOWN:
       SDL_Keycode key = event.key.keysym.sym;
 
       switch (key)
@@ -183,24 +198,41 @@ bool TextEditWindow::ProcessEvent(SDL_Event& event)
       case SDLK_RETURN:
       case SDLK_ESCAPE:
       {
-         // send event
-         SDL_Event user_event;
-         user_event.type = SDL_USEREVENT;
-         user_event.user.code = key == SDLK_RETURN ?
-            gameEventTexteditFinished : gameEventTexteditAborted;
-         user_event.user.data1 = NULL;
-         user_event.user.data2 = NULL;
-         SDL_PushEvent(&user_event);
-
+         SendTextEditEvent(key == SDLK_RETURN
+            ? gameEventTexteditFinished
+            : gameEventTexteditAborted);
          handled = true;
       }
       break;
       }
-
-      if (handled)
-         UpdateText();
    }
+
+   if (handled)
+      UpdateText();
+
+   if (previousCursorPos != m_cursorPos &&
+      m_cursorPosChangedHandler != nullptr)
+   {
+      std::string posText{ m_text.c_str(), m_cursorPos };
+      unsigned int cursorPosX = m_font.CalcLength(posText);
+
+      m_cursorPosChangedHandler(cursorPosX);
    }
 
    return handled || ImageQuad::ProcessEvent(event);
+}
+
+void TextEditWindow::SendTextEditEvent(Sint32 userEventCode)
+{
+   SDL_Event userEvent{};
+   userEvent.type = SDL_USEREVENT;
+   userEvent.user.code = userEventCode;
+   userEvent.user.data1 = nullptr;
+   userEvent.user.data2 = nullptr;
+   SDL_PushEvent(&userEvent);
+
+   if (m_editingFinishedHandler)
+   {
+      m_editingFinishedHandler(userEventCode == gameEventTexteditAborted);
+   }
 }
