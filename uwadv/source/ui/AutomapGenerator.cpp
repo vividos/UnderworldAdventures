@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2021 Underworld Adventures Team
+// Copyright (c) 2021,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -61,6 +61,23 @@ const std::vector<Uint8> c_bridgePaletteIndices = { 0xe9, 0xea, 0xeb };
 /// palette 0 indices for lava pixels
 const std::vector<Uint8> c_lavaPaletteIndices = { 0xb5, 0xb6 };
 
+/// x and y positions of gem part images for uw2
+static const std::array<
+   std::tuple<unsigned int, unsigned int>,
+   8> g_gemPartPos =
+{
+   {
+      { 268, 58 }, // N
+      { 284, 58 }, // NE
+      { 292, 68 }, // E
+      { 284, 86 }, // SE
+      { 268, 94 }, // S
+      { 258, 86 }, // SW
+      { 257, 68 }, // W
+      { 258, 58 }, // NW
+   }
+};
+
 /// returns a random palette index from the list of indices
 Uint8 GetRandomPaletteIndex(const std::vector<Uint8>& paletteIndices)
 {
@@ -72,7 +89,6 @@ Uint8 GetRandomPaletteIndex(const std::vector<Uint8>& paletteIndices)
    return paletteIndices[index];
 }
 
-
 AutomapGenerator::AutomapGenerator(Base::ResourceManager& resourceManager,
    ImageManager& imageManager, const Underworld::Tilemap& tilemap)
    :m_isUw2(resourceManager.IsUnderworldPathUw2()),
@@ -82,12 +98,18 @@ AutomapGenerator::AutomapGenerator(Base::ResourceManager& resourceManager,
    m_fontNotes.Load(resourceManager, fontSmall);
 
    imageManager.Load(m_playerPinImage, "buttons", 63, 1);
+
+   if (m_isUw2)
+      imageManager.LoadList(m_gemPartsList, "gempt");
 }
 
 void AutomapGenerator::DrawLevelNumber(IndexedImage& image, size_t levelIndex,
    const std::string& levelName) const
 {
-   std::string numberText = std::to_string(levelIndex + 1);
+   std::string numberText = std::to_string(
+      !m_isUw2
+      ? levelIndex + 1
+      : (levelIndex % 8) + 1);
 
    IndexedImage numberImage;
    m_bigFont.CreateString(numberImage, numberText, !m_isUw2 ? 45 : 78);
@@ -149,6 +171,42 @@ void AutomapGenerator::DrawUpDownArrows(IndexedImage& image, bool upArrow, bool 
          image.PasteRect(image, 281, 184, 7, 2, 296, 184);
       }
    }
+}
+
+void AutomapGenerator::DrawUw2MapGem(IndexedImage& image,
+   size_t drawLevelIndex,
+   const Underworld::Player& player) const
+{
+   Uint16 worldFlags = player.GetQuestFlags().GetFlag(130);
+
+   unsigned int currentWorldIndex =
+      drawLevelIndex < 8
+      ? 9
+      : (drawLevelIndex - 8) / 8;
+
+   for (unsigned int gemIndex = 0; gemIndex < 8; gemIndex++)
+   {
+      Uint16 worldBit = 1 << gemIndex;
+      if ((worldFlags & worldBit) == 0)
+         continue; // gem part stays dark
+
+      unsigned int gemPartIndex = gemIndex;
+
+      // for some reason these two gem parts are swapped
+      if (gemIndex == 6) gemPartIndex = 5;
+      else if (gemIndex == 5) gemPartIndex = 6;
+
+      if (gemIndex == currentWorldIndex)
+         gemPartIndex += 8;
+
+      image.PasteImage(m_gemPartsList[gemPartIndex],
+         std::get<0>(g_gemPartPos[gemIndex]),
+         std::get<1>(g_gemPartPos[gemIndex]),
+         true);
+   }
+
+   if (currentWorldIndex == 9)
+      image.PasteImage(m_gemPartsList[16], 264, 66, true);
 }
 
 void AutomapGenerator::DrawMapNotes(IndexedImage& image, const Underworld::MapNotes& mapNotes) const

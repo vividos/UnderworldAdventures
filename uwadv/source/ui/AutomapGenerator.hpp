@@ -60,6 +60,10 @@ namespace UI
       /// draws up/down arrows
       void DrawUpDownArrows(IndexedImage& image, bool upArrow, bool downArrow);
 
+      /// draws uw2 map gem, based on the available worlds
+      void DrawUw2MapGem(IndexedImage& image, size_t drawLevelIndex,
+         const Underworld::Player& player) const;
+
       /// draws all map notes
       void DrawMapNotes(IndexedImage& image, const Underworld::MapNotes& mapNotes) const;
 
@@ -103,6 +107,9 @@ namespace UI
 
       /// player pin image
       IndexedImage m_playerPinImage;
+
+      /// gem parts for uw2
+      std::vector<IndexedImage> m_gemPartsList;
    };
 
 } // namespace UI
