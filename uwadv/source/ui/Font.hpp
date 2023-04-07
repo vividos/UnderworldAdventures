@@ -58,6 +58,9 @@ public:
    /// loads a font
    void Load(Base::ResourceManager& resourceManager, FontId fontId);
 
+   /// returns if character is available in the font
+   bool IsCharAvailable(char ch) const;
+
    /// returns height of chars in pixels
    unsigned int GetCharHeight() const { return m_charHeight; }
 

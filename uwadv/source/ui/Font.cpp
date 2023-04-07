@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 /// \file Font.cpp
 /// \brief font creation and handling
 /// \details functions to create a image from a string, in a specific font. fonts are
-/// loaded in Font::init() (in resource/fontloader.cpp).
+/// loaded in Font::Init() (in import/FontLoader.cpp).
 ///
 /// font pixels are stored in an array, which can be accessed like this:
 ///
@@ -41,6 +41,13 @@ Font::Font()
    m_maxWidth(0),
    m_numChars(0)
 {
+}
+
+bool Font::IsCharAvailable(char ch) const
+{
+   return ch < m_numChars &&
+      ch < m_charLengths.size() &&
+      m_charLengths[ch] != 0;
 }
 
 unsigned int Font::CalcLength(const std::string& text) const

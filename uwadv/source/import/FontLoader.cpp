@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ const char* g_fontNames[6] =
 
 void Font::Load(Base::ResourceManager& resourceManager, FontId fontId)
 {
-   if (fontId >= (int)SDL_TABLESIZE(g_fontNames))
+   if (fontId < 0 || fontId >= (int)SDL_TABLESIZE(g_fontNames))
       throw Base::Exception("Font::init: invalid font id");
 
    std::string fontFilename = "data/";
