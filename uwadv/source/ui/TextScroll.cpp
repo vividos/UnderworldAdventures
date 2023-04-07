@@ -59,8 +59,8 @@ void TextScroll::Init(IBasicGame& game, unsigned int xpos,
    m_maxLines = unsigned(height / m_normalFont.GetCharHeight());
 
    // set up image quad and upload texture
-   m_image.Create(width, height);
-   m_image.Clear(backgroundColor);
+   GetImage().Create(width, height);
+   GetImage().Clear(backgroundColor);
 
    ImageQuad::Init(game, xpos, ypos);
 
@@ -96,7 +96,7 @@ bool TextScroll::Print(const char* text)
       std::string part;
       do
       {
-         lineWidth = m_image.GetXRes() - 2;
+         lineWidth = GetImage().GetXRes() - 2;
          part = line;
 
          // do we have a line where we have to print "more"?
@@ -214,7 +214,8 @@ bool TextScroll::ProcessEvent(SDL_Event& event)
 /// it shows the text "[MORE]" at the end of the line.
 void TextScroll::UpdateScroll()
 {
-   m_image.Clear(m_backgroundColor);
+   IndexedImage& image = GetImage();
+   image.Clear(m_backgroundColor);
 
    IndexedImage tempImage;
 
@@ -234,7 +235,7 @@ void TextScroll::UpdateScroll()
       unsigned int ypos = static_cast<unsigned int>(lineIndex * m_normalFont.GetCharHeight() + m_scrollBaseY);
 
       // paste it into final image
-      m_image.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(),
+      image.PasteRect(tempImage, 0, 0, tempImage.GetXRes(), tempImage.GetYRes(),
          m_scrollBaseX, ypos, true);
 
       // add [MORE] string on proper line
@@ -244,7 +245,7 @@ void TextScroll::UpdateScroll()
          CreateColoredString(img_more, c_textScrollMoreText);
 
          // paste string after end of last line
-         m_image.PasteRect(img_more, 0, 0, img_more.GetXRes(), img_more.GetYRes(),
+         image.PasteRect(img_more, 0, 0, img_more.GetXRes(), img_more.GetYRes(),
             tempImage.GetXRes(), ypos, true);
       }
 
