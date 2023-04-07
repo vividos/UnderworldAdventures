@@ -110,7 +110,7 @@ namespace Conv
       void ReplacePlaceholder(std::string& text);
 
       /// allocates new local string
-      Uint16 AllocString(const char* text);
+      Uint16 AllocString(std::string text);
 
       // get functions
 

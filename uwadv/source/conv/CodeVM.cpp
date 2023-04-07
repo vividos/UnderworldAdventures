@@ -621,10 +621,10 @@ void CodeVM::ImportedFunc(const char* functionName)
       m_resultRegister = m_codeCallback->ExternalFunc(functionName, m_stack);
 }
 
-Uint16 CodeVM::AllocString(const char* text)
+Uint16 CodeVM::AllocString(std::string text)
 {
    Uint16 pos = static_cast<Uint16>(m_localStrings.size());
-   m_localStrings.push_back(std::string{ text });
+   m_localStrings.push_back(text);
    return pos;
 }
 

@@ -66,10 +66,6 @@ public:
    virtual Uint16 ExternalFunc(const char* funcname, Conv::ConvStack& stack) override;
 
 protected:
-   /// allocates new local string
-   Uint16 AllocString(const char* text);
-
-protected:
    /// time to fade in / out screen
    static const double s_fadeTime;
 

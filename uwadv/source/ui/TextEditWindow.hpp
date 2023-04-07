@@ -43,7 +43,7 @@ public:
    void Done();
 
    /// returns currently typed in text
-   const char* GetText() { return m_text.c_str(); }
+   const std::string& GetText() const { return m_text; }
 
    /// updates text edit window
    void UpdateText();

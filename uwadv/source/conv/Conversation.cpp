@@ -143,7 +143,7 @@ Uint16 Conversation::GetGlobal(const char* globalName)
 
    const Underworld::NpcInfo& npcInfo = npcObject->GetNpcObject().GetNpcInfo();
 
-   if (globname == "play_name") val = AllocString(player.GetName().c_str());
+   if (globname == "play_name") val = AllocString(player.GetName());
    else if (globname == "npc_xhome") val = npcInfo.m_npc_xhome;
    else if (globname == "npc_yhome") val = npcInfo.m_npc_yhome;
    else if (globname == "npc_attitude") val = npcInfo.m_npc_attitude;
