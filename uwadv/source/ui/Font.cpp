@@ -45,9 +45,10 @@ Font::Font()
 
 bool Font::IsCharAvailable(char ch) const
 {
-   return ch < m_numChars &&
-      ch < m_charLengths.size() &&
-      m_charLengths[ch] != 0;
+   unsigned int charIndex = static_cast<unsigned int>(ch);
+   return charIndex < m_numChars &&
+      charIndex < m_charLengths.size() &&
+      m_charLengths[charIndex] != 0;
 }
 
 unsigned int Font::CalcLength(const std::string& text) const
