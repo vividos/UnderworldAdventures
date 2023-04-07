@@ -5,7 +5,7 @@
                https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
-Document version: 1.83, as of 2022-08-30
+Document version: 1.84, as of 2023-04-07
 
 
 Table of Contents
@@ -1433,6 +1433,34 @@ Table of Contents
 
    [uw2] Data blocks for Ultima Underworld 2 are compressed using the uw2
    compression scheme described in chapter 9.1.
+
+   The maps for uw2 are stored in these blocks:
+   0..4:   Castle Britannia / Sewers (BR)
+   8..15:  Prison tower (PT)
+   16..17: Killorn Keep (KK)
+   24..25: Ice Caverns (IC)
+   32..33: Talorus (TA)
+   40..47: Scintillus Academy (SA)
+   48..51: Praecor Loth's Tomb (LT)
+   56..58: Pits of Carnage (PC)
+   64..67: Ethereal Void (EV)
+   69:     Secret level
+
+   Note that not all 8 map blocks are used on every world.
+
+   This is an overview which face of the blackrock gem shows what world
+   (excuse my ASCII art skills):
+
+      +----------+
+     /EV|  PT  |KK\
+    +__  |    |  __+
+    |  '-+----+-'  |
+    | LT | BR | IC |
+    |    |    |    |
+    | __-+----+-__ |
+    +'PC | SA | TA'+
+     \  |      |  /
+      +----------+
 
    The "level tilemap/object list" for each level contains infos about
    the level architecture (tilemap) and the objects which live in it:
@@ -3475,6 +3503,7 @@ Table of Contents
     109   Lord British gave his startgame speech
     110   Mors Gotha is invading the castle
     112   The Avatar is persona non grata (?)
+    130   A bit field with available worlds (blackrock gem faces, map gem)
 
 7.9 Ultima Underworld 2 specialities
 
