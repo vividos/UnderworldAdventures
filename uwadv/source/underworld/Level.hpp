@@ -68,6 +68,9 @@ namespace Underworld
       AutomapFlag GetAutomapFlagFromTile(
          unsigned int xpos, unsigned int ypos) const;
 
+      /// reveals the comlete automap
+      void RevealCompleteAutomap();
+
       // loading / saving
 
       /// saves level

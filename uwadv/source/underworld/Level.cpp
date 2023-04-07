@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2021 Underworld Adventures Team
+// Copyright (c) 2021,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -71,4 +71,17 @@ Underworld::AutomapFlag Underworld::Level::GetAutomapFlagFromTile(
       return automapLava;
 
    return automapDefault;
+}
+
+void Underworld::Level::RevealCompleteAutomap()
+{
+   if (!GetTilemap().IsUsed())
+      return;
+
+   for (unsigned int posX = 0; posX < c_underworldTilemapSize; posX++)
+      for (unsigned int posY = 0; posY < c_underworldTilemapSize; posY++)
+      {
+         TileInfo& tileInfo = GetTilemap().GetTileInfo(posX, posY);
+         tileInfo.m_automapFlag = GetAutomapFlagFromTile(posX, posY);
+      }
 }
