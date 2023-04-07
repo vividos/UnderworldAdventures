@@ -51,6 +51,9 @@ public:
    /// sets custom image as cursor
    void SetCustom(IndexedImage& cursorImage);
 
+   /// sets new mouse position x coordinate
+   void SetXPos(unsigned int posX) { m_windowXPos = posX; }
+
    // virtual methods from Window
    virtual void Destroy() override;
    virtual void Draw() override;
@@ -58,7 +61,7 @@ public:
 
 protected:
    /// is cursor visible
-   bool m_isVisible;
+   bool m_isVisible = false;
 
    /// mouse cursor image list
    std::vector<IndexedImage> m_cursorImages;
@@ -67,5 +70,5 @@ protected:
    Texture m_mouseTexture;
 
    /// indicates if mouse cursor is drawn using smooth (filtered) pixels
-   bool m_smoothUI;
+   bool m_smoothUI = false;
 };
