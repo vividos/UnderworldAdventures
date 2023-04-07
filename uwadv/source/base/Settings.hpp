@@ -114,6 +114,9 @@ namespace Base
       /// returns the gametype
       UwGameType GetGameType() const { return m_gameType; }
 
+      /// returns if the game is an uw2 game
+      bool IsGameUw2() const { return GetGameType() == gameUw2; }
+
       /// returns string settings value
       std::string GetString(SettingsType type) const;
 

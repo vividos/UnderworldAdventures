@@ -51,7 +51,7 @@ void MapViewScreen::Init()
    RegisterWindow(&m_upButton);
    RegisterWindow(&m_downButton);
 
-   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().IsGameUw2();
    if (!isUw2)
    {
       m_upButton.Create(290, 0, 30, 22);
@@ -108,7 +108,7 @@ bool MapViewScreen::ProcessEvent(SDL_Event& event)
 
 void MapViewScreen::UpDownLevel(bool up)
 {
-   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().IsGameUw2();
 
    if (!isUw2)
    {
@@ -132,7 +132,7 @@ void MapViewScreen::DisplayLevelMap(size_t levelIndex)
 
    ImageManager& imageManager = m_gameInstance.GetImageManager();
 
-   bool isUw2 = m_gameInstance.GetSettings().GetGameType() == Base::gameUw2;
+   bool isUw2 = m_gameInstance.GetSettings().IsGameUw2();
 
    if (!isUw2)
       imageManager.Load(image, "data/blnkmap.byt", 0, 1, imageByt);
