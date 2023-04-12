@@ -96,7 +96,7 @@ void MapViewScreen::Init()
       m_upButton.Create(284, 0, 36, 32);
       m_downButton.Create(284, 168, 36, 32);
       m_eraseButton.Create(264, 109, 29, 26);
-      m_closeButton.Create(255, 118, 48, 28);
+      m_closeButton.Create(255, 141, 48, 28);
 
       for (unsigned int gemIndex = 0; gemIndex < SDL_TABLESIZE(g_gemCoordinates); gemIndex++)
       {
