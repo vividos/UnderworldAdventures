@@ -25,11 +25,13 @@
 #include "Renderer.hpp"
 #include "ImageManager.hpp"
 
-void MouseCursor::Init(IBasicGame& game, unsigned int initialType)
+void MouseCursor::Init(IBasicGame& game, unsigned int initialType,
+   unsigned int paletteIndex)
 {
    Window::Create(0, 0, 0, 0);
 
-   game.GetImageManager().LoadList(m_cursorImages, "cursors");
+   game.GetImageManager().LoadList(m_cursorImages, "cursors",
+      0, 0, paletteIndex);
 
    m_mouseTexture.Init(1);
 
