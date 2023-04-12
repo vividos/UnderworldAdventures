@@ -85,7 +85,7 @@ void DumpSinglePaletteColors(const Uint8* palette, bool scaleUpValues)
 
    for (size_t paletteIndex = 0; paletteIndex < 256; paletteIndex++)
    {
-      const Uint8* paletteEntry = &palette[paletteIndex];
+      const Uint8* paletteEntry = &palette[paletteIndex * 3];
       printf("0x%02zx: raw %02x %02x %02x, RGB #%02x%02x%02x",
          paletteIndex,
          paletteEntry[0],
