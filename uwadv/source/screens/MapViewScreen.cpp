@@ -67,12 +67,14 @@ void MapViewScreen::Init()
 {
    ImageScreen::Init();
 
+   bool isUw2 = m_gameInstance.GetSettings().IsGameUw2();
+
    // add selection image here so that it's always below the mouse cursor
    m_selectedMapNote = std::make_shared<ImageQuad>();
    RegisterWindow(m_selectedMapNote.get());
 
    // init mouse cursor
-   m_mouseCursor.Init(m_gameInstance, 0);
+   m_mouseCursor.Init(m_gameInstance, 0, isUw2 ? 1 : 0);
    m_mouseCursor.Show(true);
    RegisterWindow(&m_mouseCursor);
    SetMapEditMode(MapEditMode::mapEditModeNone);
@@ -83,7 +85,6 @@ void MapViewScreen::Init()
    RegisterWindow(&m_eraseButton);
    RegisterWindow(&m_closeButton);
 
-   bool isUw2 = m_gameInstance.GetSettings().IsGameUw2();
    if (!isUw2)
    {
       m_upButton.Create(290, 0, 30, 22);
