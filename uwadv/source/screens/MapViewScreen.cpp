@@ -438,7 +438,8 @@ void MapViewScreen::SelectMapNote(unsigned int xpos, unsigned int ypos)
 void MapViewScreen::CreateMapNoteSelectionImage(const Underworld::MapNote& mapNoteToSelect,
    IndexedImage& selectedMapNoteImage)
 {
-   Uint8 selectedColor = 48; // blue
+   bool isUw2 = m_gameInstance.GetSettings().IsGameUw2();
+   Uint8 selectedColor = !isUw2 ? 48 : 0xe0; // blue
 
    IndexedImage mapNoteTextImage;
    m_fontSelectedMapNote.CreateString(
