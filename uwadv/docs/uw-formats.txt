@@ -5,7 +5,7 @@
                https://vividos.github.io/UnderworldAdventures/
  +--------------------------------------------------------------------------+
 
-Document version: 1.84, as of 2023-04-07
+Document version: 1.85, as of 2023-04-17
 
 
 Table of Contents
@@ -32,6 +32,9 @@ Table of Contents
    3.7.2  Cutscene animation [uw2]
    3.8    Weapon animations
    3.9    XFER.DAT Transparencies
+   3.10   Lights/Shading
+   3.10.1 List of all lights
+   3.10.2 UW2 level light
 
    4      Level maps and object lists
    4.1    File format
@@ -129,6 +132,8 @@ Table of Contents
      (http://low.sourceforge.net/)
    - Telemachos (http://www.peroxide.dk/), infos about weapon animation and
      miscellaneous bits about uw.
+   - Murgo (https://web.archive.org/web/20090119003115/http://uwediting.freehostia.com:80/files/uwcspecs.txt),
+     various infos
 
    I also like to thank Telemachos who pointed me to the TSSHP's file formats
    file at the start of all of this.
@@ -141,6 +146,7 @@ Table of Contents
    Copyright (c) 2002,2003,2004 Michael Fink
    Copyright (c) 2004 Kasper Fauerby
    Copyright (c) 2022 Mike Ratzlaff
+   Copyright (c) 2008 Murgo
 
 
  +--------------------------------------------------------------------------+
@@ -260,7 +266,7 @@ Table of Contents
    pres2.byt      "a blue sky prod. game" screen, palette #5
    question.gr    a single question mark
    scrledge.gr    scroll paper edges
-   shades.dat
+   shades.dat     light infos
    skills.dat     char. generation skills for all classes
    spells.gr      spells graphics
    strings.pak    all the game strings
@@ -1379,6 +1385,57 @@ Table of Contents
       be used to derive an average alpha value for the texture.
 
 
+3.10 Lights/Shading
+
+   Lights are stored in shades.dat which consist of 8 light entries with 12
+   bytes each. (Up to 16 lights are supported).
+
+   A light entry has the following format:
+
+      Offset  Size   Description
+
+      0000    Int8   Shading
+      0001    Int8   Unknown (bit 7 turns off shading?)
+      0002    Int8   Bit 0-3: Starting light level (from light.dat)
+      0003    Int8   Unknown
+      0004    Int16  Distance before start of shading (negative value)
+      0006    Int16  Viewing Distance (Value 0-15* sets the distance in
+                     nr of tiles)
+      0008    Int16  Texturing Distance
+      000A    Int16  Unknown
+
+   * The maximum viewing distance is 15, but the game might crash if it's
+     higher than 9-10 depending on how much stuff (walls/floors/objects
+     etc.) there is in the level.
+
+   (some info was found in "Increased brightness for Ultima Underworld 1 & 2")
+
+3.10.1 List of all lights
+
+   Nr Light        Enchanted item  Spell
+
+   0  No light     Darkness
+   1  Candle       Burning match
+   2  Torch        Candlelight
+   3  Taper [uw1]  Light           In Lor
+   4  Lantern      Magic Lantern
+   5               Night Vision    Quas Lor
+   6  Light Sphere [uw2] Daylight  Vas In Lor
+   7               Sunlight*
+
+   * Sunlight is the same as daylight in both uw1/uw2.
+
+3.10.2 UW2 level light
+
+   The light used in uw2 levels (castle etc.) is stored in dl.dat which
+   consists of 80 bytes (1 for each level).
+
+   The value in the file represents light 0-9 which is activated by the
+   "special light feature" flag.
+   If the value is >=10 then the "special light feature" flag function is
+   inverted.
+
+
  +--------------------------------------------------------------------------+
 
 
@@ -1471,8 +1528,9 @@ Table of Contents
    5b00    1800   static object information (objects 0100-03ff, 768 x 8 bytes)
    7300    01fc   free list for mobile objects (objects 0002-00ff, 254 x 2 bytes)
    74fc    0600   free list for static objects (objects 0100-03ff, 768 x 2 bytes)
-   7afc    0104   unknown (260 bytes)
-   7c00    0002
+   7afc    00FE   active mobile object list
+   7bfa    0006   unknown
+   7c00    0002   nr. of active mobile objects
    7c02    0002   no. entries in mobile free list minus 1
    7c04    0002   no. entries in static free list minus 1
    7c06    0002   0x7775 ('uw')
@@ -2036,6 +2094,7 @@ Table of Contents
          indicates if the lock is locked (1) or unlocked (0). the lower 6 bits
          of the "link/special" field determines the lock ID. When unlocking a
          door with a key, the lock ID must match the key ID on the key.
+         Bit 10 of "flags" is for "use once". "Zpos" is lock quality.
 
    0110  a_picture of Tom
 
@@ -2046,6 +2105,12 @@ Table of Contents
    0120  a_spell
          spell object used by wands, spell traps, magical items;
          the "quality" field
+
+   0130  a_book (and up to 0133)
+         "Quantity" is an index in string block 2.
+
+   0134  a_scroll (and up to 0137)
+         "Quantity" is an index in string block 2.
 
    013b  a_map
          the map is shown when looked at the map in inventory. The string at
@@ -2105,6 +2170,7 @@ Table of Contents
 
    0163  a_picture [uw2]
          3D object. Texture is lower byte of flags + 42 from "tmobj.gr"
+         "Flags" are used to select painting.
 
          ??? [uw1]
          uw1 has an item with this id but it's currently unknown what it is
@@ -2167,6 +2233,8 @@ Table of Contents
          using the texture. of the closed button. I don't know if this
          behaviour is hardcoded or done via the trigger.
 
+   0180-01ac traps and triggers; see chapter 6.1.2 below
+
    01c9  a_fountain
 
    01ca  a_silver tree [uw1]
@@ -2189,6 +2257,7 @@ Table of Contents
          player vitality is decreased; number of hit points are in "quality"
          field; if the "owner" field is != 0, the hit points are added
          instead. the trap is only set off when a random value [0..10] is >= 7.
+         [uw2] Setting "owner" field = poison
 
    0181  a_teleport trap
          teleports the player to another level and tile; destination level is
@@ -2196,6 +2265,12 @@ Table of Contents
          are given in "quality" and "owner" fields.
 
    0182  a_arrow trap
+         Throws an object.
+         Object ID: bit 0-4 = "owner" field
+                    bit 5-9 = "quality" field
+
+         "Heading" sets direction, "zpos" sets height, "xpos"
+         sets x-position, "ypos" sets y-position.
 
    0183  a_do trap [uw1]
          a multi-purpose trap. the "quality"-field determines action to
@@ -2222,6 +2297,8 @@ Table of Contents
           3f       ends game, shows end sequence
 
    0183  a_hack trap [uw2]
+         Used for different things.
+         "quality" is a command? and "owner" is a value.
 
    0184  a_pit trap [uw1]
          not implemented in uw1, but used on 3rd level, as target for a use
@@ -2232,11 +2309,17 @@ Table of Contents
 
    0184  a_special effects trap [uw2]
          this trap does 'visual' effects like earthquakes, or blurry vision.
+         "quality" sets effect type.
 
    0185  a_change terrain trap
          the trap changes one or more tiles, according to the encoded info.
          the trigger's target coordinates describe the starting tile.
-         TODO
+         Tile type: bit 0 = "quality" bit 0
+                    bit 1-3 = "heading"
+
+         "quality" bit 1-4 sets floor texture, "owner" sets wall
+         texture, "zpos" sets height, "xpos" = nr of tiles in
+         x-direction, "ypos" = nr of tiles in y-direction.
 
    0186  a_spelltrap
          fields "quality" and "quantity" determine spell type.
@@ -2345,6 +2428,9 @@ Table of Contents
          block 0009. The actual string number printed is (64*level + "owner")
 
    0191  an_experience trap [uw2]
+         Increases or decreases experience points.
+         "Quality" and "owner" determines the value.
+
    0192  a_jump trap [uw2]
          causes the player to get an upward velocity according to the quality
          field; where '24' would be the velocity one would get from a standing
@@ -2353,9 +2439,19 @@ Table of Contents
    0193  a_change from trap [uw2]
    0194  a_change to trap [uw2]
    0195  an_oscillator trap [uw2]
+         "Quality" is lower height, "owner" is upper height.
+
    0196  a_proximity trap [uw2]
    0197  a_pit trap [uw2]
+         Changes height and floor texture of a tile.
+         Floor texture: bit 0-2 = "xpos"
+                        bit 3 = "ypos" bit 1
+         "Owner" changes height.
+
    0198  a_bridge trap [uw2]
+         Creates a bridge at trigger target position.
+         "Quality" sets length of bridge, "heading" sets
+         direction, "owner" sets texture, "zpos" sets height.
 
    019e  a_flam rune [uw2]
    019f  a_tym rune [uw2]
@@ -3372,6 +3468,23 @@ Table of Contents
    0x35 teleport_player       [x]
    0x36 add_event             [x]
 
+   List of UW2 extra functions:
+
+   Type     Args  Function Name
+
+   void     3     set_sequence
+   void     1     switch_pic
+   int      2     teleport_talker
+   void     ?     add_event
+   int      3     teleport_player
+   int      1     x_exp
+   int      2     x_clock
+   void     4     transform_talker
+   int      ?     gronk_trigger
+   void     0     do_input_wait
+   void     0     give_all_stuff
+   void     1     babl_hack
+
    0x3b find_barter_total     [unconfirmed]
          return int
          argc: 4
@@ -3398,6 +3511,8 @@ Table of Contents
       Example: conversation 142 (Lord British)
 
    0x3e set_sequence          [x]
+         return: void
+         argc: 3
 
    -------------------------------------------------------------------------
 
@@ -3412,6 +3527,157 @@ Table of Contents
    description:  ???
    return value: ???
    -------------------------------------------------------------------------
+
+   name="give_all_stuff"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="do_input_wait"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="gronk_trigger"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="transform_talker"
+
+   parameters: arg1: ?
+               arg2: ?
+               arg3: npc_whoami
+               arg4: Type (0-63)
+   description:  Transform Talker
+   return value: unknown
+
+   -------------------------------------------------------------------------
+   name="x_clock"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="x_exp"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="teleport_player"
+
+   parameters:    arg1: Level+1 (0=Current Level)
+                  arg2: Y-pos
+                  arg3: X-pos
+   description:   Teleport Player
+   return value:  Y-Pos?
+   -------------------------------------------------------------------------
+
+   name="add_event"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="teleport_talker"
+
+   parameters:    arg1: Y-Pos
+                  arg2: X-Pos
+   description:   Teleport Talker
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="switch_pic"
+
+   parameters:    arg1: Pic Nr
+   description:   Switch Pic
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+   name="set_sequence"
+
+   parameters:    unknown
+   description:   unknown
+   return value:  unknown
+   -------------------------------------------------------------------------
+
+
+   List of function ID:
+
+   Function            ID:     UW1  UW2
+   babl_menu                    0    0
+   babl_fmenu                   1    1
+   print                        2    2
+   babl_ask                     3    3
+   compare                      4    4
+   random                       5    5
+   plural                       6    6
+   contains                     7    7
+   append                       8    8
+   copy                         9    9
+   find                         A    A
+   length                       B    B
+   val                          C    C
+   say                          D    D
+   respond                      E    E
+   give_all_stuff               -   10
+   do_input_wait                -   11
+   get_quest                    F   12
+   babl_hack                    -    F
+   set_quest                   10   13
+   sex                         11   14
+   show_inv                    12   15
+   give_to_npc                 13   16
+   give_ptr_npc                14   17
+   take_from_npc               15   18
+   take_id_from_npc            16   19
+   identify_inv                17   1A
+   do_offer                    18   1B
+   do_demand                   19   1C
+   do_inv_create               1A   1D
+   do_inv_delete               1B   1E
+   check_inv_quality           1C   1F
+   set_inv_quality             1D   20
+   count_inv                   1E   21
+   setup_to_barter             1F   22
+   end_barter                  20   23
+   do_judgement                21   24
+   do_decline                  22   25
+   pause                       23   26
+   set_likes_dislikes          24   27
+   gronk_door                  25   28
+   gronk_trigger               --   29
+   set_race_attitude           26   2A
+   place_object                27   2B
+   take_from_npc_inv           28   2C
+   add_to_npc_inv              29   2D
+   transform_talker            --   2E
+   remove_talker               2A   2F
+   set_attitude                2B   20
+   x_skills                    2C   31
+   x_traps                     2D   32
+   x_clock                     --   33
+   x_exp                       --   34
+   teleport_player             --   35
+   add_event                   --   36
+   x_obj_pos                   2E   37
+   x_obj_stuff                 2F   38
+   find_inv                    30   39
+   find_barter                 31   3A
+   find_barter_total           32   3B
+   teleport_talker             --   3C
+   switch_pic                  --   3D
+   set_sequence                --   3E
 
 
 7.7  Imported variables
