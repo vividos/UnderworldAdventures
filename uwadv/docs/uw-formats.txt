@@ -127,7 +127,7 @@ Table of Contents
    - Fabian Pache (about map details and 3D models, uw2 conversations uw2
      player save http://uw2rev.sourceforge.net)
    - Hank Morgan, from his UnderworldExporter project
-     https://github.com/hankmorgan/UnderworldExporter.
+     https://github.com/hankmorgan/UnderworldExporter
    - Marc A. Pelletier (coren), from the Labyrinth of Worlds project
      (http://low.sourceforge.net/)
    - Telemachos (http://www.peroxide.dk/), infos about weapon animation and
@@ -229,7 +229,7 @@ Table of Contents
    compass.gr     compass graphics
    conv.byt       seems to be a conversation screenshot, palette #0
    converse.gr    conversation screen bitmaps
-   cursors.gr     mouse cursor images
+   cursors.gr     mouse cursor images (uw1 palette #0, uw2 palette #?)
    doors.gr       door textures
    dragons.gr     scroll dragons animations
    eyes.gr        eyes from top screen
