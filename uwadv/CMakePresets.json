@@ -7,28 +7,68 @@
     },
     "configurePresets": [
         {
-            "name": "windows-x64-debug",
-            "displayName": "Windows x64 Debug",
-            "description": "Compile for x64 processor under Windows",
+            "name": "visual-studio-x64-debug",
+            "displayName": "Visual Studio x64 Debug",
+            "description": "Compile for x64 processor using Visual Studio",
             "generator": "Visual Studio 17 2022",
             "toolset": "host=x64",
             "architecture": "x64",
             "binaryDir": "${sourceDir}/output/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/output/install/${presetName}",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "visual-studio-x64-release",
+            "displayName": "Visual Studio x64 Release",
+            "description": "Compile for x64 processor using Visual Studio",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/output/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/output/install/${presetName}",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             }
         },
         {
             "name": "android-arm64-v8a-debug",
-            "displayName": "Android ARM64 Debug",
-            "description": "Compile for ARM64 processor under Android",
+            "displayName": "Android NDK ARM64 Debug",
+            "description": "Compile for ARM64 processor using Android NDK",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/output/build/${presetName}",
             "cacheVariables": {
+                "CMAKE_SYSTEM_NAME": "Android",
+                "CMAKE_SYSTEM_VERSION": "21",
+                "CMAKE_ANDROID_ARCH_ABI": "arm64-v8a",
                 "CMAKE_MAKE_PROGRAM": "Ninja",
                 "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/output/install/${presetName}",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake",
+                "VCPKG_TARGET_TRIPLET": "arm64-android-dynamic",
+                "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/android/custom-triplets",
+                "VCPKG_CMAKE_SYSTEM_NAME": "Android",
+                "ANDROID_ABI": "arm64-v8a",
+                "ANDROID_PLATFORM": "android-21"
+            }
+        },
+        {
+            "name": "android-arm64-v8a-release",
+            "displayName": "Android NDK ARM64 Release",
+            "description": "Compile for ARM64 processor using Android NDK",
+            "generator": "Ninja",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/output/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_SYSTEM_NAME": "Android",
+                "CMAKE_SYSTEM_VERSION": "21",
+                "CMAKE_ANDROID_ARCH_ABI": "arm64-v8a",
+                "CMAKE_MAKE_PROGRAM": "Ninja",
+                "CMAKE_BUILD_TYPE": "Release",
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/output/install/${presetName}",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
                 "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake",
@@ -41,5 +81,29 @@
         }
     ],
     "buildPresets": [
+        {
+            "name": "windows-x64-debug",
+            "displayName": "Windows x64 Debug",
+            "configurePreset": "visual-studio-x64-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-x64-release",
+            "displayName": "Windows x64 Release",
+            "configurePreset": "visual-studio-x64-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "android-arm64-debug",
+            "displayName": "Android ARM64 Debug",
+            "configurePreset": "android-arm64-v8a-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "android-arm64-release",
+            "displayName": "Android ARM64 Release",
+            "configurePreset": "android-arm64-v8a-release",
+            "configuration": "Release"
+        }
     ]
 }
