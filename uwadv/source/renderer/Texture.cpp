@@ -23,7 +23,10 @@
 #include "Texture.hpp"
 #include "IndexedImage.hpp"
 #include "Scaler.hpp"
-#include <gl/GLU.h>
+
+#ifndef ANDROID
+#include <gl/GLU.h> // for gluBuild2DMipmaps
+#endif
 
 Texture::Texture()
    :m_xres(0),
@@ -202,6 +205,7 @@ void Texture::Upload(unsigned int textureIndex, bool useMipmaps)
 
    Uint32* tex = GetTexels(textureIndex);
 
+#ifndef ANDROID
    if (useMipmaps)
    {
       // build mipmapped textures
@@ -215,6 +219,7 @@ void Texture::Upload(unsigned int textureIndex, bool useMipmaps)
          tex);
    }
    else
+#endif
    {
       // build texture
       glTexImage2D(

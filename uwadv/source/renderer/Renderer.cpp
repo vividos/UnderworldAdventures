@@ -68,6 +68,7 @@ void Renderer::InitGame(IBasicGame& game)
    // enable texturing
    glEnable(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, 0);
+   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // hardware mipmap
 
    // smooth shading
    glShadeModel(GL_SMOOTH);
