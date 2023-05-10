@@ -546,6 +546,8 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
             case M3_UW_FACE_PLANE_XZ:
                UaModelTrace("normal=(%f,%f,%f) dist=(%f,%f,%f) xz", nx, 0.0, ny, vx, 0.0, vy);
                break;
+            default:
+               break;
             }
          break;
 
@@ -681,6 +683,8 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
                break;
             case M3_UW_SORT_PLANE_XZ:
                UaModelTrace("normal=(%f,%f,%f) dist=(%f,%f,%f)", ny, 0.0, nz, vy, 0.0, vz);
+               break;
+            default:
                break;
             }
          }
