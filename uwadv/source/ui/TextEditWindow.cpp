@@ -23,7 +23,7 @@
 #include "TextEditWindow.hpp"
 #include "ImageManager.hpp"
 
-TextEditWindow::~TextEditWindow()
+TextEditWindow::~TextEditWindow() noexcept
 {
 }
 
