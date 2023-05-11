@@ -185,16 +185,6 @@ private:
    virtual void RemoveScreen() override
    {
    }
-
-   virtual unsigned int GetScreenXRes() override
-   {
-      return 800;
-   }
-
-   virtual unsigned int GetScreenYRes() override
-   {
-      return 600;
-   }
 };
 
 bool MapDisplay::Run()

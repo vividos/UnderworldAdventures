@@ -84,11 +84,6 @@ public:
    /// removes current screen at next event processing
    virtual void RemoveScreen() = 0;
 
-   /// returns screen x resolution
-   virtual unsigned int GetScreenXRes() = 0;
-   /// returns screen y resolution
-   virtual unsigned int GetScreenYRes() = 0;
-
 protected:
    /// ctor
    IGame() {}

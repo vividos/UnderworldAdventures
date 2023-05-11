@@ -174,8 +174,8 @@ void Screen::RegisterKeymap(Base::Keymap* keymap)
 
 void Screen::MapWindowPosition(int& xpos, int& ypos) const
 {
-   int windowWidth = m_game.GetScreenXRes();
-   int windowHeight = m_game.GetScreenYRes();
+   int windowWidth = 0, windowHeight = 0;
+   m_game.GetRenderWindow().GetWindowSize(windowWidth, windowHeight);
 
    xpos = unsigned(xpos * 320.0 / windowWidth);
    ypos = unsigned(ypos * 200.0 / windowHeight);
@@ -183,8 +183,8 @@ void Screen::MapWindowPosition(int& xpos, int& ypos) const
 
 void Screen::UnmapWindowPosition(unsigned int& xpos, unsigned int& ypos) const
 {
-   int windowWidth = m_game.GetScreenXRes();
-   int windowHeight = m_game.GetScreenYRes();
+   int windowWidth = 0, windowHeight = 0;
+   m_game.GetRenderWindow().GetWindowSize(windowWidth, windowHeight);
 
    xpos = unsigned((xpos / 320.0) * windowWidth);
    ypos = unsigned((ypos / 200.0) * windowHeight);

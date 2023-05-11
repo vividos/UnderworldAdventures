@@ -23,6 +23,7 @@
 #include "UwadvMenuScreen.hpp"
 #include "Settings.hpp"
 #include "Renderer.hpp"
+#include "RenderWindow.hpp"
 #include "ResourceManager.hpp"
 #include "StartSplashScreen.hpp"
 #ifdef HAVE_DEBUG
@@ -69,9 +70,9 @@ void UwadvMenuScreen::Draw()
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
    // calculate height, width and position
-   double xres = m_game.GetScreenXRes();
-   double yres = m_game.GetScreenYRes();
-   double ratio = (xres / yres) * (200.0 / 320.0);
+   int windowWidth = 0, windowHeight = 0;
+   m_game.GetRenderWindow().GetWindowSize(windowWidth, windowHeight);
+   double ratio = (double(windowWidth) / windowHeight) * (200.0 / 320.0);
 
    const unsigned width = 150;
    const unsigned height = static_cast<unsigned>(60 * ratio);
