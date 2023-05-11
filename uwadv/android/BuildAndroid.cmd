@@ -16,7 +16,7 @@ pushd ..
 
 cmake -B output\build\android-arm64-v8a-debug
 cmake --build ^
-  --preset "android-arm64-v8a-debug" ^
+  --preset "android-arm64-debug" ^
   --target "uwadv_android_apk"
 
 popd
