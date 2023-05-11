@@ -9,4 +9,13 @@ public class GameActivity extends SDLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+    @Override
+    protected String[] getLibraries() {
+        return new String[] {
+            "SDL2",
+            "SDL2_mixer",
+            "uwadv_android"
+        };
+    }
 }
