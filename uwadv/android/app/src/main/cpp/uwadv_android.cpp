@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2022 Underworld Adventures Team
+// Copyright (c) 2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,21 +20,24 @@
 /// \brief the Android app's main function
 //
 #include "Base.hpp"
-#include "Underworld.hpp"
+#include "AndroidGame.hpp"
 
 /// Android main function
 int main(int argc, char* argv[])
 {
    try
    {
-      UaTrace("Underworld Adventures for Android");
-      Underworld::Underworld underworld;
+      AndroidGame game;
+
+      game.Init();
+      game.Run();
+      game.Done();
    }
    catch (const Base::Exception& ex)
    {
       UaTrace("caught Base::Exception: %s\n", ex.what());
 
-      std::string text("An unhandled exception was encountered:\n\r");
+      std::string text{ "An unhandled exception was encountered:\n\r" };
       text.append(ex.what());
 
       SDL_ShowSimpleMessageBox(

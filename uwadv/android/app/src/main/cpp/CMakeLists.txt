@@ -25,6 +25,7 @@ project("uwadv_android")
 find_package(SDL2 REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
+    AndroidGame.cpp AndroidGame.hpp
     uwadv_android.cpp
 )
 
