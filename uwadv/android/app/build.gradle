@@ -43,7 +43,7 @@ task copyExternalSharedObjects(type: Copy) {
         include 'libuwadv_android.so'
     }
     from ('../../output/build/android-arm64-v8a-debug/vcpkg_installed/arm64-android-dynamic/lib/') {
-        include 'libSDL2.so', 'libSDL2_mixer.so'
+        include 'libSDL2.so', 'libSDL2_mixer.so', 'libSDL2_mixer.so', 'liblua.so', 'libmpg123.so', 'libogg.so', 'libopus.so', 'libout123.so', 'libSDL2.so', 'libSDL2_mixer.so', 'libsyn123.so', 'libvorbis.so', 'libvorbisenc.so', 'libvorbisfile.so', 'libz.so', 'libzzip.so'
     }
     into 'src/main/jniLibs/arm64-v8a'
 }
