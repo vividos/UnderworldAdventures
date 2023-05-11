@@ -35,10 +35,7 @@ target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE
 		"${UWADV_SOURCE_DIR}/base"
-		"${UWADV_SOURCE_DIR}/renderer"
 		"${UWADV_SOURCE_DIR}/script"
-		"${UWADV_SOURCE_DIR}/screens"
-		"${UWADV_SOURCE_DIR}/ui"
 		"${UWADV_SOURCE_DIR}/underworld"
 		"${UWADV_SOURCE_DIR}/game")
 
