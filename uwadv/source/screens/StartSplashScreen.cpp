@@ -250,11 +250,11 @@ void StartSplashScreen::OnFadeOutEnded()
 
       m_gameInstance.GetScripting().InitNewGame();
 
-      m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
+      m_game.GetScreenHost().ReplaceScreen(new OriginalIngameScreen(m_game), false);
       return;
    }
    else
-      m_game.ReplaceScreen(new StartMenuScreen(m_game), false);
+      m_game.GetScreenHost().ReplaceScreen(new StartMenuScreen(m_game), false);
 }
 
 void StartSplashScreen::UpdateForNextStage()

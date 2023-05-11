@@ -179,7 +179,7 @@ void AcknowledgementsScreen::Tick()
       //UaTrace("showing frame %u\n",m_currentFrame);
 
       if (m_isEnded)
-         m_game.RemoveScreen();
+         m_game.GetScreenHost().RemoveScreen();
 
       // switch to show mode
       m_stage = 0;

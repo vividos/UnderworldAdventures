@@ -247,7 +247,7 @@ void CutsceneViewScreen::Tick()
    if (m_isEnded && m_animationFadeCount >= s_fadeTime * GetTickRate())
    {
       // we're finished
-      m_game.RemoveScreen();
+      m_game.GetScreenHost().RemoveScreen();
       return;
    }
 

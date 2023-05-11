@@ -66,7 +66,7 @@ Game::Game()
    :MainGameLoop("Underworld Adventures", false),
 #endif
    m_tickRate(20),
-   m_screenToDestroy(NULL)
+   m_gameScreenHost([this]() { ClearScreen(); })
 {
    printf("Underworld Adventures"
 #ifdef HAVE_DEBUG
@@ -101,7 +101,6 @@ void Game::Init()
 
    // normal game start
    m_initAction = 0;
-   m_currentScreen = NULL;
 }
 
 /// \brief Reads in command line arguments
@@ -219,7 +218,7 @@ void Game::Run()
    {
    case 0: // normal start
       // start with uwadv menu screen
-      ReplaceScreen(new UwadvMenuScreen(*this), false);
+      m_gameScreenHost.ReplaceScreen(new UwadvMenuScreen(*this), false);
       break;
 
    case 1: // load savegame
@@ -227,7 +226,7 @@ void Game::Run()
       BasicGame::LoadSavegame(m_savegameName);
 
       // immediately start game
-      ReplaceScreen(new OriginalIngameScreen(*this), false);
+      m_gameScreenHost.ReplaceScreen(new OriginalIngameScreen(*this), false);
    }
    break;
 
@@ -241,12 +240,12 @@ void Game::Run()
       if (customGamePrefix == "uw2")
       {
          // start splash screen
-         ReplaceScreen(new StartSplashScreen(*this), false);
+         m_gameScreenHost.ReplaceScreen(new StartSplashScreen(*this), false);
       }
       else
       {
          // other custom games currently don't have a splash screen
-         ReplaceScreen(new OriginalIngameScreen(*this), false);
+         m_gameScreenHost.ReplaceScreen(new OriginalIngameScreen(*this), false);
       }
    }
    break;
@@ -268,44 +267,19 @@ void Game::UpdateCaption(const char* windowTitle)
 
 void Game::OnTick(bool& resetTickTimer)
 {
-   // do game logic
-   m_currentScreen->Tick();
-
-   // check if there is a screen to destroy
-   if (m_screenToDestroy != nullptr)
-   {
-      m_screenToDestroy->Destroy();
-      delete m_screenToDestroy;
-      m_screenToDestroy = nullptr;
-
-      resetTickTimer = true;
-   }
+   m_gameScreenHost.Tick(resetTickTimer);
 }
 
 void Game::OnRender()
 {
    // draw the screen
-   m_currentScreen->Draw();
+   m_gameScreenHost.GetCurrentScreen()->Draw();
    m_renderWindow->SwapBuffers();
 }
 
 void Game::Done()
 {
-   // free current screen
-   if (m_currentScreen != NULL)
-   {
-      m_currentScreen->Destroy();
-      delete m_currentScreen;
-      m_currentScreen = NULL;
-   }
-
-   // free all screens on screen stack
-   size_t max = m_screenStack.size();
-   for (size_t screenIndex = 0; screenIndex < max; screenIndex++)
-   {
-      m_screenStack[screenIndex]->Destroy();
-      delete m_screenStack[screenIndex];
-   }
+   m_gameScreenHost.Cleanup();
 
    DoneGame();
 
@@ -342,7 +316,7 @@ void Game::InitSDL()
 void Game::OnEvent(SDL_Event& event)
 {
    // let the screen handle the event first
-   m_currentScreen->ProcessEvent(event);
+   m_gameScreenHost.GetCurrentScreen()->ProcessEvent(event);
 
    switch (event.type)
    {
@@ -360,9 +334,11 @@ void Game::OnEvent(SDL_Event& event)
       switch (event.user.code)
       {
       case gameEventDestroyScreen:
-         PopScreen();
-         if (m_currentScreen == NULL)
+         if (!m_gameScreenHost.PopScreen())
+         {
+            QuitLoop();
             return; // don't process events anymore
+         }
          break;
 
       default:
@@ -379,75 +355,6 @@ void Game::InitGame()
    m_renderer.InitGame(GetGameInstance());
 
    m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
-
-   m_resetTickTimer = true;
-}
-
-void Game::PopScreen()
-{
-   // clear screen; this can take a while
-   m_renderWindow->Clear();
-   m_renderWindow->SwapBuffers();
-
-   m_currentScreen->Destroy();
-   delete m_currentScreen;
-
-   if (!m_screenStack.empty())
-   {
-      // get last pushed screen
-      m_currentScreen = m_screenStack.back();
-      m_screenStack.pop_back();
-
-      // send resume event
-      SDL_Event user_event;
-      user_event.type = SDL_USEREVENT;
-      user_event.user.code = gameEventResumeScreen;
-      user_event.user.data1 = NULL;
-      user_event.user.data2 = NULL;
-      SDL_PushEvent(&user_event);
-   }
-   else
-   {
-      // no more screens available
-      m_currentScreen = NULL;
-      QuitLoop();
-   }
-}
-
-void Game::ReplaceScreen(Screen* newScreen, bool saveCurrent)
-{
-   // clear screen; this can take a while
-   m_renderWindow->Clear();
-   m_renderWindow->SwapBuffers();
-
-   if (saveCurrent)
-   {
-      // save on m_screenStack
-      m_screenStack.push_back(m_currentScreen);
-   }
-   else
-   {
-      // defer screen destruction
-      if (m_currentScreen != NULL)
-         m_screenToDestroy = m_currentScreen;
-   }
-
-   // initialize new screen
-   m_currentScreen = newScreen;
-
-   m_currentScreen->Init();
-
-   // reset tick timer
-   m_resetTickTimer = true;
-}
-
-void Game::RemoveScreen()
-{
-   // send "destroy screen" event
-   SDL_Event event;
-   event.type = SDL_USEREVENT;
-   event.user.code = gameEventDestroyScreen;
-   SDL_PushEvent(&event);
 }
 
 void Game::ToggleFullscreen()
@@ -456,4 +363,10 @@ void Game::ToggleFullscreen()
    GetSettings().SetValue(Base::settingFullscreen, isFullscreen);
 
    m_renderWindow->SetFullscreen(isFullscreen);
+}
+
+void Game::ClearScreen()
+{
+   m_renderWindow->Clear();
+   m_renderWindow->SwapBuffers();
 }

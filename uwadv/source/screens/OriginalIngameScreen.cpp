@@ -783,17 +783,17 @@ void OriginalIngameScreen::DoAction(IngameAction action)
 
       // leave the ingame_orig screen
    case ingameActionExit:
-      m_game.RemoveScreen();
+      m_game.GetScreenHost().RemoveScreen();
       break;
 
       // start "load game" screen
    case ingameActionLoadGame:
-      m_game.ReplaceScreen(new SaveGameScreen(m_game, false, true), true);
+      m_game.GetScreenHost().ReplaceScreen(new SaveGameScreen(m_game, false, true), true);
       break;
 
       // start "save game" screen
    case ingameActionSaveGame:
-      m_game.ReplaceScreen(new SaveGameScreen(m_game, false, false), true);
+      m_game.GetScreenHost().ReplaceScreen(new SaveGameScreen(m_game, false, false), true);
       break;
 
       // quickloading
@@ -824,16 +824,16 @@ void OriginalIngameScreen::DoAction(IngameAction action)
 
    // starts conversation
    case ingameActionConversation:
-      m_game.ReplaceScreen(new ConversationScreen(m_game, m_fadeoutParameter), true);
+      m_game.GetScreenHost().ReplaceScreen(new ConversationScreen(m_game, m_fadeoutParameter), true);
       break;
 
       // shows cutscene
    case ingameActionCutscene:
-      m_game.ReplaceScreen(new CutsceneViewScreen(m_game, m_fadeoutParameter), true);
+      m_game.GetScreenHost().ReplaceScreen(new CutsceneViewScreen(m_game, m_fadeoutParameter), true);
       break;
 
    case ingameActionShowMap:
-      m_game.ReplaceScreen(new MapViewScreen(m_game), true);
+      m_game.GetScreenHost().ReplaceScreen(new MapViewScreen(m_game), true);
       break;
 
    default:

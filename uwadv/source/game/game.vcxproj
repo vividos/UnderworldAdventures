@@ -52,6 +52,7 @@
     <ClCompile Include="BasicGame.cpp" />
     <ClCompile Include="DebugServer.cpp" />
     <ClCompile Include="GameConfigLoader.cpp" />
+    <ClCompile Include="GameScreenHost.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -62,6 +63,7 @@
     <ClInclude Include="BasicGame.hpp" />
     <ClInclude Include="DebugServer.hpp" />
     <ClInclude Include="GameConfigLoader.hpp" />
+    <ClInclude Include="GameScreenHost.hpp" />
     <ClInclude Include="LevelEditor.hpp" />
     <ClInclude Include="pch.hpp" />
   </ItemGroup>

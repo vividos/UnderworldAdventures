@@ -46,6 +46,8 @@
 #include <vector>
 #include <algorithm>
 
+class IScreenHost;
+
 /// map display class
 class MapDisplay :
    public MainGameLoop,
@@ -178,12 +180,9 @@ private:
       throw std::runtime_error("object not available");
    }
 
-   virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) override
+   virtual IScreenHost& GetScreenHost() override
    {
-   }
-
-   virtual void RemoveScreen() override
-   {
+      throw std::runtime_error("object not available");
    }
 };
 

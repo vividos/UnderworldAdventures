@@ -222,22 +222,22 @@ void StartMenuScreen::OnFadeOutEnded()
    switch (m_selectedArea)
    {
    case 0: // "introduction"
-      m_game.ReplaceScreen(new CutsceneViewScreen(m_game, 0), true);
+      m_game.GetScreenHost().ReplaceScreen(new CutsceneViewScreen(m_game, 0), true);
       break;
 
    case 1: // "create character"
-      m_game.ReplaceScreen(new CreateCharacterScreen(m_game), true);
+      m_game.GetScreenHost().ReplaceScreen(new CreateCharacterScreen(m_game), true);
       break;
 
    case 2: // "acknowledgements"
-      m_game.ReplaceScreen(new AcknowledgementsScreen(m_game), true);
+      m_game.GetScreenHost().ReplaceScreen(new AcknowledgementsScreen(m_game), true);
       break;
 
    case 3: // "journey onward"
       if (m_isJourneyOnwardAvailable)
       {
          // "load game" screen (with later starting "orig. ingame ui")
-         m_game.ReplaceScreen(new SaveGameScreen(m_game, true, true), true);
+         m_game.GetScreenHost().ReplaceScreen(new SaveGameScreen(m_game, true, true), true);
       }
       break;
    }

@@ -12,6 +12,7 @@ set(uwadv_SRC
 	"pch.cpp" "pch.hpp"
 	"Game.cpp" "Game.hpp"
 	"../IDebugServer.hpp"
+	"../IScreenHost.hpp"
 	"main.cpp")
 
 if (WIN32)

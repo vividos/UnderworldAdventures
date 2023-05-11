@@ -33,6 +33,7 @@ class RenderWindow;
 class Viewport;
 class Screen;
 class IUserInterface;
+class IScreenHost;
 
 /// game events that can be sent to the event queue via SDL_PushEvent using SDL_USEREVENT
 enum GameEvents
@@ -78,11 +79,8 @@ public:
    /// returns renderer viewport
    virtual Viewport& GetViewport() = 0;
 
-   /// replaces current screen with new one; saves current on a screen stack when selected
-   virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) = 0;
-
-   /// removes current screen at next event processing
-   virtual void RemoveScreen() = 0;
+   /// returns the game screen host
+   virtual IScreenHost& GetScreenHost() = 0;
 
 protected:
    /// ctor

@@ -28,6 +28,7 @@
 #include "renderer/Viewport.hpp"
 #include "renderer/Renderer.hpp"
 #include "game/BasicGame.hpp"
+#include "game/GameScreenHost.hpp"
 #include "MainGameLoop.hpp"
 
 /// main game class
@@ -90,8 +91,10 @@ public:
       return *m_viewport.get();
    }
 
-   virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) override;
-   virtual void RemoveScreen() override;
+   virtual IScreenHost& GetScreenHost() override
+   {
+      return m_gameScreenHost;
+   }
 
    // MainGameLoop virtual methods
 
@@ -111,11 +114,11 @@ private:
    /// initializes SDL and creates a window
    void InitSDL();
 
-   /// deletes current screen and pops off last screen from m_screenStack
-   void PopScreen();
-
    /// toggles fullscreen and windowed mode
    void ToggleFullscreen();
+
+   /// clears screen with black color
+   void ClearScreen();
 
 private:
    /// render window
@@ -123,6 +126,9 @@ private:
 
    /// render viewport
    std::unique_ptr<Viewport> m_viewport;
+
+   /// game screen host
+   GameScreenHost m_gameScreenHost;
 
    /// screen width
    unsigned int m_width;
@@ -140,21 +146,9 @@ private:
    /// savegame to load
    std::string m_savegameName;
 
-   /// current screen
-   Screen* m_currentScreen;
-
-   /// stack of screens
-   std::vector<Screen*> m_screenStack;
-
-   /// true when tick timer should be resetted for the next cycle
-   bool m_resetTickTimer;
-
    /// audio manager object
    std::unique_ptr<Audio::AudioManager> m_audioManager;
 
    /// renderer class
    Renderer m_renderer;
-
-   /// screen queued to destroy
-   Screen* m_screenToDestroy;
 };

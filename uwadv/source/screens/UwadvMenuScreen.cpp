@@ -111,5 +111,5 @@ void UwadvMenuScreen::Tick()
    // now that we know the generic uw path, we can init the whole game stuff
    m_gameInstance.InitGame();
 
-   m_game.ReplaceScreen(new StartSplashScreen(m_game), false);
+   m_game.GetScreenHost().ReplaceScreen(new StartSplashScreen(m_game), false);
 }

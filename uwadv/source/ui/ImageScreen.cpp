@@ -23,6 +23,7 @@
 #include "ImageScreen.hpp"
 #include "ImageManager.hpp"
 #include "Renderer.hpp"
+#include "IScreenHost.hpp"
 
 ImageScreen::ImageScreen(IGame& game, unsigned int paletteIndex, double fadeInOutTime)
    :Screen(game),
@@ -102,7 +103,7 @@ void ImageScreen::OnFadeOutStarted()
 
 void ImageScreen::OnFadeOutEnded()
 {
-   m_game.RemoveScreen();
+   m_game.GetScreenHost().RemoveScreen();
 }
 
 void ImageScreen::Init()

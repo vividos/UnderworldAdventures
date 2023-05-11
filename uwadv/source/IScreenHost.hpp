@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,14 +16,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file screens/pch.hpp
-/// \brief precompiled header support
+/// \file IScreenHost.hpp
+/// \brief screen host interface
 //
 #pragma once
 
-#include "common.hpp"
-#include "Base.hpp"
-#include "Screen.hpp"
-#include "IScreenHost.hpp"
-#include "IndexedImage.hpp"
-#include "ImageQuad.hpp"
+/// interface to a scren host, managing IScreen instances
+class IScreenHost
+{
+public:
+   virtual ~IScreenHost() noexcept {}
+
+   /// replaces current screen with new one; saves current on a screen stack when selected
+   virtual void ReplaceScreen(Screen* newScreen, bool saveCurrent) = 0;
+
+   /// removes current screen at next event processing
+   virtual void RemoveScreen() = 0;
+};

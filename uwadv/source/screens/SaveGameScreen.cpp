@@ -564,14 +564,14 @@ void SaveGameScreen::OnFadeOutEnded()
 
       // next screen
       if (m_calledFromStartMenu)
-         m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
+         m_game.GetScreenHost().ReplaceScreen(new OriginalIngameScreen(m_game), false);
       else
-         m_game.RemoveScreen();
+         m_game.GetScreenHost().RemoveScreen();
       break;
    }
 
    case saveGameButtonExit:
-      m_game.RemoveScreen();
+      m_game.GetScreenHost().RemoveScreen();
       break;
 
    default:

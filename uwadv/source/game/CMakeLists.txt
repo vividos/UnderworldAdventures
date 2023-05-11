@@ -13,6 +13,7 @@ add_library(${PROJECT_NAME} STATIC
 	"BasicGame.cpp" "BasicGame.hpp"
 	"DebugServer.cpp" "DebugServer.hpp"
 	"GameConfigLoader.cpp" "GameConfigLoader.hpp"
+	"GameScreenHost.cpp" "GameScreenHost.hpp"
 	"LevelEditor.cpp" "LevelEditor.hpp"
 )
 

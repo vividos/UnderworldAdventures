@@ -312,10 +312,10 @@ void CreateCharacterScreen::OnFadeOutEnded()
       m_gameInstance.GetScripting().InitNewGame();
 
       // start original game
-      m_game.ReplaceScreen(new OriginalIngameScreen(m_game), false);
+      m_game.GetScreenHost().ReplaceScreen(new OriginalIngameScreen(m_game), false);
    }
    else
-      m_game.RemoveScreen();
+      m_game.GetScreenHost().RemoveScreen();
 }
 
 void CreateCharacterScreen::InitLuaScript()
