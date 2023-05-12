@@ -276,10 +276,10 @@ void OriginalIngameScreen::Draw()
 
       glEnable(GL_BLEND);
 
-      if (IsFadeInProgress())
+      Uint8 alpha = GetCurentFadeAlphaValue();
+      if (IsFadeInProgress() || alpha == 0)
       {
          // when fading in/out, lay a quad over the already rendered 3D view
-         Uint8 alpha = GetCurentFadeAlphaValue();
          if (alpha < 255)
          {
             glColor4ub(0, 0, 0, 255 - alpha);
