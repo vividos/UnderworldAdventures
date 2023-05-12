@@ -212,6 +212,8 @@ void OriginalIngameScreen::Init()
 
    RegisterWindow(&m_mouseCursor);
 
+   m_gameInstance.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
+
    Resume();
 }
 
@@ -222,8 +224,6 @@ void OriginalIngameScreen::Suspend()
    m_game.GetRenderWindow().Clear();
    m_game.GetRenderWindow().SwapBuffers();
 
-   m_gameInstance.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
-
    m_gameInstance.GetGameLogic().RegisterUserInterface(nullptr);
 }
 
@@ -232,8 +232,6 @@ void OriginalIngameScreen::Resume()
    UaTrace("resuming orig. ingame user interface\n");
 
    m_gameInstance.GetGameLogic().RegisterUserInterface(this);
-
-   m_gameInstance.GetPhysicsModel().AddTrackBody(&m_playerPhysics);
 
    if (m_fadeoutAction == ingameActionConversation)
    {
@@ -253,10 +251,7 @@ void OriginalIngameScreen::Destroy()
 {
    Suspend();
 
-   // only windows and other stuff has to be destroyed that wasn't registered
-   // with ImageScreen::RegisterWindow()
-
-
+   m_gameInstance.GetPhysicsModel().RemoveTrackBody(&m_playerPhysics);
 
    UaTrace("orig. ingame user interface finished\n\n");
 }
