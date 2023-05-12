@@ -334,12 +334,10 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       {
          if (m_moveWalkBackwards)
             m_playerPhysics.SetMovementFactor(Physics::moveWalk, -0.4);
-         else
-            if (m_moveWalkForward)
-               m_playerPhysics.SetMovementFactor(Physics::moveWalk, 0.6);
-            else
-               if (!m_view3d.GetMouseMove())
-                  m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
+         else if (m_moveWalkForward)
+            m_playerPhysics.SetMovementFactor(Physics::moveWalk, 0.6);
+         else if (!m_view3d.GetMouseMove())
+            m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
       }
 
       break;
@@ -357,12 +355,10 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       {
          if (m_moveWalkBackwards)
             m_playerPhysics.SetMovementFactor(Physics::moveWalk, -0.4);
-         else
-            if (m_moveRunForward)
-               m_playerPhysics.SetMovementFactor(Physics::moveWalk, 1.0);
-            else
-               if (!m_view3d.GetMouseMove())
-                  m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
+         else if (m_moveRunForward)
+            m_playerPhysics.SetMovementFactor(Physics::moveWalk, 1.0);
+         else if (!m_view3d.GetMouseMove())
+            m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
       }
       break;
 
@@ -379,9 +375,8 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       {
          if (m_moveTurnRight)
             m_playerPhysics.SetMovementFactor(Physics::moveRotate, -1.0);
-         else
-            if (!m_view3d.GetMouseMove())
-               m_playerPhysics.SetMovementMode(0, Physics::moveRotate);
+         else if (!m_view3d.GetMouseMove())
+            m_playerPhysics.SetMovementMode(0, Physics::moveRotate);
       }
       break;
 
@@ -398,9 +393,8 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       {
          if (m_moveTurnLeft)
             m_playerPhysics.SetMovementFactor(Physics::moveRotate, 1.0);
-         else
-            if (!m_view3d.GetMouseMove())
-               m_playerPhysics.SetMovementMode(0, Physics::moveRotate);
+         else if (!m_view3d.GetMouseMove())
+            m_playerPhysics.SetMovementMode(0, Physics::moveRotate);
       }
       break;
 
@@ -411,9 +405,8 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
          m_playerPhysics.SetMovementFactor(Physics::moveSlide, -1.0);
          m_playerPhysics.SetMovementMode(Physics::moveSlide);
       }
-      else
-         if (!m_view3d.GetMouseMove())
-            m_playerPhysics.SetMovementMode(0, Physics::moveSlide);
+      else if (!m_view3d.GetMouseMove())
+         m_playerPhysics.SetMovementMode(0, Physics::moveSlide);
       break;
 
       // slide right key
@@ -423,9 +416,8 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
          m_playerPhysics.SetMovementFactor(Physics::moveSlide, 1.0);
          m_playerPhysics.SetMovementMode(Physics::moveSlide);
       }
-      else
-         if (!m_view3d.GetMouseMove())
-            m_playerPhysics.SetMovementMode(0, Physics::moveSlide);
+      else if (!m_view3d.GetMouseMove())
+         m_playerPhysics.SetMovementMode(0, Physics::moveSlide);
       break;
 
       // walk backwards keys
@@ -442,9 +434,8 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       {
          if (m_moveWalkForward || m_moveRunForward)
             m_playerPhysics.SetMovementFactor(Physics::moveWalk, m_moveRunForward ? 1.0 : 0.6);
-         else
-            if (!m_view3d.GetMouseMove())
-               m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
+         else if (!m_view3d.GetMouseMove())
+            m_playerPhysics.SetMovementMode(0, Physics::moveWalk);
       }
       break;
 
