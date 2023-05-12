@@ -29,16 +29,29 @@
 #include "GameInterface.hpp"
 #include "Constants.hpp"
 #include <SDL2/SDL_opengl.h>
+#include "OpenGL.hpp"
 
 Renderer::Renderer()
    :m_viewOffset(0.0, 0.0, 0.0),
-   m_rendererImpl(NULL)
+   m_rendererImpl(nullptr)
 {
+   if (SDL_Init(SDL_INIT_VIDEO) < 0)
+   {
+      UaTrace("error initializing video: %s\n", SDL_GetError());
+
+      std::string text("error initializing video: ");
+      text.append(SDL_GetError());
+      throw Base::Exception(text.c_str());
+   }
+
+   OpenGL::PrintOpenGLDiagnostics();
 }
 
 Renderer::~Renderer()
 {
    Done();
+
+   SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 /// Initializes the renderer, the texture manager, critter frames manager and
@@ -47,10 +60,7 @@ Renderer::~Renderer()
 void Renderer::InitGame(IBasicGame& game)
 {
    // check if textures > 256 x 256 are supported
-   GLint maxTextureSize = 0;
-   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
-
-   if (maxTextureSize <= 256)
+   if (OpenGL::GetMaxTextureSize() <= 256)
       throw Base::Exception("OpenGL doesn't support textures larger than 256x256!");
 
    m_rendererImpl = new UnderworldRenderer(game);
@@ -77,48 +87,6 @@ void Renderer::InitGame(IBasicGame& game)
    glHint(GL_FOG_HINT, GL_DONT_CARE);
    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
    glHint(GL_POLYGON_SMOOTH_HINT, GL_DONT_CARE);
-}
-
-void Renderer::PrintOpenGLDiagnostics()
-{
-   GLint redbits, greenbits, bluebits, alphabits, depthbits;
-   glGetIntegerv(GL_RED_BITS, &redbits);
-   glGetIntegerv(GL_GREEN_BITS, &greenbits);
-   glGetIntegerv(GL_BLUE_BITS, &bluebits);
-   glGetIntegerv(GL_ALPHA_BITS, &alphabits);
-   glGetIntegerv(GL_DEPTH_BITS, &depthbits);
-
-   UaTrace("OpenGL stats:\n bit depths: red/green/blue/alpha = %u/%u/%u/%u, depth=%u\n",
-      redbits, greenbits, bluebits, alphabits, depthbits);
-
-   GLint maxtexsize, maxlights, maxnamestack, maxmodelstack, maxprojstack;
-   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxtexsize);
-   glGetIntegerv(GL_MAX_LIGHTS, &maxlights);
-   glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, &maxnamestack);
-   glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &maxmodelstack);
-   glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &maxprojstack);
-
-   UaTrace(" max. texture size = %u x %u, max. lights = %u\n",
-      maxtexsize, maxtexsize, maxlights);
-
-   UaTrace(" stack depths: name stack = %u, modelview stack = %u, proj. stack = %u\n",
-      maxnamestack, maxmodelstack, maxprojstack);
-
-   const GLubyte* vendor, *rendererName, *version;
-   vendor = glGetString(GL_VENDOR);
-   rendererName = glGetString(GL_RENDERER);
-   version = glGetString(GL_VERSION);
-
-   UaTrace(" vendor: %s\n renderer: %s\n version: %s\n",
-      vendor, rendererName, version);
-
-   GLboolean stereo;
-   glGetBooleanv(GL_STEREO, &stereo);
-
-   UaTrace(" supports stereo mode: %s\n",
-      stereo == GL_TRUE ? "yes" : "no");
-
-   UaTrace("video driver: %s\n\n", SDL_GetCurrentVideoDriver());
 }
 
 /// Cleans up renderer.

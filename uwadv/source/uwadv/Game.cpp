@@ -309,8 +309,6 @@ void Game::InitSDL()
    m_viewport = std::make_unique<Viewport>(*m_renderWindow.get());
 
    m_renderer.SetViewport(m_viewport.get());
-
-   Renderer::PrintOpenGLDiagnostics();
 }
 
 void Game::OnEvent(SDL_Event& event)

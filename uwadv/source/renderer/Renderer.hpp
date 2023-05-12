@@ -62,9 +62,6 @@ public:
    /// initializes renderer
    void InitGame(IBasicGame& game);
 
-   /// output some OpenGL diagnostics
-   static void PrintOpenGLDiagnostics();
-
    /// cleans up renderer
    void Done();
 

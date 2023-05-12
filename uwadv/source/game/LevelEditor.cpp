@@ -30,10 +30,7 @@
 LevelEditor::LevelEditor(IBasicGame& game, const void* windowHandle)
    :m_game(game)
 {
-   SDL_Init(SDL_INIT_VIDEO);
-
    m_renderer = std::make_shared<Renderer>();
-   m_renderer->PrintOpenGLDiagnostics();
 
    m_renderWindow = std::make_shared<RenderWindow>(windowHandle);
 
@@ -58,8 +55,6 @@ LevelEditor::~LevelEditor()
       m_renderer->Done();
       m_renderer.reset();
    }
-
-   SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 void LevelEditor::SetWindowSize(unsigned int width, unsigned int height)

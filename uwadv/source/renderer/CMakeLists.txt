@@ -30,6 +30,7 @@ add_library(${PROJECT_NAME} STATIC
 	"Model3DVrml.cpp" "Model3DVrml.hpp"
 	"PolygonTessellator.cpp" "PolygonTessellator.hpp"
 	"Quadtree.cpp" "Quadtree.hpp"
+	"OpenGL.cpp" "OpenGL.hpp"
 	"Renderer.cpp" "Renderer.hpp"
 	"RenderOptions.hpp"
 	"RenderWindow.cpp" "RenderWindow.hpp"
