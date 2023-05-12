@@ -64,6 +64,9 @@ public:
    /// returns game instance; const version
    virtual const IBasicGame& GetConstGameInstance() const = 0;
 
+   /// sets up game after initializing game instance
+   virtual void SetupGame() = 0;
+
    /// returns game tickrate
    virtual double GetTickRate() const = 0;
 

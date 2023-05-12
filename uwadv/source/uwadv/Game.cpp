@@ -83,7 +83,7 @@ void Game::Init()
       m_width = 640;
       m_height = 480;
 
-      std::string screen_res{ GetSettings().GetString(Base::settingScreenResolution) };
+      std::string screen_res{ m_gameInstance.GetSettings().GetString(Base::settingScreenResolution) };
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
@@ -198,7 +198,7 @@ void Game::ParseArgs(unsigned int argc, const char** argv)
          m_initAction = 2;
 
          std::string customGamePrefix{ argv[i + 1] };
-         GetSettings().SetValue(Base::settingGamePrefix, customGamePrefix);
+         m_gameInstance.GetSettings().SetValue(Base::settingGamePrefix, customGamePrefix);
       }
       break;
 
@@ -223,7 +223,8 @@ void Game::Run()
 
    case 1: // load savegame
    {
-      BasicGame::LoadSavegame(m_savegameName);
+      m_gameInstance.LoadSavegame(m_savegameName);
+      SetupGame();
 
       // immediately start game
       m_gameScreenHost.ReplaceScreen(new OriginalIngameScreen(*this), false);
@@ -233,9 +234,10 @@ void Game::Run()
    case 2: // start custom game
    {
       std::string customGamePrefix =
-         GetSettings().GetString(Base::settingGamePrefix);
+         m_gameInstance.GetSettings().GetString(Base::settingGamePrefix);
 
-      BasicGame::InitCustomGame(customGamePrefix);
+      m_gameInstance.InitCustomGame(customGamePrefix);
+      SetupGame();
 
       if (customGamePrefix == "uw2")
       {
@@ -281,7 +283,7 @@ void Game::Done()
 {
    m_gameScreenHost.Cleanup();
 
-   DoneGame();
+   m_gameInstance.DoneGame();
 
    SDL_Quit();
 }
@@ -298,7 +300,7 @@ void Game::InitSDL()
    m_renderWindow = std::make_unique<RenderWindow>(
       m_width, m_height,
       "Underworld Adventures",
-      GetSettings().GetBool(Base::settingFullscreen));
+      m_gameInstance.GetSettings().GetBool(Base::settingFullscreen));
 
 #ifdef WIN32
    m_renderWindow->SetWindowIcon(IDI_ICON);
@@ -346,19 +348,19 @@ void Game::OnEvent(SDL_Event& event)
    }
 }
 
-void Game::InitGame()
+void Game::SetupGame()
 {
-   BasicGame::InitGame();
-
    m_renderer.InitGame(GetGameInstance());
 
-   m_audioManager = std::make_unique<Audio::AudioManager>(GetSettings(), GetResourceManager());
+   m_audioManager = std::make_unique<Audio::AudioManager>(
+      m_gameInstance.GetSettings(),
+      m_gameInstance.GetResourceManager());
 }
 
 void Game::ToggleFullscreen()
 {
-   bool isFullscreen = !GetSettings().GetBool(Base::settingFullscreen);
-   GetSettings().SetValue(Base::settingFullscreen, isFullscreen);
+   bool isFullscreen = !m_gameInstance.GetSettings().GetBool(Base::settingFullscreen);
+   m_gameInstance.GetSettings().SetValue(Base::settingFullscreen, isFullscreen);
 
    m_renderWindow->SetFullscreen(isFullscreen);
 }

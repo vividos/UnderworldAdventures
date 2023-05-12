@@ -33,7 +33,6 @@
 
 /// main game class
 class Game :
-   public BasicGame,
    public MainGameLoop,
    public IGame
 {
@@ -55,14 +54,13 @@ public:
    /// cleans up all stuff
    void Done();
 
-   // virtual BasicGame methods
-
-   virtual void InitGame() override;
-
    // virtual IGame methods
 
-   virtual IBasicGame& GetGameInstance() override { return *this; }
-   virtual const IBasicGame& GetConstGameInstance() const override { return *this; }
+   virtual IBasicGame& GetGameInstance() override { return m_gameInstance; }
+   virtual const IBasicGame& GetConstGameInstance() const override { return m_gameInstance; }
+
+   /// sets up game
+   virtual void SetupGame() override;
 
    virtual double GetTickRate() const override
    {
@@ -121,6 +119,9 @@ private:
    void ClearScreen();
 
 private:
+   /// game instance
+   BasicGame m_gameInstance;
+
    /// render window
    std::unique_ptr<RenderWindow> m_renderWindow;
 
