@@ -104,9 +104,6 @@ void CreateCharacterScreen::Init()
 
    UaTrace("character creation screen started\n");
 
-   // setup screen
-   m_game.GetRenderer().SetupForUserInterface();
-
    // get a pointer to to current player
    m_player = &(m_gameInstance.GetUnderworld().GetPlayer());
 

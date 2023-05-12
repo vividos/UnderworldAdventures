@@ -65,8 +65,6 @@ void StartSplashScreen::Init()
       !isUw2 ? Audio::musicUw1_Introduction : Audio::musicUw2_LabyrinthOfWorldsTheme,
       false);
 
-   m_game.GetRenderer().SetupForUserInterface();
-
    SetFadeinComplete();
 
    // leave out first two screens when we have savegames

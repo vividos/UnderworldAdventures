@@ -70,9 +70,6 @@ void ConversationScreen::Init()
 
    UaTrace("conversation slot 0x%04x\n", convslot);
 
-   // init renderer
-   m_game.GetRenderer().SetupForUserInterface();
-
    m_normalFont.Load(m_gameInstance.GetResourceManager(), fontNormal);
 
    // background image

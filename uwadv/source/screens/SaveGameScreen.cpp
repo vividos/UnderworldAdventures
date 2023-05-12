@@ -332,8 +332,6 @@ void SaveGameScreen::Init()
 
    UaTrace("save game screen started\n");
 
-   m_game.GetRenderer().SetupForUserInterface();
-
    m_showPreview = false;
    m_isEditingDescription = false;
    m_pressedButton = saveGameButtonNone;
