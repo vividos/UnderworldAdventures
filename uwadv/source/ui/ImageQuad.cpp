@@ -104,7 +104,7 @@ void ImageQuad::Draw()
 
    double dx = 0.0, dy = 0.0;
 
-   unsigned int x0, x1, y0, y1;
+   GLdouble x0, x1, y0, y1;
    x0 = m_windowXPos;
    x1 = m_windowXPos + m_windowWidth;
 

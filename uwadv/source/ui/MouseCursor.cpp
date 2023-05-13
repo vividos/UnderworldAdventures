@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,24 +21,18 @@
 //
 #include "pch.hpp"
 #include "MouseCursor.hpp"
-#include "GameInterface.hpp"
-#include "Renderer.hpp"
 #include "ImageManager.hpp"
 
 void MouseCursor::Init(IBasicGame& game, unsigned int initialType,
    unsigned int paletteIndex)
 {
-   Window::Create(0, 0, 0, 0);
+   ImageQuad::Init(game, 0, 0);
 
    game.GetImageManager().LoadList(m_cursorImages, "cursors",
       0, 0, paletteIndex);
 
-   m_mouseTexture.Init(1);
-
    m_isVisible = false;
    SetType(initialType);
-
-   m_smoothUI = game.GetSettings().GetBool(Base::settingUISmooth);
 }
 
 void MouseCursor::Show(bool show)
@@ -64,19 +58,14 @@ void MouseCursor::SetCustom(IndexedImage& cursorImage)
    m_windowWidth = cursorImage.GetXRes();
    m_windowHeight = cursorImage.GetYRes();
 
-   IndexedImage tempImage;
-   tempImage.Create(m_windowWidth + 1, m_windowHeight + 1);
-   tempImage.PasteRect(cursorImage, 0, 0, m_windowWidth, m_windowHeight, 0, 0);
+   IndexedImage& image = GetImage();
+   image.Create(m_windowWidth + 1, m_windowHeight + 1);
+   image.Clear();
+   image.PasteRect(cursorImage, 0, 0, m_windowWidth, m_windowHeight, 0, 0);
 
-   tempImage.SetPalette(cursorImage.GetPalette());
+   image.SetPalette(cursorImage.GetPalette());
 
-   m_mouseTexture.Convert(tempImage);
-   m_mouseTexture.Upload();
-}
-
-void MouseCursor::Destroy()
-{
-   m_mouseTexture.Done();
+   Update();
 }
 
 void MouseCursor::Draw()
@@ -84,32 +73,15 @@ void MouseCursor::Draw()
    if (!m_isVisible)
       return;
 
-   bool blend_enabled = glIsEnabled(GL_BLEND) == GL_TRUE;
+   bool isBlendEnabled = glIsEnabled(GL_BLEND) == GL_TRUE;
 
    // mouse cursor must be drawn with blending enabled
-   if (!blend_enabled)
+   if (!isBlendEnabled)
       glEnable(GL_BLEND);
 
-   m_mouseTexture.Use();
-   double u = m_mouseTexture.GetTexU(), v = m_mouseTexture.GetTexV();
-   u -= m_mouseTexture.GetTexU() / m_mouseTexture.GetXRes();
-   v -= m_mouseTexture.GetTexV() / m_mouseTexture.GetYRes();
+   ImageQuad::Draw();
 
-   // set wrap parameter
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_smoothUI ? GL_LINEAR : GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_smoothUI ? GL_LINEAR : GL_NEAREST);
-
-   glBegin(GL_QUADS);
-   glTexCoord2d(0.0, v); glVertex2i(m_windowXPos, 200 - m_windowYPos);
-   glTexCoord2d(u, v); glVertex2i(m_windowXPos + m_windowWidth, 200 - m_windowYPos);
-   glTexCoord2d(u, 0.0); glVertex2i(m_windowXPos + m_windowWidth, 200 - m_windowYPos + m_windowHeight);
-   glTexCoord2d(0.0, 0.0); glVertex2i(m_windowXPos, 200 - m_windowYPos + m_windowHeight);
-   glEnd();
-
-   if (!blend_enabled)
+   if (!isBlendEnabled)
       glDisable(GL_BLEND);
 }
 
@@ -120,7 +92,7 @@ bool MouseCursor::ProcessEvent(SDL_Event& event)
       CalcMousePosition(event, m_windowXPos, m_windowYPos);
 
       m_windowXPos -= m_windowWidth / 2.0;
-      m_windowYPos += m_windowHeight / 2.0;
+      m_windowYPos -= m_windowHeight / 2.0;
 
       m_windowXPos += m_offsetX;
       m_windowYPos += m_offsetY;

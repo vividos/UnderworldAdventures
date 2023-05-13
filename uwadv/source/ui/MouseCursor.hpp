@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,14 +24,13 @@
 //
 #pragma once
 
-#include "Window.hpp"
+#include "ImageQuad.hpp"
 #include "IndexedImage.hpp"
-#include "Texture.hpp"
 
 class IGame;
 
 /// mouse cursor class
-class MouseCursor : public Window
+class MouseCursor : public ImageQuad
 {
 public:
    /// ctor
@@ -56,9 +55,8 @@ public:
    void SetXPos(unsigned int posX) { m_windowXPos = posX; }
 
    // virtual methods from Window
-   virtual void Destroy() override;
    virtual void Draw() override;
-   bool ProcessEvent(SDL_Event& event) override;
+   virtual bool ProcessEvent(SDL_Event& event) override;
 
 protected:
    /// is cursor visible
@@ -66,12 +64,6 @@ protected:
 
    /// mouse cursor image list
    std::vector<IndexedImage> m_cursorImages;
-
-   /// texture object for mouse
-   Texture m_mouseTexture;
-
-   /// indicates if mouse cursor is drawn using smooth (filtered) pixels
-   bool m_smoothUI = false;
 
    /// X offset from the center of the image to mouse position
    int m_offsetX = 0;
