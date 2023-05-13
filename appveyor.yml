@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2022 Underworld Adventures Team
+# Copyright (c) 2002-2023 Underworld Adventures Team
 #
 # AppVeyor build configuration file
 #
@@ -20,7 +20,7 @@ before_build:
   - ps: uwadv\Patch-BuildVersion.ps1 -version $env:appveyor_build_version
   - cmd: |
       cd "C:\Tools\vcpkg"
-      git pull > nul
+      REM git pull > nul
       call .\bootstrap-vcpkg.bat -disableMetrics
 
 build:
