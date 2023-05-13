@@ -154,6 +154,7 @@ private:
    // IGame virtual methods
    virtual IBasicGame& GetGameInstance() override { return m_gameInstance; }
    virtual const IBasicGame& GetConstGameInstance() const override { return m_gameInstance; }
+   virtual void SetupGame() override {}
 
    virtual double GetTickRate() const override
    {
