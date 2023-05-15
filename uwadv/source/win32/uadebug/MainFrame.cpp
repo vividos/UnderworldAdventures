@@ -716,11 +716,16 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
    return 0;
 }
 
+bool MainFrame::IsDockingWindowVisible(DockingWindowBase& dockingWindow) const
+{
+   return dockingWindow.IsWindow() &&
+      dockingWindow.IsWindowVisible() &&
+      (dockingWindow.IsDocking() || dockingWindow.IsFloating());
+}
+
 bool MainFrame::ShowHideDockingWindow(DockingWindowBase& dockingWindow)
 {
-   // determine if docking window is visible
-   bool isVisible = dockingWindow.IsWindow() && dockingWindow.IsWindowVisible() &&
-      (dockingWindow.IsDocking() || dockingWindow.IsFloating());
+   bool isVisible = IsDockingWindowVisible(dockingWindow);
 
    if (isVisible)
    {

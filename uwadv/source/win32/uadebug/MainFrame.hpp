@@ -201,6 +201,9 @@ private:
       return 0;
    }
 
+   /// determines if given docking window is currently visible (and docked or floating)
+   bool IsDockingWindowVisible(DockingWindowBase& dockingWindow) const;
+
    /// shows or hides docking windows
    bool ShowHideDockingWindow(DockingWindowBase& dockingWindow);
 
