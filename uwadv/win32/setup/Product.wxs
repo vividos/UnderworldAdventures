@@ -150,18 +150,91 @@
       <Component Id="LexillaLexer">
         <File Id="LexillaDll" Name="Lexilla.dll" Source="$(var.OutputFolder)Lexilla.dll" />
       </Component>
+
+      <Component Id="LuaLib">
+        <File Id="LuaDll" Name="lua.dll" Source="$(var.OutputFolder)lua.dll" />
+      </Component>
+
+      <Component Id="LuaProperties">
+        <File Id="LuaProperties" Name="lua.properties" Source="$(var.OutputFolder)lua.properties" />
+      </Component>
+
+      <Component Id="Mpg123Library">
+        <File Id="Mpg123Dll" Name="mpg123.dll" Source="$(var.OutputFolder)mpg123.dll" />
+      </Component>
+
+      <Component Id="OggLibrary">
+        <File Id="OggDll" Name="ogg.dll" Source="$(var.OutputFolder)ogg.dll" />
+      </Component>
+
+      <Component Id="OpusLibrary">
+        <File Id="OpusDll" Name="opus.dll" Source="$(var.OutputFolder)opus.dll" />
+      </Component>
+
+      <Component Id="VorbisLibrary">
+        <File Id="VorbisDll" Name="vorbis.dll" Source="$(var.OutputFolder)vorbis.dll" />
+      </Component>
+
+      <Component Id="VorbisFileLibrary">
+        <File Id="VorbisFileDll" Name="vorbisfile.dll" Source="$(var.OutputFolder)vorbisfile.dll" />
+      </Component>
+
+      <Component Id="ZlibLibrary">
+        <File Id="Zlib1Dll" Name="zlib1.dll" Source="$(var.OutputFolder)zlib1.dll" />
+      </Component>
+
+      <Component Id="ZzipLibrary">
+        <File Id="ZzipDll" Name="zzip.dll" Source="$(var.OutputFolder)zzip.dll" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="UnderworldAdventuresTools" Directory="ToolsFolder">
 
       <!-- Tools -->
-      <Component Id="StrPakTool">
-        <File Id="StrPakExe" Name="strpak.exe" Source="$(var.OutputFolder)tools\strpak.exe" />
+      <Component Id="ConvDebugger">
+        <File Id="ConvDbgExe" Name="convdbg.exe" Source="$(var.OutputFolder)tools\convdbg.exe" />
+      </Component>
+
+      <Component Id="ConvDecompiler">
+        <File Id="ConvDecExe" Name="convdec.exe" Source="$(var.OutputFolder)tools\convdec.exe" />
       </Component>
 
       <Component Id="LuaCompiler">
         <File Id="LuaCExe" Name="luac.exe" Source="$(var.OutputFolder)tools\luac.exe" />
       </Component>
+
+      <Component Id="MapDisplayTool">
+        <File Id="MapDispExe" Name="mapdisp.exe" Source="$(var.OutputFolder)tools\mapdisp.exe" />
+      </Component>
+
+      <Component Id="StrPakTool">
+        <File Id="StrPakExe" Name="strpak.exe" Source="$(var.OutputFolder)tools\strpak.exe" />
+      </Component>
+
+      <Component Id="ToolsSdl2Library">
+        <File Id="ToolsSdl2Dll" Name="SDL2.dll" Source="$(var.OutputFolder)tools\SDL2.dll" />
+      </Component>
+
+      <Component Id="UnderworldDumpTool">
+        <File Id="UwDumpExe" Name="uwdump.exe" Source="$(var.OutputFolder)tools\uwdump.exe" />
+      </Component>
+
+      <Component Id="XmiToMidiTool">
+        <File Id="Xmi2MidExe" Name="xmi2mid.exe" Source="$(var.OutputFolder)tools\xmi2mid.exe" />
+      </Component>
+
+      <Component Id="ToolsZlibLibrary">
+        <File Id="ToolsZlib1Dll" Name="zlib1.dll" Source="$(var.OutputFolder)tools\zlib1.dll" />
+      </Component>
+
+      <Component Id="ToolsZzipLibrary">
+        <File Id="ToolsZzipDll" Name="zzip.dll" Source="$(var.OutputFolder)tools\zzip.dll" />
+      </Component>
+
+      <Component Id="ReadmeTools">
+        <File Id="ReadmeToolsTxt" Name="README.Tools.txt" Source="$(var.OutputFolder)tools\README.Tools.txt" />
+      </Component>
+
     </ComponentGroup>
 
     <ComponentGroup Id="UnderworldAdventuresData" Directory="DataFolder">
