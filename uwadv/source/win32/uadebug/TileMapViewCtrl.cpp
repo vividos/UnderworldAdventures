@@ -32,6 +32,16 @@ TileMapViewCtrl::TileMapViewCtrl()
    m_selectedTileX = m_selectedTileY = unsigned(-1);
 }
 
+bool TileMapViewCtrl::GetSelectedTileXY(unsigned int& selectedTileX, unsigned int& selectedTileY) const
+{
+   selectedTileX = m_selectedTileX;
+   selectedTileY = m_selectedTileY;
+
+   return
+      m_selectedTileX != unsigned(-1) &&
+      m_selectedTileY != unsigned(-1);
+}
+
 void TileMapViewCtrl::DoPaint(CDCHandle hDC)
 {
    CRect rc;

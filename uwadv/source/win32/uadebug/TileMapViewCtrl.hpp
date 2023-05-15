@@ -63,6 +63,9 @@ public:
    /// returns tile y size
    unsigned int GetTileSizeY() const { return m_tileSizeY; }
 
+   /// returns currently selected tile X and Y coordinates, or false when none is selected
+   bool GetSelectedTileXY(unsigned int& selectedTileX, unsigned int& selectedTileY) const;
+
    /// handles scrolled painting; called by CScrollWindowImpl
    void DoPaint(CDCHandle dc);
 

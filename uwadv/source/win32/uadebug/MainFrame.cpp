@@ -434,6 +434,24 @@ LRESULT MainFrame::OnViewTileInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
    bool isVisible = ShowHideDockingWindow(m_tileInfoWindow);
    UISetCheck(ID_VIEW_TILEINFO, isVisible);
+
+   unsigned int selectedTileX = 0;
+   unsigned int selectedTileY = 0;
+
+   if (isVisible &&
+      ::IsWindowVisible(m_tilemapChildFrame) &&
+      m_tilemapChildFrame.GetTilemapViewCtrl().GetSelectedTileXY(
+         selectedTileX, selectedTileY))
+   {
+      // send notification about tile selection
+      DebugWindowNotification notify;
+      notify.m_notifyCode = notifyCodeSelectedTile;
+      notify.m_param1 = selectedTileX;
+      notify.m_param2 = selectedTileY;
+
+      SendNotification(notify, true, &m_tileInfoWindow);
+   }
+
    return 0;
 }
 
