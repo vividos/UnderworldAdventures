@@ -142,27 +142,7 @@ void BasicGame::InitGame()
    m_savegamesManager->SetNewGamePrefix(gamePrefix);
    m_savegamesManager->Rescan();
 
-   // try to load %prefix%/game.cfg
-   {
-      std::string gameConfigFilename{ gamePrefix };
-      gameConfigFilename.append("/game.cfg");
-
-      GameConfigLoader configLoader{ *this, &m_scripting };
-
-      Base::SDL_RWopsPtr gameConfig =
-         m_resourceManager->GetResourceFile(gameConfigFilename.c_str());
-
-      // no game.cfg found? too bad ...
-      if (gameConfig == nullptr)
-      {
-         std::string text = "could not find game.cfg for game prefix ";
-         text += gamePrefix;
-         throw Base::Exception(text.c_str());
-      }
-
-      Base::TextFile textFile{ gameConfig };
-      configLoader.Load(textFile);
-   }
+   LoadGameConfig(gamePrefix);
 
    UaTrace("using generic uw-path: %s\n",
       m_settings.GetString(Base::settingUnderworldPath).c_str());
@@ -206,6 +186,29 @@ void BasicGame::InitGame()
       else
          UaTrace("not available\n");
    }
+}
+
+// tries to load %prefix%/game.cfg
+void BasicGame::LoadGameConfig(const std::string& gamePrefix)
+{
+   std::string gameConfigFilename{ gamePrefix };
+   gameConfigFilename.append("/game.cfg");
+
+   GameConfigLoader configLoader{ *this, &m_scripting };
+
+   Base::SDL_RWopsPtr gameConfig =
+      m_resourceManager->GetResourceFile(gameConfigFilename.c_str());
+
+   // no game.cfg found? too bad ...
+   if (gameConfig == nullptr)
+   {
+      std::string text = "could not find game.cfg for game prefix ";
+      text += gamePrefix;
+      throw Base::Exception(text.c_str());
+   }
+
+   Base::TextFile textFile{ gameConfig };
+   configLoader.Load(textFile);
 }
 
 void BasicGame::DoneGame()

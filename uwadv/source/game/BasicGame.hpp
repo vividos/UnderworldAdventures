@@ -128,6 +128,10 @@ public:
    }
 
 private:
+   /// loads game.cfg for given game prefix
+   void LoadGameConfig(const std::string& gamePrefix);
+
+private:
    /// indicates if the game is currently paused
    bool m_isPaused;
 
