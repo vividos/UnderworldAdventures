@@ -46,10 +46,10 @@ void GameConfigLoader::Load(Base::TextFile& file)
 /// Processes a keyword/value pair. The following keywords are currently
 /// recognized:
 /// game-name: specifies game name in future uw menu screens
-/// init-scripting: inits scripting engine
-/// load-script: loads a given script into scripting engine
-/// use-resources: specifies which resources the game has to use (uw1 or uw2)
-/// import-strings: imports gamestrings from custom .pak file
+/// scripting-lang: inits scripting engine
+/// scripting-file: loads a given script into scripting engine
+/// base-game: specifies which resources the game has to use (uw1 or uw2)
+/// strings-file: imports gamestrings from custom .pak file
 /// \param name the keyword name
 /// \param value the keyword value
 void GameConfigLoader::ProcessParameter(std::string name, std::string value)
@@ -58,7 +58,7 @@ void GameConfigLoader::ProcessParameter(std::string name, std::string value)
    {
       m_gameName = value;
    }
-   else if (name.compare("init-scripting") == 0)
+   else if (name.compare("scripting-lang") == 0)
    {
       if (value == "lua")
       {
@@ -74,12 +74,12 @@ void GameConfigLoader::ProcessParameter(std::string name, std::string value)
       else
          UaTrace("unsupported scripting language \"%s\"\n", value.c_str());
    }
-   else if (name.compare("load-script") == 0)
+   else if (name.compare("scripting-file") == 0)
    {
       // load given lua script name
       m_game.GetScripting().LoadScript(value.c_str());
    }
-   else if (name.compare("use-resources") == 0)
+   else if (name.compare("base-game") == 0)
    {
       Base::Settings& settings = m_game.GetSettings();
 
@@ -127,13 +127,12 @@ void GameConfigLoader::ProcessParameter(std::string name, std::string value)
       }
       else
       {
-         // unknown string
-         std::string text("unknown use-resources string in game.cfg: ");
+         std::string text("unknown base-game string in game.cfg: ");
          text.append(value);
          throw Base::Exception(text.c_str());
       }
    }
-   else if (name.compare("import-strings") == 0)
+   else if (name.compare("strings-file") == 0)
    {
       // load game strings
       Base::SDL_RWopsPtr rwops = m_game.GetResourceManager().GetResourceFile(value.c_str());

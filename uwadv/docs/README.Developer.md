@@ -368,7 +368,7 @@ The Lua scripts are usually loaded into the game engine when a new game is
 started, e.g. by creating a new character or when loading a save game. Based
 on the game prefix (e.g. "uw1" or "uw"), the file
 `uadata??.zip/<game-type>/game.cfg` is processed and all Lua scripts specified
-with the `load-script` command is loaded.
+with the `scripting-file` command is loaded.
 
 The two scripts `createchar.lua` and `cutscene.lua` are special scripts used
 for character creation and and showing cutscenes and are described in later
