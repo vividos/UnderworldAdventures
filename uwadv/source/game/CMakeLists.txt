@@ -1,6 +1,6 @@
 #
 # Underworld Adventures - an Ultima Underworld remake project
-# Copyright (c) 2002-2022 Underworld Adventures Team
+# Copyright (c) 2002-2023 Underworld Adventures Team
 #
 # CMakeList.txt: CMake project for game.
 #
@@ -12,6 +12,7 @@ add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"BasicGame.cpp" "BasicGame.hpp"
 	"DebugServer.cpp" "DebugServer.hpp"
+	"GameConfig.cpp" "GameConfig.hpp"
 	"GameConfigLoader.cpp" "GameConfigLoader.hpp"
 	"GameScreenHost.cpp" "GameScreenHost.hpp"
 	"LevelEditor.cpp" "LevelEditor.hpp"

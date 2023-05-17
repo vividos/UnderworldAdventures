@@ -51,6 +51,7 @@
   <ItemGroup>
     <ClCompile Include="BasicGame.cpp" />
     <ClCompile Include="DebugServer.cpp" />
+    <ClCompile Include="GameConfig.cpp" />
     <ClCompile Include="GameConfigLoader.cpp" />
     <ClCompile Include="GameScreenHost.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
@@ -62,6 +63,7 @@
   <ItemGroup>
     <ClInclude Include="BasicGame.hpp" />
     <ClInclude Include="DebugServer.hpp" />
+    <ClInclude Include="GameConfig.hpp" />
     <ClInclude Include="GameConfigLoader.hpp" />
     <ClInclude Include="GameScreenHost.hpp" />
     <ClInclude Include="LevelEditor.hpp" />
