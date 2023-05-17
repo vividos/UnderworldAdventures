@@ -24,6 +24,7 @@
 #include "ImageLoader.hpp"
 #include "ResourceManager.hpp"
 #include "ArchiveFile.hpp"
+#include <SDL_pnglite.h>
 
 void ImageManager::Init()
 {
@@ -105,4 +106,20 @@ void ImageManager::LoadFromArk(IndexedImage& image, const char* arkFilename,
    imageFile.ReadBuffer(&pixels[0], 320 * 200);
 
    image.SetPalette(m_allPalettes[paletteIndex]);
+}
+
+void ImageManager::Save(std::string filename,
+   unsigned int xres, unsigned int yres,
+   const std::vector<Uint32>& rgbaImageData)
+{
+   SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
+      const_cast<Uint32*>(rgbaImageData.data()),
+      xres, yres, 32, xres * 4,
+      SDL_PIXELFORMAT_ABGR8888);
+
+   if (surface != nullptr)
+   {
+      SDL_SavePNG(surface, filename.c_str());
+      SDL_FreeSurface(surface);
+   }
 }

@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE
 		"${PROJECT_SOURCE_DIR}/../renderer"
-		"${PROJECT_SOURCE_DIR}/../underworld")
+		"${PROJECT_SOURCE_DIR}/../underworld"
+		"${PROJECT_SOURCE_DIR}/../thirdparty/SDL_pnglite")
 
 target_link_libraries(${PROJECT_NAME} base import)

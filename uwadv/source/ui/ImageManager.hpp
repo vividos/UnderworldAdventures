@@ -56,6 +56,11 @@ public:
       return m_allPalettes[paletteIndex >= 8 ? 0 : paletteIndex];
    }
 
+   /// saves a 32-bit raw image to given filename
+   static void Save(std::string filename,
+      unsigned int xres, unsigned int yres,
+      const std::vector<Uint32>& rgbaImageData);
+
 protected:
    /// resource manager to use for loading
    Base::ResourceManager& m_resourceManager;
