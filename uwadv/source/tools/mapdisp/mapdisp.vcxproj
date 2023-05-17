@@ -47,7 +47,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\ui;$(SolutionDir)source\script;$(SolutionDir)source\underworld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -62,7 +62,7 @@
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\ui;$(SolutionDir)source\underworld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)source\import;$(SolutionDir)source\renderer;$(SolutionDir)source\ui;$(SolutionDir)source\script;$(SolutionDir)source\underworld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>

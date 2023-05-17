@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2005,2006,2019,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2005,2006,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@
 #include "physics/GeometryProvider.hpp"
 
 BasicGame::BasicGame()
-   :m_isPaused(false)
+   :m_isPaused(false),
+   m_gameConfig(BaseGameNone)
 {
    UaTrace("initializing game ...\n\n");
 
@@ -188,13 +189,11 @@ void BasicGame::InitGame()
    }
 }
 
-// tries to load %prefix%/game.cfg
+/// tries to load %prefix%/game.cfg
 void BasicGame::LoadGameConfig(const std::string& gamePrefix)
 {
    std::string gameConfigFilename{ gamePrefix };
    gameConfigFilename.append("/game.cfg");
-
-   GameConfigLoader configLoader{ *this, &m_scripting };
 
    Base::SDL_RWopsPtr gameConfig =
       m_resourceManager->GetResourceFile(gameConfigFilename.c_str());
@@ -207,8 +206,93 @@ void BasicGame::LoadGameConfig(const std::string& gamePrefix)
       throw Base::Exception(text.c_str());
    }
 
-   Base::TextFile textFile{ gameConfig };
-   configLoader.Load(textFile);
+   m_gameConfig.Load(gameConfig, gameConfigFilename);
+   ApplyGameConfig();
+}
+
+void BasicGame::ApplyGameConfig()
+{
+   Base::Settings& settings = GetSettings();
+   Base::ResourceManager& resourceManager = GetResourceManager();
+
+   switch (m_gameConfig.GetBaseGame())
+   {
+   case BaseGameUwDemo:
+   case BaseGameUw1:
+   {
+      // check base path
+      std::string base = settings.GetString(Base::settingUw1Path);
+      if (base.empty())
+         throw Base::Exception("path to uw1 was not specified in config file");
+
+      // check game files
+      bool uw1IsDemo = false;
+      if (resourceManager.CheckUw1GameFilesAvailable(uw1IsDemo))
+      {
+         settings.SetGameType(Base::gameUw1);
+         settings.SetValue(Base::settingUw1IsUwdemo, uw1IsDemo);
+      }
+      else
+         throw Base::Exception("could not find relevant uw1 game files");
+
+      // set generic uw path to uw1 path
+      settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw1Path));
+   }
+   break;
+
+   case BaseGameUw2:
+   {
+      // check base path
+      std::string base = settings.GetString(Base::settingUw2Path);
+      if (base.empty())
+         throw Base::Exception("path to uw2 was not specified in config file");
+
+      // check for uw2 game files
+      if (resourceManager.CheckUw2GameFilesAvailable())
+         settings.SetGameType(Base::gameUw2);
+      else
+         throw Base::Exception("could not find relevant uw2 game files");
+
+      // set generic uw path to uw2 path
+      settings.SetValue(Base::settingUnderworldPath, settings.GetString(Base::settingUw2Path));
+      settings.SetGameType(Base::gameUw2);
+   }
+   break;
+
+   case BaseGameNone:
+   default:
+      // nothing to check
+      break;
+   }
+
+   if (m_gameConfig.GetScriptingLanguage() == scriptingLanguageLua)
+   {
+      // init Lua scripting
+      m_scripting = IScripting::CreateScripting(scriptingLanguageLua);
+
+      if (m_scripting == nullptr)
+         throw Base::Exception("could not create scripting object");
+
+      m_scripting->Init(this);
+
+      for (const auto& scriptingFilename : m_gameConfig.GetScriptingFilesList())
+         GetScripting().LoadScript(scriptingFilename.c_str());
+   }
+
+   for (const auto& gameStringsFilename : m_gameConfig.GetGameStringsFilesList())
+   {
+      Base::SDL_RWopsPtr rwops = GetResourceManager().GetResourceFile(
+         gameStringsFilename);
+
+      if (rwops != nullptr)
+      {
+         // add strings.pak-like file
+         Import::GameStringsImporter importer{ GetGameStrings() };
+         importer.LoadStringsPakFile(rwops);
+      }
+      else
+         UaTrace("could not load strings file %s\n", gameStringsFilename.c_str());
+   }
 }
 
 void BasicGame::DoneGame()

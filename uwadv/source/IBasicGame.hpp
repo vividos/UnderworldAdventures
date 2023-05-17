@@ -41,6 +41,7 @@ class IScripting;
 class IDebugServer;
 class GameStrings;
 class IUserInterface;
+class GameConfig;
 
 /// basic game interface class, without user interface stuff
 class IBasicGame
@@ -48,6 +49,9 @@ class IBasicGame
 public:
    /// pauses or unpauses game
    virtual bool PauseGame(bool pause) = 0;
+
+   /// returns game config object
+   virtual const GameConfig& GetGameConfig() = 0;
 
    /// returns settings object
    virtual Base::Settings& GetSettings() = 0;

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include "underworld/GameLogic.hpp"
 #include "underworld/GameStrings.hpp"
 #include "physics/PhysicsModel.hpp"
+#include "game/GameConfig.hpp"
 #include "DebugServer.hpp"
 
 /// game instance class
@@ -66,6 +67,9 @@ public:
 
    /// pauses (or unpauses) game
    virtual bool PauseGame(bool pause) override;
+
+   /// returns game config object
+   virtual const GameConfig& GetGameConfig() override { return m_gameConfig; }
 
    /// returns game settings
    virtual Base::Settings& GetSettings() override
@@ -131,9 +135,15 @@ private:
    /// loads game.cfg for given game prefix
    void LoadGameConfig(const std::string& gamePrefix);
 
+   /// applies loaded game config infos to game instance
+   void ApplyGameConfig();
+
 private:
    /// indicates if the game is currently paused
    bool m_isPaused;
+
+   /// game config
+   GameConfig m_gameConfig;
 
    /// game settings
    Base::Settings m_settings;
