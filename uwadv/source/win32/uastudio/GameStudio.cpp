@@ -22,22 +22,9 @@
 #include "common.hpp"
 #include "game/BasicGame.hpp"
 
-/// Underworld Adventures studio
-class GameStudio :
-   public IUserInterface
+class TraceOnlyUserInterface : public IUserInterface
 {
 public:
-   /// ctor
-   GameStudio()
-   {
-      UaTrace("Underworld Adventures Studio\n\n");
-   }
-
-   void Init();
-   void Done();
-
-   void Run();
-
    // virtual IUserInterface methods
 
    /// notifies callback class
@@ -70,6 +57,23 @@ public:
    {
       UaTrace("ShowMap\n");
    }
+};
+
+/// Underworld Adventures studio
+class GameStudio :
+   public TraceOnlyUserInterface
+{
+public:
+   /// ctor
+   GameStudio()
+   {
+      UaTrace("Underworld Adventures Studio\n\n");
+   }
+
+   void Init();
+   void Done();
+
+   void Run();
 
 private:
    /// game instance to run the game studio on
