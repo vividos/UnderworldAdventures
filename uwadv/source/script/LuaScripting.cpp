@@ -39,7 +39,7 @@ LuaScripting::LuaScripting()
 {
 }
 
-void LuaScripting::Init(IBasicGame* game)
+void LuaScripting::Init(IGameInstance* game)
 {
    m_game = game;
 

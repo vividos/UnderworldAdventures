@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameFlask::Init(IBasicGame& game, unsigned int xpos,
+void IngameFlask::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos, 24, 33);

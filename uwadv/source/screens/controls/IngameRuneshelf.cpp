@@ -26,7 +26,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameRuneshelf::Init(IBasicGame& game, unsigned int xpos,
+void IngameRuneshelf::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos, 46, 16);

@@ -31,7 +31,7 @@ IngameDragon::IngameDragon(OriginalIngameScreen& screen, bool leftDragon)
 {
 }
 
-void IngameDragon::Init(IBasicGame& game, unsigned int xpos,
+void IngameDragon::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos, 37, 104);

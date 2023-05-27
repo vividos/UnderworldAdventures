@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "Renderer.hpp"
 
-void Ingame3DView::Init(IBasicGame& game, unsigned int xpos,
+void Ingame3DView::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos,

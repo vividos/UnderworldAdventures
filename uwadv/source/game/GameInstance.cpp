@@ -16,18 +16,18 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file BasicGame.cpp
-/// \brief basic game implementation
+/// \file GameInstance.cpp
+/// \brief game instance implementation
 //
 #include "pch.hpp"
-#include "BasicGame.hpp"
+#include "GameInstance.hpp"
 #include "TextFile.hpp"
 #include "GameConfigLoader.hpp"
 #include "import/Import.hpp"
 #include "import/GameStringsImporter.hpp"
 #include "physics/GeometryProvider.hpp"
 
-BasicGame::BasicGame()
+GameInstance::GameInstance()
    :m_isPaused(false),
    m_gameConfig(BaseGameNone)
 {
@@ -38,7 +38,7 @@ BasicGame::BasicGame()
    m_resourceManager = std::make_unique<Base::ResourceManager>(m_settings);
 }
 
-void BasicGame::InitNewGame()
+void GameInstance::InitNewGame()
 {
    InitGame();
 
@@ -50,7 +50,7 @@ void BasicGame::InitNewGame()
    GetScripting().InitNewGame();
 }
 
-void BasicGame::InitCustomGame(const std::string& customGamePrefix)
+void GameInstance::InitCustomGame(const std::string& customGamePrefix)
 {
    m_settings.SetValue(Base::settingGamePrefix, customGamePrefix);
 
@@ -67,7 +67,7 @@ void BasicGame::InitCustomGame(const std::string& customGamePrefix)
    InitGame();
 }
 
-void BasicGame::LoadSavegame(const std::string& savegameFilename)
+void GameInstance::LoadSavegame(const std::string& savegameFilename)
 {
    UaTrace("loading savegame from file %s\n", savegameFilename.c_str());
 
@@ -88,7 +88,7 @@ void BasicGame::LoadSavegame(const std::string& savegameFilename)
    GetUnderworld().Load(sg);
 }
 
-void BasicGame::RunStandalone(double tickRate)
+void GameInstance::RunStandalone(double tickRate)
 {
    Uint32 now, then = SDL_GetTicks();
 
@@ -121,7 +121,7 @@ void BasicGame::RunStandalone(double tickRate)
    }
 }
 
-void BasicGame::Tick(double elapsed)
+void GameInstance::Tick(double elapsed)
 {
    if (!m_isPaused)
       GetGameLogic().EvaluateUnderworld(elapsed);
@@ -130,7 +130,7 @@ void BasicGame::Tick(double elapsed)
    m_debugServer.Tick();
 }
 
-void BasicGame::InitGame()
+void GameInstance::InitGame()
 {
    // rescan, with proper underworld path
    m_resourceManager->Rescan(m_settings);
@@ -190,7 +190,7 @@ void BasicGame::InitGame()
 }
 
 /// tries to load %prefix%/game.cfg
-void BasicGame::LoadGameConfig(const std::string& gamePrefix)
+void GameInstance::LoadGameConfig(const std::string& gamePrefix)
 {
    std::string gameConfigFilename{ gamePrefix };
    gameConfigFilename.append("/game.cfg");
@@ -210,7 +210,7 @@ void BasicGame::LoadGameConfig(const std::string& gamePrefix)
    ApplyGameConfig();
 }
 
-void BasicGame::ApplyGameConfig()
+void GameInstance::ApplyGameConfig()
 {
    Base::Settings& settings = GetSettings();
    Base::ResourceManager& resourceManager = GetResourceManager();
@@ -295,7 +295,7 @@ void BasicGame::ApplyGameConfig()
    }
 }
 
-void BasicGame::DoneGame()
+void GameInstance::DoneGame()
 {
    m_debugServer.Shutdown();
 
@@ -307,7 +307,7 @@ void BasicGame::DoneGame()
    }
 }
 
-bool BasicGame::PauseGame(bool pause)
+bool GameInstance::PauseGame(bool pause)
 {
    bool oldPaused = m_isPaused;
    m_isPaused = pause;

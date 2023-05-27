@@ -24,7 +24,7 @@
 #include "ConfigFile.hpp"
 #include <string>
 
-class IBasicGame;
+class IGameInstance;
 class IScripting;
 
 /// \brief game.cfg loader
@@ -36,7 +36,7 @@ class GameConfigLoader
 {
 public:
    /// ctor
-   GameConfigLoader(IBasicGame& game,
+   GameConfigLoader(IGameInstance& game,
       IScripting** scripting)
       :m_game(game),
       m_scripting(scripting)
@@ -55,7 +55,7 @@ private:
 
 private:
    /// game interface
-   IBasicGame& m_game;
+   IGameInstance& m_game;
 
    /// pointer to pointer to scripting object to initialize
    IScripting** m_scripting;

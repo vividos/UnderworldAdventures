@@ -37,7 +37,7 @@
 #include "ImageManager.hpp"
 #include "LevelList.hpp"
 #include "LevelImporter.hpp"
-#include "game/BasicGame.hpp"
+#include "game/GameInstance.hpp"
 #include "MainGameLoop.hpp"
 #include "RenderOptions.hpp"
 #include "RenderWindow.hpp"
@@ -117,7 +117,7 @@ private:
 
 private:
    /// game instance to display the underworld
-   BasicGame m_gameInstance;
+   GameInstance m_gameInstance;
 
    /// list of levels
    Underworld::LevelList m_levelList;
@@ -152,8 +152,8 @@ private:
 
 private:
    // IGame virtual methods
-   virtual IBasicGame& GetGameInstance() override { return m_gameInstance; }
-   virtual const IBasicGame& GetConstGameInstance() const override { return m_gameInstance; }
+   virtual IGameInstance& GetGameInstance() override { return m_gameInstance; }
+   virtual const IGameInstance& GetConstGameInstance() const override { return m_gameInstance; }
    virtual void SetupGame() override {}
 
    virtual double GetTickRate() const override
@@ -230,7 +230,7 @@ bool MapDisplay::Init()
 
 void MapDisplay::LoadLevels()
 {
-   IBasicGame& gameInstance = GetGameInstance();
+   IGameInstance& gameInstance = GetGameInstance();
 
    gameInstance.GetSettings().SetValue(Base::settingUnderworldPath, "./");
 

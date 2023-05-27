@@ -56,8 +56,8 @@ Renderer::~Renderer()
 
 /// Initializes the renderer, the texture manager, critter frames manager and
 /// OpenGL flags common to 2d and 3d rendering.
-/// \param game game interface
-void Renderer::InitGame(IBasicGame& game)
+/// \param game game instance
+void Renderer::InitGame(IGameInstance& game)
 {
    // check if textures > 256 x 256 are supported
    if (OpenGL::GetMaxTextureSize() <= 256)

@@ -27,7 +27,7 @@
 #include "renderer/RenderWindow.hpp"
 #include "renderer/Viewport.hpp"
 #include "renderer/Renderer.hpp"
-#include "game/BasicGame.hpp"
+#include "game/GameInstance.hpp"
 #include "game/GameScreenHost.hpp"
 #include "MainGameLoop.hpp"
 
@@ -56,8 +56,8 @@ public:
 
    // virtual IGame methods
 
-   virtual IBasicGame& GetGameInstance() override { return m_gameInstance; }
-   virtual const IBasicGame& GetConstGameInstance() const override { return m_gameInstance; }
+   virtual IGameInstance& GetGameInstance() override { return m_gameInstance; }
+   virtual const IGameInstance& GetConstGameInstance() const override { return m_gameInstance; }
 
    /// sets up game
    virtual void SetupGame() override;
@@ -120,7 +120,7 @@ private:
 
 private:
    /// game instance
-   BasicGame m_gameInstance;
+   GameInstance m_gameInstance;
 
    /// render window
    std::unique_ptr<RenderWindow> m_renderWindow;

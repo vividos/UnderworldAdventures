@@ -26,7 +26,7 @@
 #include <deque>
 #include "IDebugServer.hpp"
 
-class IBasicGame;
+class IGameInstance;
 class DebuggerLibContext;
 class LevelEditor;
 
@@ -69,10 +69,10 @@ public:
    void Init();
 
    /// returns game instance
-   virtual IBasicGame& GetGameInstance() override { return *m_game; }
+   virtual IGameInstance& GetGameInstance() override { return *m_game; }
 
    /// starts debugger client; returns if debugger was already running
-   virtual bool StartDebugger(IBasicGame* game) override;
+   virtual bool StartDebugger(IGameInstance* game) override;
 
    /// returns if the debugger is running
    bool IsDebuggerRunning();
@@ -192,8 +192,8 @@ private:
    /// mutex to lock/unlock underworld object
    SDL_mutex* m_underworldLock;
 
-   /// pointer to game interface
-   IBasicGame* m_game;
+   /// game instance
+   IGameInstance* m_game;
 
    /// is true when new level textures should be prepared at next Tick()
    bool m_schedulePrepare;

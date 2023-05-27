@@ -438,7 +438,7 @@ bool DebugClient::Init(IDebugServer* pDebugInterface)
    return true;
 }
 
-IBasicGame& DebugClient::GetGameInstance()
+IGameInstance& DebugClient::GetGameInstance()
 {
    return m_debugInterface->GetGameInstance();
 }

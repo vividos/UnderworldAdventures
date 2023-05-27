@@ -109,7 +109,7 @@ void DebugServer::Init()
       m_debugLibrary->IsAvail() ? "" : "not ");
 }
 
-bool DebugServer::StartDebugger(IBasicGame* game)
+bool DebugServer::StartDebugger(IGameInstance* game)
 {
    m_game = game;
 

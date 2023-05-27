@@ -21,7 +21,7 @@
 //
 #pragma once
 
-class IBasicGame;
+class IGameInstance;
 class Renderer;
 class RenderWindow;
 class Viewport;
@@ -31,7 +31,7 @@ class LevelEditor
 {
 public:
    /// ctor
-   LevelEditor(IBasicGame& game, const void* windowHandle);
+   LevelEditor(IGameInstance& game, const void* windowHandle);
    /// dtor
    ~LevelEditor();
 
@@ -43,7 +43,7 @@ public:
 
 private:
    /// game instance
-   IBasicGame& m_game;
+   IGameInstance& m_game;
 
    /// renderer instance
    std::shared_ptr<Renderer> m_renderer;

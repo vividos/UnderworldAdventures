@@ -41,7 +41,7 @@ Uint8 c_textScrollColors[10] =
 /// \param width width of control
 /// \param height height of control
 /// \param backgroundColor background color index, from palette 0
-void TextScroll::Init(IBasicGame& game, unsigned int xpos,
+void TextScroll::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos, unsigned int width, unsigned int height,
    Uint8 backgroundColor)
 {

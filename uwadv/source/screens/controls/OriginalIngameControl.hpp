@@ -37,12 +37,12 @@ public:
    Physics::PlayerPhysicsObject& GetPlayerPhysicsObject();
 
    /// initializes ingame control
-   virtual void Init(IBasicGame&, unsigned int xpos, unsigned int ypos) = 0;
+   virtual void Init(IGameInstance&, unsigned int xpos, unsigned int ypos) = 0;
 
 protected:
    /// parent screen
    OriginalIngameScreen& m_parent;
 
    /// reference to the game's instance
-   IBasicGame& m_gameInstance;
+   IGameInstance& m_gameInstance;
 };

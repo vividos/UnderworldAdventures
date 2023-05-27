@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameSpellArea::Init(IBasicGame& game, unsigned int xpos,
+void IngameSpellArea::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos, 51, 18);

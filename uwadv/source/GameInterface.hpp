@@ -21,7 +21,7 @@
 //
 #pragma once
 
-#include "IBasicGame.hpp"
+#include "IGameInstance.hpp"
 
 namespace Audio
 {
@@ -60,9 +60,9 @@ class IGame
 {
 public:
    /// returns game instance
-   virtual IBasicGame& GetGameInstance() = 0;
+   virtual IGameInstance& GetGameInstance() = 0;
    /// returns game instance; const version
-   virtual const IBasicGame& GetConstGameInstance() const = 0;
+   virtual const IGameInstance& GetConstGameInstance() const = 0;
 
    /// sets up game after initializing game instance
    virtual void SetupGame() = 0;

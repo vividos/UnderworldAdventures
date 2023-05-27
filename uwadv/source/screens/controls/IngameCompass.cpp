@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameCompass::Init(IBasicGame& game, unsigned int xpos,
+void IngameCompass::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    // init image

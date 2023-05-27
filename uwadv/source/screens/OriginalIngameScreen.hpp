@@ -121,7 +121,7 @@ public:
    virtual IGame& GetGameInterface() override { return m_game; }
 
    /// returns game instance; for controls
-   virtual IBasicGame& GetGameInstance() override { return m_game.GetGameInstance(); }
+   virtual IGameInstance& GetGameInstance() override { return m_game.GetGameInstance(); }
 
 private:
    /// suspends game resources while showing another screen

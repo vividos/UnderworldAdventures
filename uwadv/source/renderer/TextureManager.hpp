@@ -25,7 +25,7 @@
 #include "Texture.hpp"
 #include "IndexedImage.hpp"
 
-class IBasicGame;
+class IGameInstance;
 
 /// texture manager
 class TextureManager
@@ -41,7 +41,7 @@ public:
    TextureManager& operator=(const TextureManager&) = delete;
 
    /// initializes texture manager; loads stock textures
-   void Init(IBasicGame& game);
+   void Init(IGameInstance& game);
 
    /// called every game tick
    void Tick(double tickRate);

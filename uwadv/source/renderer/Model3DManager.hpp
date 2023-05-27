@@ -29,7 +29,7 @@
 #include <map>
 #include <vector>
 
-class IBasicGame;
+class IGameInstance;
 struct RenderOptions;
 
 /// 3d model manager
@@ -40,7 +40,7 @@ public:
    Model3DManager() {}
 
    /// init manager
-   void Init(IBasicGame& game);
+   void Init(IGameInstance& game);
 
    /// returns if a 3d model for a certain item_id is available
    bool IsModelAvailable(Uint16 itemId) const;

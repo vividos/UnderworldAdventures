@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\IDebugServer.hpp" />
+    <ClInclude Include="..\IGameInstance.hpp" />
     <ClInclude Include="..\IScreenHost.hpp" />
     <ClInclude Include="..\win32\CrashReporting.hpp" />
     <ClInclude Include="Game.hpp" />

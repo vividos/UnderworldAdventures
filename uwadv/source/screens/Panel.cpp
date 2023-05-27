@@ -108,7 +108,7 @@ void Panel::Init(IPanelParent* panelParent, unsigned int xpos,
 {
    m_panelParent = panelParent;
    IGame& game = m_panelParent->GetGameInterface();
-   IBasicGame& gameInstance = game.GetGameInstance();
+   IGameInstance& gameInstance = game.GetGameInstance();
 
    m_panelType = panelInventory;
    m_useFemaleArmor = gameInstance.GetUnderworld().GetPlayer().GetAttribute(Underworld::attrGender) != 0;

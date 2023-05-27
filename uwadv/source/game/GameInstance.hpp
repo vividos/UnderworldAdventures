@@ -16,12 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file BasicGame.hpp
-/// \brief basic game class
+/// \file GameInstance.hpp
+/// \brief game instance class
 //
 #pragma once
 
-#include "IBasicGame.hpp"
+#include "IGameInstance.hpp"
 #include "base/Settings.hpp"
 #include "base/ResourceManager.hpp"
 #include "ui/IndexedImage.hpp"
@@ -34,13 +34,13 @@
 #include "DebugServer.hpp"
 
 /// game instance class
-class BasicGame : public IBasicGame
+class GameInstance : public IGameInstance
 {
 public:
    /// ctor
-   BasicGame();
+   GameInstance();
    /// dtor
-   virtual ~BasicGame() {}
+   virtual ~GameInstance() {}
 
    /// initializes new game with the currently set game prefix
    void InitNewGame();
@@ -57,7 +57,7 @@ public:
    /// processes a single tick, using given elapsed time
    void Tick(double elapsed);
 
-   // virtual IBasicGame methods
+   // virtual IGameInstance methods
 
    /// initializes game instance
    virtual void InitGame() override;

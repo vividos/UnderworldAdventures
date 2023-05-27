@@ -71,7 +71,7 @@ public:
    TextScroll() {}
 
    /// initializes text scroll
-   void Init(IBasicGame& game, unsigned int xpos, unsigned int ypos,
+   void Init(IGameInstance& game, unsigned int xpos, unsigned int ypos,
       unsigned int width, unsigned int height, Uint8 backgroundColor);
 
    /// sets new foreground text color code

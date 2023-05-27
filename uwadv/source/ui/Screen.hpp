@@ -83,7 +83,7 @@ protected:
    IGame& m_game;
 
    /// game instance
-   IBasicGame& m_gameInstance;
+   IGameInstance& m_gameInstance;
 
    /// screen keymap
    Base::Keymap* m_screenKeymap;

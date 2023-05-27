@@ -27,7 +27,7 @@
 
 const double c_renderHeightScale = 0.125 * 0.25;
 
-UnderworldRenderer::UnderworldRenderer(IBasicGame& game)
+UnderworldRenderer::UnderworldRenderer(IGameInstance& game)
    :m_selectionMode(false)
 {
    m_textureManager.Init(game);

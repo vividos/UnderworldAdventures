@@ -10,7 +10,7 @@ project(game)
 
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
-	"BasicGame.cpp" "BasicGame.hpp"
+	"GameInstance.cpp" "GameInstance.hpp"
 	"DebugServer.cpp" "DebugServer.hpp"
 	"GameConfig.cpp" "GameConfig.hpp"
 	"GameConfigLoader.cpp" "GameConfigLoader.hpp"

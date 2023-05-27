@@ -241,7 +241,7 @@ public:
    bool Init(IDebugServer* pDebugInterface);
 
    /// returns current game instance
-   IBasicGame& GetGameInstance();
+   IGameInstance& GetGameInstance();
 
    void Lock(bool locked);
 

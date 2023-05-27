@@ -23,7 +23,7 @@
 
 #include "GameLogic.hpp"
 
-class IBasicGame;
+class IGameInstance;
 
 /// scripting language
 enum ScriptingLanguage
@@ -40,7 +40,7 @@ public:
    virtual ~IScripting() {}
 
    /// inits scripting
-   virtual void Init(IBasicGame* game) = 0;
+   virtual void Init(IGameInstance* game) = 0;
 
    /// loads a script into scripting engine
    virtual bool LoadScript(const char* basename) = 0;

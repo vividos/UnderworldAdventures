@@ -87,7 +87,7 @@ struct IngameCommandMenuInfo
    },
 };
 
-void IngameCommandButtons::Init(IBasicGame& game, unsigned int xpos,
+void IngameCommandButtons::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos, 35, 108);

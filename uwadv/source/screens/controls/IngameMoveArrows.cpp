@@ -23,7 +23,7 @@
 #include "IngameMoveArrows.hpp"
 #include "../OriginalIngameScreen.hpp"
 
-void IngameMoveArrows::Init(IBasicGame& game, unsigned int xpos,
+void IngameMoveArrows::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Create(xpos, ypos, 63, 14);

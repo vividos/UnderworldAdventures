@@ -60,7 +60,7 @@ public:
    }
 
    /// initializes renderer
-   void InitGame(IBasicGame& game);
+   void InitGame(IGameInstance& game);
 
    /// cleans up renderer
    void Done();

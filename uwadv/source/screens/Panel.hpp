@@ -49,7 +49,7 @@ public:
    virtual IGame& GetGameInterface() = 0;
 
    /// returns game instance
-   virtual IBasicGame& GetGameInstance() = 0;
+   virtual IGameInstance& GetGameInstance() = 0;
 };
 
 

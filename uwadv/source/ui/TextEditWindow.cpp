@@ -27,7 +27,7 @@ TextEditWindow::~TextEditWindow() noexcept
 {
 }
 
-void TextEditWindow::Init(IBasicGame& game, unsigned int xpos,
+void TextEditWindow::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos, unsigned int width, Uint8 backgroundColor,
    Uint8 prefixColor, Uint8 textColor,
    const char* prefixText, const char* startText, bool border,

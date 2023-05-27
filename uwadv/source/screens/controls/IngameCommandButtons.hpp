@@ -88,7 +88,7 @@ public:
    }
 
    /// initializes command buttons
-   virtual void Init(IBasicGame& game, unsigned int xpos,
+   virtual void Init(IGameInstance& game, unsigned int xpos,
       unsigned int ypos) override;
 
    // virtual functions from Window

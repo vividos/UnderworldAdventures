@@ -34,7 +34,7 @@ public:
    }
 
    /// initializes 3d view window
-   virtual void Init(IBasicGame& game, unsigned int xpos,
+   virtual void Init(IGameInstance& game, unsigned int xpos,
       unsigned int ypos) override;
 
    /// returns if 3d view is in mouse move mode

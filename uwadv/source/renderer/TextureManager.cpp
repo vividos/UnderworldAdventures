@@ -40,8 +40,8 @@ TextureManager::~TextureManager()
 
 /// Initializes texture manager. All stock textures are loaded and animation
 /// infos are generated for animated textures.
-/// \param game game interface
-void TextureManager::Init(IBasicGame& game)
+/// \param game game instance
+void TextureManager::Init(IGameInstance& game)
 {
    m_palette0 = game.GetImageManager().GetPalette(0);
 

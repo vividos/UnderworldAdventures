@@ -45,7 +45,7 @@ public:
    static bool LoadScript(LuaState& lua, const Base::Settings& settings, const Base::ResourceManager& resourceManager, const char* basename);
 
    // virtual methods from IScripting
-   virtual void Init(IBasicGame* game) override;
+   virtual void Init(IGameInstance* game) override;
    virtual bool LoadScript(const char* basename) override;
    virtual void Done() override;
    virtual void InitNewGame() override;
@@ -63,8 +63,8 @@ private:
    void RegisterFunctions();
 
 private:
-   /// ptr to basic game interface
-   IBasicGame* m_game;
+   /// game instance
+   IGameInstance* m_game;
 
    /// name for 'self' global in Lua
    static const char* s_selfName;

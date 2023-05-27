@@ -49,7 +49,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BasicGame.cpp" />
+    <ClCompile Include="GameInstance.cpp" />
     <ClCompile Include="DebugServer.cpp" />
     <ClCompile Include="GameConfig.cpp" />
     <ClCompile Include="GameConfigLoader.cpp" />
@@ -61,7 +61,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicGame.hpp" />
+    <ClInclude Include="GameInstance.hpp" />
     <ClInclude Include="DebugServer.hpp" />
     <ClInclude Include="GameConfig.hpp" />
     <ClInclude Include="GameConfigLoader.hpp" />

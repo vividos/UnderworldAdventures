@@ -21,7 +21,7 @@
 //
 #pragma once
 
-class IBasicGame;
+class IGameInstance;
 class LevelEditor;
 
 /// current debug server interface version
@@ -205,10 +205,10 @@ public:
    virtual ~IDebugServer() {}
 
    /// returns game instance
-   virtual IBasicGame& GetGameInstance() = 0;
+   virtual IGameInstance& GetGameInstance() = 0;
 
    /// starts debugger client; returns if debugger was already running
-   virtual bool StartDebugger(IBasicGame* game) = 0;
+   virtual bool StartDebugger(IGameInstance* game) = 0;
 
    // methods called from debug client
 

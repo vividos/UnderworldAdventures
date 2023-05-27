@@ -27,7 +27,7 @@
 #include "underworld/Underworld.hpp"
 #include "underworld/Level.hpp"
 
-LevelEditor::LevelEditor(IBasicGame& game, const void* windowHandle)
+LevelEditor::LevelEditor(IGameInstance& game, const void* windowHandle)
    :m_game(game)
 {
    m_renderer = std::make_shared<Renderer>();

@@ -17,9 +17,6 @@
     <ClCompile Include="GameConfigLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BasicGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DebugServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,15 +29,15 @@
     <ClCompile Include="GameConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameConfigLoader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicGame.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DebugServer.hpp">
@@ -53,6 +50,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameConfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameInstance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

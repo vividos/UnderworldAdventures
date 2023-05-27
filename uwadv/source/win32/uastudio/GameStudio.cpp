@@ -20,7 +20,7 @@
 /// \brief underworld adventures studio main
 //
 #include "common.hpp"
-#include "game/BasicGame.hpp"
+#include "game/GameInstance.hpp"
 
 class TraceOnlyUserInterface : public IUserInterface
 {
@@ -77,7 +77,7 @@ public:
 
 private:
    /// game instance to run the game studio on
-   BasicGame m_gameInstance;
+   GameInstance m_gameInstance;
 };
 
 

@@ -25,7 +25,7 @@
 #include "GameLogic.hpp"
 #include "ImageManager.hpp"
 
-void IngameGargoyleEyes::Init(IBasicGame& game, unsigned int xpos,
+void IngameGargoyleEyes::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    ImageWindow::Init(xpos, ypos, 20, 3);

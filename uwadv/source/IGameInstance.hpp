@@ -16,8 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-/// \file IBasicGame.hpp
-/// \brief basic game interface
+/// \file IGameInstance.hpp
+/// \brief game instance interface
 //
 #pragma once
 
@@ -43,8 +43,8 @@ class GameStrings;
 class IUserInterface;
 class GameConfig;
 
-/// basic game interface class, without user interface stuff
-class IBasicGame
+/// game instance interface class, without user interface
+class IGameInstance
 {
 public:
    /// pauses or unpauses game

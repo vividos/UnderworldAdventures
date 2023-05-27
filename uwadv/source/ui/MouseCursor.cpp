@@ -23,7 +23,7 @@
 #include "MouseCursor.hpp"
 #include "ImageManager.hpp"
 
-void MouseCursor::Init(IBasicGame& game, unsigned int initialType,
+void MouseCursor::Init(IGameInstance& game, unsigned int initialType,
    unsigned int paletteIndex)
 {
    ImageQuad::Init(game, 0, 0);

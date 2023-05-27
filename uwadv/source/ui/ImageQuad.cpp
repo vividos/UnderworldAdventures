@@ -29,10 +29,10 @@
 /// 0 is retrieved and set.
 /// The method is virtual and can be derived to do window/control specific
 /// init'ing before or after calling this method.
-/// \param game reference to game interface
+/// \param game reference to game instance
 /// \param xpos x position on Screen
 /// \param ypos y position
-void ImageQuad::Init(IBasicGame& game, unsigned int xpos,
+void ImageQuad::Init(IGameInstance& game, unsigned int xpos,
    unsigned int ypos)
 {
    Window::Create(xpos, ypos, m_image.GetXRes(), m_image.GetYRes());
