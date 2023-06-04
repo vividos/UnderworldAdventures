@@ -81,7 +81,7 @@ private:
    /// source to read from
    SDL_RWops* m_rwops;
 
-   double m_double;        ///< read double value
-   int m_int;              ///< read integer value
+   double m_double = 0.0;  ///< read double value
+   int m_int = 0;          ///< read integer value
    std::string m_string;   ///< read string value
 };

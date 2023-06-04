@@ -1,6 +1,7 @@
 //
 // Underworld Adventures - an Ultima Underworld hacking project
-// Copyright (c) 2019 Underworld Adventures Team
+// Copyright (c) 2019-2023 Underworld Adventures Team
 //
 // this file lists all cppcheck warnings that will be suppressed
 //
+*:wrllexer.cpp

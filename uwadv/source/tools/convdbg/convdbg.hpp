@@ -35,7 +35,7 @@ class ConversationDebugger :
 public:
    /// ctor
    ConversationDebugger()
-   :m_resourceManager(m_settings)
+      :m_resourceManager(m_settings)
    {
    }
 
@@ -75,9 +75,6 @@ private:
    /// resource manager
    Base::ResourceManager m_resourceManager;
 
-   /// conversations file name
-   const char* m_conversationName;
-
    /// all game strings
    GameStrings m_gameStrings;
 
@@ -88,8 +85,8 @@ private:
    std::vector<Uint16> m_allBreakpoints;
 
    /// indicates if conversation is loaded
-   bool m_isLoaded;
+   bool m_isLoaded = false;
 
    /// indicates if verbose mode is on
-   bool m_verbose;
+   bool m_verbose = false;
 };

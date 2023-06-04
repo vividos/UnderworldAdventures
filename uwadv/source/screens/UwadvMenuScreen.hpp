@@ -51,5 +51,5 @@ protected:
    Texture m_texture;
 
    /// indicates if texture was already rendered
-   bool m_isRendered;
+   bool m_isRendered = false;
 };

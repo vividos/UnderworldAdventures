@@ -24,7 +24,6 @@
 #include "Screen.hpp"
 
 Window::Window()
-   :m_windowXPos(0), m_windowYPos(0), m_windowWidth(0), m_windowHeight(0)
 {
 }
 

@@ -54,7 +54,7 @@ private:
    RenderWindow& m_window;
 
    /// 3D viewport to use
-   int m_viewport[4];
+   int m_viewport[4] = {};
 
    /// near plane distance
    static const double c_nearDistance;

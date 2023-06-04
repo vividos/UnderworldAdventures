@@ -33,7 +33,10 @@ cppcheck.exe ^
 	-I ..\source\ ^
 	-i ..\source\thirdparty\ ^
 	-i ..\source\unittest\ ^
-	-DWIN32 -D_WINDOWS -DNDEBUG -D_UNICODE -D__cplusplus -D_MSC_VER=1900 ^
-	-D__ATLAPP_H__ -DNTDDI_WIN7=0x06010000 -DNTDDI_VERSION=0x06010000 ^
+	-DWIN32 -D_WINDOWS -DNDEBUG -D_UNICODE -D__cplusplus ^
+	-D_MSC_VER=1900 -D__ATLAPP_H__ -D_WTL_VER=0x0710 ^
 	--suppressions-list=cppcheck-suppress.txt ^
 	-j 4 --platform=win32A --language=c++ --std=c++11 %FORMAT% --enable=all --template vs 2> %OUTFILE%
+
+REM	 ^
+REM	-DNTDDI_WIN7=0x06010000 -DNTDDI_VERSION=0x06010000 ^

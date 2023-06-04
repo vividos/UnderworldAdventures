@@ -151,7 +151,7 @@ void GameInstance::InitGame()
    m_imageManager = std::make_unique<ImageManager>(GetResourceManager());
    m_imageManager->Init();
 
-   m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting);
+   m_gameLogic = std::make_unique<Underworld::GameLogic>(m_scripting.get());
 
    UaTrace("loading game strings ... ");
    Import::GameStringsImporter importer(GetGameStrings());
@@ -268,7 +268,8 @@ void GameInstance::ApplyGameConfig()
    if (m_gameConfig.GetScriptingLanguage() == scriptingLanguageLua)
    {
       // init Lua scripting
-      m_scripting = IScripting::CreateScripting(scriptingLanguageLua);
+      m_scripting = std::unique_ptr<IScripting>(
+         IScripting::CreateScripting(scriptingLanguageLua));
 
       if (m_scripting == nullptr)
          throw Base::Exception("could not create scripting object");
@@ -302,8 +303,7 @@ void GameInstance::DoneGame()
    if (m_scripting != nullptr)
    {
       m_scripting->Done();
-      delete m_scripting;
-      m_scripting = nullptr;
+      m_scripting.reset();
    }
 }
 

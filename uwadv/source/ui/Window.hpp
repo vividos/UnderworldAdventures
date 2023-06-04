@@ -74,11 +74,11 @@ public:
 
 protected:
    /// screen where this window belongs to
-   Screen* m_screen;
+   Screen* m_screen = nullptr;
 
    /// window position
-   unsigned int m_windowXPos, m_windowYPos;
+   unsigned int m_windowXPos = 0, m_windowYPos = 0;
 
    /// window size
-   unsigned int m_windowWidth, m_windowHeight;
+   unsigned int m_windowWidth = 0, m_windowHeight = 0;
 };

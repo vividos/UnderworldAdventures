@@ -164,7 +164,7 @@ private:
    Physics::PhysicsModel m_physicsModel;
 
    /// scripting implementation
-   IScripting* m_scripting;
+   std::unique_ptr<IScripting> m_scripting;
 
    /// underworld debugger - server side
    DebugServer m_debugServer;

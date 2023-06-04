@@ -55,16 +55,16 @@ protected:
    static const double s_crossfadeTime;
 
    /// current view stage
-   unsigned int m_stage;
+   unsigned int m_stage = 0;
 
    /// tick count for every stage
-   unsigned int m_tickCount;
+   unsigned int m_tickCount = 0;
 
    /// current visible frame
-   unsigned int m_currentFrame;
+   unsigned int m_currentFrame = 0;
 
    /// indicates if ended
-   bool m_isEnded;
+   bool m_isEnded = false;
 
    /// fading helper
    FadingHelper m_fader;

@@ -40,7 +40,6 @@ void ConversationDebugger::Init(const char* underworldFolder, const char* conver
    Import::LoadConvGlobals(m_convGlobals, m_resourceManager, conversationGlobalsName);
 
    printf("done loading.\n");
-   m_isLoaded = false; // code not loaded yet
 }
 
 void ConversationDebugger::Start()
@@ -119,7 +118,7 @@ void ConversationDebugger::Start()
          {
             ret = Import::LoadConvCode(*this, m_settings, m_resourceManager, "data/cnv.ark", conv);
          }
-         catch (const std::exception & ex)
+         catch (const std::exception& ex)
          {
             printf("caught exception: %s\n", ex.what());
             ret = false;
@@ -129,7 +128,7 @@ void ConversationDebugger::Start()
          if (ret)
          {
             printf("loaded conversation #%04x.\n", conv);
-            Conv::CodeVM::Init(this, m_convGlobals/*, m_gameStrings.GetStringBlock(GetStringBlock())*/);
+            Conv::CodeVM::Init(this, m_convGlobals);
             printf("conversation partner: \"%s\"\n",
                m_gameStrings.GetString(7, 16 + m_conversationSlot).c_str());
             printf("using strings from string block #%04x\n", GetStringBlock());
@@ -306,7 +305,7 @@ void ConversationDebugger::Start()
          {
             Conv::CodeVM::Step();
          }
-         catch (const std::exception & ex)
+         catch (const std::exception& ex)
          {
             printf("caught exception at ip = %04x: %s\n", m_instructionPointer, ex.what());
             n = 0;
@@ -470,8 +469,7 @@ Uint16 ConversationDebugger::BablMenu(const std::vector<Uint16>& answerStringIds
       fgets(buffer, 255, stdin);
 
       answer = atoi(buffer);
-   }
-   while (answer < 1 || answer > answerStringIds.size());
+   } while (answer < 1 || answer > answerStringIds.size());
 
    printf("response: %u\n\n", answer);
    return answer;
@@ -549,7 +547,7 @@ int main(int argc, char* argv[])
       // start debugging
       dbg.Start();
    }
-   catch (const std::exception & ex)
+   catch (const std::exception& ex)
    {
       printf("caught an exception: \"%s\"\n", ex.what());
    }
