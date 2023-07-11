@@ -1,12 +1,12 @@
 /*
 Filename: AtlScintilla.h
-Version: 2.4
+Version: 2.5
 Description: Defines an easy wrapper for the Scintilla control, to be used with ATL/WTL projects.
-Date: 2021-12-14
+Date: 2023-07-11
 
 Copyright (c) 2005/2006 by Gilad Novik.
 Copyright (c) 2006 by Reece Dunn.
-Copyright (c) 2019-2021 by Michael Fink.
+Copyright (c) 2019-2023 by Michael Fink.
 
 License Agreement (zlib license)
 -------------------------
@@ -52,6 +52,9 @@ History (Date/Author/Description):
 2020-12-14: vividos
 - Lexilla.dll is now loaded dynamically. Fixed SetILexer() not setting lexer.
   Also removed SetLexer() and SetLexerLanguage() not supported anymore.
+2023-07-11: vividos
+- Fixed syntax error in GetStyledText(). Fixed three analyzer warnings about
+  uninitialized variables.
 */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -216,7 +219,7 @@ public:
 		ATLASSERT(::IsWindow(m_hWnd));
 		int length = max - min;
 		int result = GetStyledText(min, max, text.GetBuffer(length));
-		textReleaseBuffer(length);
+		text.ReleaseBuffer(length);
 		return result;
 	}
 #endif
@@ -3094,8 +3097,8 @@ public:
 		CAtlFile File;
 		if (FAILED(File.Create(szFilename, GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS, 0)))
 			return FALSE;
-		char buffer[8192 + 1];
-		Sci_TextRange range;
+		char buffer[8192 + 1]{};
+		Sci_TextRange range{};
 		range.lpstrText = buffer;
 		DWORD dwWritten;
 		if (GetCodePage() == SC_CP_UTF8)
@@ -3125,7 +3128,7 @@ public:
 		ClearAll();
 		SetUndoCollection(false);
 		static BYTE UTF8[] = { 0xEF,0xBB,0xBF };
-		char buffer[8192];
+		char buffer[8192]{};
 		DWORD dwRead;
 		if (SUCCEEDED(File.Read(buffer, sizeof(UTF8), dwRead)) && dwRead > 0)
 		{
