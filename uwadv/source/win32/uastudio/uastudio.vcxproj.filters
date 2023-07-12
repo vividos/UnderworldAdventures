@@ -26,6 +26,9 @@
     <ClInclude Include="..\..\IDebugServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TraceOnlyUserInterface.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Sanct.ico">

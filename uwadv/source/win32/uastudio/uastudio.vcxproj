@@ -75,6 +75,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\IDebugServer.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="TraceOnlyUserInterface.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Sanct.ico" />

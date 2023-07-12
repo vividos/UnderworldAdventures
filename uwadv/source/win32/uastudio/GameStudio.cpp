@@ -22,46 +22,8 @@
 #include "common.hpp"
 #include "game/GameInstance.hpp"
 
-class TraceOnlyUserInterface : public IUserInterface
-{
-public:
-   // virtual IUserInterface methods
-
-   /// notifies callback class
-   virtual void Notify(UserInterfaceNotification notify,
-      unsigned int param = 0) override
-   {
-      UaTrace("Notify: %u, param=%u\n", notify, param);
-   }
-
-   /// called to print text to textscroll
-   virtual void PrintScroll(const char* text) override
-   {
-      UaTrace("Print: %s\n", text);
-   }
-
-   /// starts conversation with object in current level, on list position
-   virtual void StartConversation(Uint16 listPos) override
-   {
-      UaTrace("StartConversation: listPos=%04x\n", listPos);
-   }
-
-   /// starts showing cutscene with given number
-   virtual void ShowCutscene(unsigned int cutsceneNumber) override
-   {
-      UaTrace("ShowCutscene: number=%u\n", cutsceneNumber);
-   }
-
-   /// shows map
-   virtual void ShowMap() override
-   {
-      UaTrace("ShowMap\n");
-   }
-};
-
 /// Underworld Adventures studio
-class GameStudio :
-   public TraceOnlyUserInterface
+class GameStudio
 {
 public:
    /// ctor
@@ -98,8 +60,6 @@ void GameStudio::Init()
    settings.SetValue(Base::settingGamePrefix, gamePrefix);
 
    m_gameInstance.InitNewGame();
-
-   m_gameInstance.GetGameLogic().RegisterUserInterface(this);
 
    m_gameInstance.PauseGame(true);
 
