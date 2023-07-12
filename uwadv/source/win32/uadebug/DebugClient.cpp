@@ -448,14 +448,9 @@ void DebugClient::Lock(bool locked)
    m_debugInterface->Lock(locked);
 }
 
-bool DebugClient::IsStudioMode()
+bool DebugClient::IsStudioMode() const
 {
-   return 1 == m_debugInterface->GetFlag(debugServerFlagIsStudioMode);
-}
-
-unsigned int DebugClient::GetFlag(unsigned int flag)
-{
-   return m_debugInterface->GetFlag(flag);
+   return m_debugInterface->IsStudioMode();
 }
 
 CString DebugClient::GetGameConfigPath()

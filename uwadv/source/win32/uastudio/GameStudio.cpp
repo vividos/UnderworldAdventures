@@ -65,10 +65,7 @@ class GameStudio :
 {
 public:
    /// ctor
-   GameStudio()
-   {
-      UaTrace("Underworld Adventures Studio\n\n");
-   }
+   GameStudio();
 
    void Init();
    void Done();
@@ -80,6 +77,16 @@ private:
    GameInstance m_gameInstance;
 };
 
+
+GameStudio::GameStudio()
+{
+   UaTrace("Underworld Adventures Studio\n\n");
+
+   DebugServer& debugServer =
+      *dynamic_cast<DebugServer*>(&m_gameInstance.GetDebugger());
+
+   debugServer.SetStudioMode();
+}
 
 void GameStudio::Init()
 {

@@ -65,6 +65,12 @@ public:
    /// dtor
    virtual ~DebugServer();
 
+   /// sets debug server to be in studio mode
+   void SetStudioMode()
+   {
+      m_isStudioMode = true;
+   }
+
    /// inits debug server
    void Init();
 
@@ -109,7 +115,7 @@ private:
 
    virtual bool CheckInterfaceVersion(unsigned int interfaceVersion) override;
 
-   virtual unsigned int GetFlag(unsigned int flagId) override;
+   virtual bool IsStudioMode() const override;
 
    virtual size_t GetGamePath(char* buffer, size_t bufferSize) override;
 
@@ -206,4 +212,7 @@ private:
 
    /// id of last code debugger
    unsigned int m_lastCodeDebuggerId;
+
+   /// indicates if the debug server is running in the studio environment
+   bool m_isStudioMode = false;
 };

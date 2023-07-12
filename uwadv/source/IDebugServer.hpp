@@ -49,11 +49,6 @@ enum DebugServerMessageType
    debugMessageUnknown,
 };
 
-/// debug server flags, used in IDebugServer::GetFlag()
-enum DebugServerFlags
-{
-   debugServerFlagIsStudioMode = 0, ///< is in studio mode?
-};
 
 /// tile info type for GetTileInfoValue() and SetTileInfoValue()
 enum DebugServerTileInfo
@@ -219,8 +214,8 @@ public:
    virtual bool CheckInterfaceVersion(
       unsigned int interfaceVersion = c_debugServerInterfaceVersion) = 0;
 
-   /// returns server flag
-   virtual unsigned int GetFlag(unsigned int flagId) = 0;
+   /// returns if the debug server is running in the studio environment
+   virtual bool IsStudioMode() const = 0;
 
    /// returns current game path, or "" when none
    virtual size_t GetGamePath(char* buffer, size_t bufferSize) = 0;

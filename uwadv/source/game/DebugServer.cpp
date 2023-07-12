@@ -283,24 +283,9 @@ bool DebugServer::CheckInterfaceVersion(unsigned int interfaceVersion)
    return interfaceVersion == c_debugServerInterfaceVersion;
 }
 
-unsigned int DebugServer::GetFlag(unsigned int flagId)
+bool DebugServer::IsStudioMode() const
 {
-   unsigned int flag = 0;
-   switch (flagId)
-   {
-   case debugServerFlagIsStudioMode:
-#ifdef COMPILE_UASTUDIO
-      flag = 1; // in uastudio mode
-#else
-      flag = 0;
-#endif
-      break;
-
-   default:
-      UaAssert(false);
-      break;
-   }
-   return flag;
+   return m_isStudioMode;
 }
 
 size_t DebugServer::GetGamePath(char* buffer, size_t bufferSize)

@@ -245,8 +245,9 @@ public:
 
    void Lock(bool locked);
 
-   bool IsStudioMode();
-   unsigned int GetFlag(unsigned int flag);
+   /// returns if the debug client is running in the studio environment
+   bool IsStudioMode() const;
+
    CString GetGameConfigPath();
 
    void LoadGameConfig(LPCTSTR pszPrefix);
