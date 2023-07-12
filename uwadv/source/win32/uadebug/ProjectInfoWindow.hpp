@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -113,6 +113,9 @@ private:
    // virtual methods from DockingWindowBase
    virtual void ReceiveNotification(DebugWindowNotification& notify) override;
 
+   /// initializes tree
+   void InitTree();
+
    /// updates project info data
    void UpdateData();
 
@@ -155,10 +158,10 @@ private:
    bool m_bIgnoreSelections;
 
    /// tree item with all level entries
-   HTREEITEM m_hItemLevels;
+   HTREEITEM m_treeItemLevels;
 
    /// tree item with all code debuggers
-   HTREEITEM m_hItemCodeDebugger;
+   HTREEITEM m_treeItemCodeDebugger;
 
    /// map with all code debugger infos
    CAtlMap<unsigned int, CodeDebuggerInfo> m_aCodeDebuggerInfos;

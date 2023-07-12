@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,6 +27,38 @@
 
 LPCTSTR g_pszActive = _T(" (active)");
 
+void ProjectInfoWindow::InitTree()
+{
+   ProjectManager& projectManager = m_mainFrame->GetProjectManager();
+
+   HTREEITEM treeItemProject = m_treeCtrl.InsertItem(_T(""), 0, 0, TVI_ROOT, nullptr);
+
+   CString projectName{ _T("No project open.") };
+   if (projectManager.IsOpen())
+      projectName.Format(_T("Project: %s"), projectManager.GetProjectName().GetString());
+
+   m_treeCtrl.SetItemText(m_treeCtrl.GetRootItem(), projectName);
+
+   if (projectManager.IsOpen())
+   {
+      // set up fixed tree items
+      m_treeItemLevels = m_treeCtrl.InsertItem(
+         _T("Level list"),
+         0,
+         0,
+         treeItemProject, nullptr);
+
+      m_treeItemCodeDebugger = m_treeCtrl.InsertItem(
+         _T("Sourcecode debugger list"),
+         0,
+         0,
+         treeItemProject,
+         nullptr);
+
+      m_treeCtrl.Expand(treeItemProject);
+   }
+}
+
 void ProjectInfoWindow::ReceiveNotification(DebugWindowNotification& notify)
 {
    switch (notify.m_notifyCode)
@@ -43,17 +75,20 @@ void ProjectInfoWindow::ReceiveNotification(DebugWindowNotification& notify)
 
 void ProjectInfoWindow::UpdateData()
 {
-   // set project name text at root item
+   bool hasRootTreeNode = m_treeCtrl.GetRootItem() != nullptr;
+
    ProjectManager& projectManager = m_mainFrame->GetProjectManager();
+   bool wasProjectOpen = m_treeItemLevels != nullptr;
 
-   CString projectName{ _T("No project open.") };
+   if (!hasRootTreeNode ||
+      wasProjectOpen != projectManager.IsOpen())
+      InitTree();
+
    if (projectManager.IsOpen())
-      projectName.Format(_T("Project: %s"), projectManager.GetProjectName().GetString());
-
-   m_treeCtrl.SetItemText(m_treeCtrl.GetRootItem(), projectName);
-
-   RefreshCodeDebuggerList();
-   RefreshLevelList();
+   {
+      RefreshCodeDebuggerList();
+      RefreshLevelList();
+   }
 }
 
 void ProjectInfoWindow::OnCodeDebuggerUpdate(DebugWindowNotification& notify)
@@ -178,13 +213,6 @@ LRESULT ProjectInfoWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
    }
 
    m_treeCtrl.SetImageList(m_ilIcons, TVSIL_NORMAL);
-
-   // set up fixed tree items
-   HTREEITEM hItemProject = m_treeCtrl.InsertItem(_T(""), 0, 0, TVI_ROOT, NULL);
-   m_hItemLevels = m_treeCtrl.InsertItem(_T("Level list"), 0, 0, hItemProject, NULL);
-   m_hItemCodeDebugger = m_treeCtrl.InsertItem(_T("Sourcecode debugger list"), 0, 0, hItemProject, NULL);
-
-   m_treeCtrl.Expand(hItemProject);
 
    return 0;
 }
@@ -351,7 +379,7 @@ void ProjectInfoWindow::RefreshLevelList()
    m_bIgnoreSelections = true;
 
    // remove all subitems
-   RemoveSubitems(m_hItemLevels);
+   RemoveSubitems(m_treeItemLevels);
 
    DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
@@ -369,7 +397,7 @@ void ProjectInfoWindow::RefreshLevelList()
       if (nLevel == n)
          cszLevelName += g_pszActive;
 
-      HTREEITEM hItem = m_treeCtrl.InsertItem(cszLevelName, 2, 2, m_hItemLevels, NULL);
+      HTREEITEM hItem = m_treeCtrl.InsertItem(cszLevelName, 2, 2, m_treeItemLevels, NULL);
       SetTreeItemInfo(hItem, ProjectTreeItemInfo(tiLevel, n));
 
       if (nLevel == n)
@@ -378,7 +406,7 @@ void ProjectInfoWindow::RefreshLevelList()
 
    debugClient.Lock(false);
 
-   m_treeCtrl.Expand(m_hItemLevels);
+   m_treeCtrl.Expand(m_treeItemLevels);
 
    m_treeCtrl.SelectItem(hSelItem);
    m_bIgnoreSelections = false;
@@ -388,11 +416,14 @@ void ProjectInfoWindow::RefreshLevelList()
 
 void ProjectInfoWindow::RefreshCodeDebuggerList()
 {
+   if (m_treeItemCodeDebugger == nullptr)
+      return; // no project open
+
    m_treeCtrl.SetRedraw(FALSE);
 
    m_bIgnoreSelections = true;
 
-   RemoveSubitems(m_hItemCodeDebugger);
+   RemoveSubitems(m_treeItemCodeDebugger);
 
    DebugClient& debugClient = m_mainFrame->GetDebugClientInterface();
    debugClient.Lock(true);
@@ -406,7 +437,7 @@ void ProjectInfoWindow::RefreshCodeDebuggerList()
 
       HTREEITEM hItem = m_treeCtrl.InsertItem(
          enType == cdtUwConv ? _T("Conversation code") : _T("Lua script code"),
-         0, 0, m_hItemCodeDebugger, NULL);
+         0, 0, m_treeItemCodeDebugger, NULL);
 
       SetTreeItemInfo(hItem, ProjectTreeItemInfo(tiCodeDebugger, 0, codeDebuggerId));
 
@@ -445,7 +476,7 @@ void ProjectInfoWindow::RefreshCodeDebuggerList()
 
    debugClient.Lock(false);
 
-   m_treeCtrl.Expand(m_hItemCodeDebugger);
+   m_treeCtrl.Expand(m_treeItemCodeDebugger);
 
    m_bIgnoreSelections = false;
 
