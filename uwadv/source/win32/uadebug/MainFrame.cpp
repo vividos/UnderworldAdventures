@@ -185,8 +185,63 @@ BOOL MainFrame::PreTranslateMessage(MSG* msg)
 BOOL MainFrame::OnIdle()
 {
    UIUpdateToolBar();
+   UIUpdateCodeEditorWindow();
 
    return FALSE;
+}
+
+void MainFrame::UIUpdateCodeEditorWindow()
+{
+   // if an editor is currently active, update edit UI state
+   HWND hWnd = MDIGetActive();
+
+   // search active Lua child frame
+   bool foundEditor = false;
+
+   int maxIndex = m_luaChildWindows.GetSize();
+   for (int index = 0; index < maxIndex; index++)
+   {
+      if (hWnd == m_luaChildWindows[index]->m_hWnd)
+      {
+         // found window
+         LuaSourceWindow& sourceCodeWindow = *m_luaChildWindows[index];
+         const LuaScriptEditorView& editorView = sourceCodeWindow.GetEditorView();
+
+         UIEnable(ID_EDIT_PASTE, editorView.CanPaste());
+         UIEnable(ID_EDIT_UNDO, editorView.CanUndo());
+         UIEnable(ID_EDIT_REDO, editorView.CanRedo());
+
+         bool isTextSelected = editorView.IsTextSelected();
+         UIEnable(ID_EDIT_CUT, isTextSelected);
+         UIEnable(ID_EDIT_COPY, isTextSelected);
+         UIEnable(ID_EDIT_CLEAR, isTextSelected);
+
+         bool isModified = editorView.GetModify();
+
+         UIEnable(ID_FILE_SAVE, isModified);
+
+         foundEditor = true;
+         break;
+      }
+   }
+
+   if (!foundEditor)
+   {
+      UIEnable(ID_EDIT_PASTE, false);
+      UIEnable(ID_EDIT_UNDO, false);
+      UIEnable(ID_EDIT_REDO, false);
+
+      UIEnable(ID_EDIT_CUT, false);
+      UIEnable(ID_EDIT_COPY, false);
+      UIEnable(ID_EDIT_CLEAR, false);
+
+      UIEnable(ID_FILE_SAVE, false);
+   }
+
+   bool isAnyCodeEditorOpen = m_luaChildWindows.GetSize() > 0;
+
+   UIEnable(ID_FILE_SAVE_AS, isAnyCodeEditorOpen);
+   UIEnable(ID_FILE_SAVE_ALL, isAnyCodeEditorOpen);
 }
 
 LRESULT MainFrame::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)

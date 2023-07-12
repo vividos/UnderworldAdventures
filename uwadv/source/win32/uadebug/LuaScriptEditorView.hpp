@@ -48,6 +48,12 @@ public:
    /// sets current execution line marker
    void SetCurrentExecutionLine(int lineNumber);
 
+   /// returns if there's a text selection in the editor
+   bool IsTextSelected() const
+   {
+      return GetSelectionStart() < GetSelectionEnd();
+   }
+
 private:
    BEGIN_MSG_MAP(LuaScriptEditorView)
       CHAIN_MSG_MAP_ALT(FindReplaceClass, 1)

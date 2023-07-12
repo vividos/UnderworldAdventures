@@ -86,6 +86,9 @@ private:
    /// called for idle processing
    virtual BOOL OnIdle();
 
+   /// updates UI state for code editor window
+   void UIUpdateCodeEditorWindow();
+
    /// processes all waiting debug server messages
    void ProcessServerMessages();
 
@@ -132,6 +135,11 @@ private:
       UPDATE_ELEMENT(ID_FILE_OPEN_PROJECT, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_UNDERWORLD_RUN, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_UNDERWORLD_PAUSE, UPDUI_RIBBON)
+      UPDATE_ELEMENT(ID_EDIT_CUT, UPDUI_RIBBON)
+      UPDATE_ELEMENT(ID_EDIT_COPY, UPDUI_RIBBON)
+      UPDATE_ELEMENT(ID_EDIT_PASTE, UPDUI_RIBBON)
+      UPDATE_ELEMENT(ID_EDIT_UNDO, UPDUI_RIBBON)
+      UPDATE_ELEMENT(ID_EDIT_REDO, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_PROJECT, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_PLAYERINFO, UPDUI_RIBBON)
       UPDATE_ELEMENT(ID_VIEW_TILEMAP, UPDUI_RIBBON)
