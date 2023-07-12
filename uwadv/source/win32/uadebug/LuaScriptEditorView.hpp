@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,10 +52,28 @@ private:
    BEGIN_MSG_MAP(LuaScriptEditorView)
       CHAIN_MSG_MAP_ALT(FindReplaceClass, 1)
       CHAIN_MSG_MAP_ALT(EditCommandsClass, 1)
+      COMMAND_CODE_HANDLER(SCEN_CHANGE, OnChangedText)
+      MESSAGE_HANDLER(WM_TIMER, OnTimer)
+      MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
    END_MSG_MAP()
 
    // Handler prototypes (uncomment arguments if needed):
    // LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
    // LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
    // LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
+
+   /// called when text in edit window has changed
+   LRESULT OnChangedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+   /// called when a timer event occurs
+   LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+   /// called at destruction of view
+   LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+   /// restarts syntax check timer
+   void RestartSyntaxCheckTimer();
+
+   /// checks syntax and highlights errors in view
+   void CheckSyntax();
 };

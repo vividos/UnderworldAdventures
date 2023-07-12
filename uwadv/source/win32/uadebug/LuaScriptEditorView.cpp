@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,9 +21,16 @@
 //
 #include "pch.hpp"
 #include "LuaScriptEditorView.hpp"
+#include "script/LuaState.hpp"
 
 const int c_markerCurrentExecution = 1;
 const int c_markerBreakpoint = 2;
+
+/// delay time in ms, after which a syntax check of the text in the view occurs
+const UINT c_syntaxCheckDelayTimeInMs = 1000;
+
+/// timer ID for syntax check
+const UINT IDT_TIMER_SYNTAX_CHECK = 64;
 
 void LuaScriptEditorView::SetupSourceEditor()
 {
@@ -68,7 +75,7 @@ void LuaScriptEditorView::SetupSourceEditor()
    SetUseTabs(false);
 
    // only notify about text edits in SCEN_CHANGE messages
-   //SetModEventMask(SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT);
+   SetModEventMask(SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT);
 }
 
 void LuaScriptEditorView::SetCurrentExecutionLine(int lineNumber)
@@ -82,4 +89,83 @@ void LuaScriptEditorView::SetCurrentExecutionLine(int lineNumber)
 
    MarkerAdd(lineNumber - 1, c_markerCurrentExecution);
    ScrollToLine(lineNumber - 1);
+}
+
+LRESULT LuaScriptEditorView::OnChangedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+{
+   bHandled = false;
+
+   RestartSyntaxCheckTimer();
+
+   return 0;
+}
+
+LRESULT LuaScriptEditorView::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+   if (wParam == IDT_TIMER_SYNTAX_CHECK)
+   {
+      KillTimer(IDT_TIMER_SYNTAX_CHECK);
+
+      CheckSyntax();
+   }
+
+   return 0;
+}
+
+LRESULT LuaScriptEditorView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+   KillTimer(IDT_TIMER_SYNTAX_CHECK);
+
+   bHandled = false;
+   return 0;
+}
+
+void LuaScriptEditorView::RestartSyntaxCheckTimer()
+{
+   KillTimer(IDT_TIMER_SYNTAX_CHECK);
+   SetTimer(IDT_TIMER_SYNTAX_CHECK, c_syntaxCheckDelayTimeInMs);
+}
+
+void LuaScriptEditorView::CheckSyntax()
+{
+   CStringA text;
+   GetText(text);
+
+   int indicatorNumber = INDIC_CONTAINER;
+
+   AnnotationClearAll();
+
+   std::vector<std::string> errorMessages;
+   if (LuaState::CheckSyntax(std::string{text}, errorMessages))
+   {
+      IndicSetStyle(indicatorNumber, INDIC_HIDDEN);
+      AnnotationSetVisible(ANNOTATION_HIDDEN);
+      return;
+   }
+
+   IndicSetStyle(indicatorNumber, INDIC_SQUIGGLE);
+   IndicSetFore(indicatorNumber, RGB(255, 0, 0)); // red
+
+   SetIndicatorCurrent(indicatorNumber);
+
+   for (size_t index = 0, maxIndex = errorMessages.size(); index < maxIndex; index++)
+   {
+      CString errorMessage = errorMessages[0].c_str();
+
+      int pos = errorMessage.Find(_T("]:"));
+      int pos2 = errorMessage.Find(_T(':'), pos + 2);
+
+      int lineNumber = _ttoi(errorMessage.Mid(pos + 2, pos2 - (pos + 2)));
+      CString error = errorMessage.Mid(pos2 + 1).Trim();
+
+      SetIndicatorValue(index);
+
+      int textStart = static_cast<int>(PositionFromLine(lineNumber - 1));
+      int textEnd = GetLineEndPosition(lineNumber - 1);
+
+      IndicatorFillRange(textStart, textEnd - textStart);
+
+      AnnotationSetText(lineNumber - 1, CStringA(error).GetString());
+      AnnotationSetVisible(ANNOTATION_BOXED);
+   }
 }
