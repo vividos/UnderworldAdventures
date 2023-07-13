@@ -73,6 +73,7 @@ void LuaScriptEditorView::SetupSourceEditor()
 
    SetTabWidth(3);
    SetUseTabs(false);
+   SetEOLMode(SC_EOL_CRLF);
 
    // only notify about text edits in SCEN_CHANGE messages
    SetModEventMask(SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT);
