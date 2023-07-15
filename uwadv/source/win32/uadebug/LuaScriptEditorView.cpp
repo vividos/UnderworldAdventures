@@ -23,14 +23,17 @@
 #include "LuaScriptEditorView.hpp"
 #include "script/LuaState.hpp"
 
+/// marker index for current execution arrow
 const int c_markerCurrentExecution = 1;
+
+/// marker index for breakpoint circle
 const int c_markerBreakpoint = 2;
 
 /// delay time in ms, after which a syntax check of the text in the view occurs
 const UINT c_syntaxCheckDelayTimeInMs = 1000;
 
 /// timer ID for syntax check
-const UINT IDT_TIMER_SYNTAX_CHECK = 64;
+const UINT c_syntaxCheckTimerId = 64;
 
 void LuaScriptEditorView::SetupSourceEditor()
 {
@@ -103,9 +106,9 @@ LRESULT LuaScriptEditorView::OnChangedText(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT LuaScriptEditorView::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-   if (wParam == IDT_TIMER_SYNTAX_CHECK)
+   if (wParam == c_syntaxCheckTimerId)
    {
-      KillTimer(IDT_TIMER_SYNTAX_CHECK);
+      KillTimer(c_syntaxCheckTimerId);
 
       CheckSyntax();
    }
@@ -115,7 +118,7 @@ LRESULT LuaScriptEditorView::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 
 LRESULT LuaScriptEditorView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   KillTimer(IDT_TIMER_SYNTAX_CHECK);
+   KillTimer(c_syntaxCheckTimerId);
 
    bHandled = false;
    return 0;
@@ -123,8 +126,8 @@ LRESULT LuaScriptEditorView::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 void LuaScriptEditorView::RestartSyntaxCheckTimer()
 {
-   KillTimer(IDT_TIMER_SYNTAX_CHECK);
-   SetTimer(IDT_TIMER_SYNTAX_CHECK, c_syntaxCheckDelayTimeInMs);
+   KillTimer(c_syntaxCheckTimerId);
+   SetTimer(c_syntaxCheckTimerId, c_syntaxCheckDelayTimeInMs);
 }
 
 void LuaScriptEditorView::CheckSyntax()

@@ -25,7 +25,7 @@
 
 LRESULT LuaSourceWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-   m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL,
+   m_hWndClient = m_view.Create(m_hWnd, rcDefault, nullptr,
       WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, WS_EX_CLIENTEDGE);
 
    m_view.SetupSourceEditor();
@@ -50,7 +50,7 @@ void LuaSourceWindow::UpdateFilename()
    if (IsModified())
       filename += _T("*");
 
-   CString titleText(_T("Lua Source File - "));
+   CString titleText{ _T("Lua Source File - ") };
    titleText += filename;
 
    SetTitle(titleText);

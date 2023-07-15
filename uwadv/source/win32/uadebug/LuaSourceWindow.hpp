@@ -1,6 +1,6 @@
 //
 // Underworld Adventures Debugger - a debugger tool for Underworld Adventures
-// Copyright (c) 2004,2005,2019 Underworld Adventures Team
+// Copyright (c) 2004,2005,2019,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "resource.h"
 #include "LuaScriptEditorView.hpp"
 
+/// child window showing a Lua source code editor
 class LuaSourceWindow : public ChildWindowBase<IDR_LUA_SOURCE_FRAME>
 {
    typedef LuaSourceWindow thisClass;
@@ -31,7 +32,7 @@ class LuaSourceWindow : public ChildWindowBase<IDR_LUA_SOURCE_FRAME>
 
 public:
    /// ctor
-   LuaSourceWindow() :m_isModified(false)
+   LuaSourceWindow()
    {
       m_isDynamicWindow = true;
    }
@@ -74,13 +75,16 @@ public:
    bool IsModified() const { return m_isModified; }
 
    /// sets "modified" state of file
-   void SetModified(bool modified) { m_isModified = modified; }
+   void SetModified(bool isModified) { m_isModified = isModified; }
 
    /// sets current execution line marker
    void SetCurrentExecutionLine(int lineNumber)
    {
       m_view.SetCurrentExecutionLine(lineNumber);
    }
+
+   /// returns editor view
+   const LuaScriptEditorView& GetEditorView() const { return m_view; }
 
 private:
    BEGIN_MSG_MAP(thisClass)
@@ -91,7 +95,10 @@ private:
       FORWARD_NOTIFICATIONS()
    END_MSG_MAP()
 
+   /// called when the window is created
    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+   /// called when the window is destroyed
    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
    /// updates displayed filename
@@ -101,8 +108,8 @@ private:
    /// Lua script editor view
    LuaScriptEditorView m_view;
 
-   /// indicates if file is modified
-   bool m_isModified;
+   /// indicates if the file is modified
+   bool m_isModified = false;
 
    /// filename
    CString m_filename;

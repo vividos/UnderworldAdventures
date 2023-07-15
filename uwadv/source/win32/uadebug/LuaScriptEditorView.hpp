@@ -40,7 +40,7 @@ class LuaScriptEditorView :
 
 public:
    /// window class infos
-   DECLARE_WND_SUPERCLASS(NULL, CScintillaWindow::GetWndClassName())
+   DECLARE_WND_SUPERCLASS(nullptr, BaseClass::GetWndClassName());
 
    /// sets up source editor
    void SetupSourceEditor();
@@ -56,17 +56,17 @@ public:
 
 private:
    BEGIN_MSG_MAP(LuaScriptEditorView)
-      CHAIN_MSG_MAP_ALT(FindReplaceClass, 1)
-      CHAIN_MSG_MAP_ALT(EditCommandsClass, 1)
       COMMAND_CODE_HANDLER(SCEN_CHANGE, OnChangedText)
       MESSAGE_HANDLER(WM_TIMER, OnTimer)
       MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+      CHAIN_MSG_MAP_ALT(FindReplaceClass, 1)
+      CHAIN_MSG_MAP_ALT(EditCommandsClass, 1)
    END_MSG_MAP()
 
    // Handler prototypes (uncomment arguments if needed):
    // LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
    // LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-   // LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
+   // LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 
    /// called when text in edit window has changed
    LRESULT OnChangedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

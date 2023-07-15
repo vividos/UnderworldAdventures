@@ -28,24 +28,31 @@ class DockingWindowBase;
 /// window info about code debugger
 struct CodeDebuggerInfo
 {
-   CodeDebuggerInfo()
-      :m_pWatchesWindow(NULL), m_pBreakpointWindow(NULL), m_pCallstackWindow(NULL) {}
+   CodeDebuggerInfo() {}
 
-   DockingWindowBase* m_pBreakpointWindow;
-   DockingWindowBase* m_pWatchesWindow;
-   DockingWindowBase* m_pCallstackWindow;
-   //DockingWindowBase* m_pMemoryWindow;
+   DockingWindowBase* m_breakpointWindow = nullptr;
+   DockingWindowBase* m_watchesWindow = nullptr;
+   DockingWindowBase* m_callStackWindow = nullptr;
+   //DockingWindowBase* m_memoryWindow = nullptr;
 };
 
 /// player info docking window
 class ProjectInfoWindow : public DockingWindowBase
 {
-   typedef ProjectInfoWindow thisClass;
-   typedef DockingWindowBase baseClass;
+   /// this class type
+   typedef ProjectInfoWindow ThisClass;
+
+   /// base class type
+   typedef DockingWindowBase BaseClass;
 
    enum ProjectTreeItemType
    {
-      tiNone = 1, tiLevel, tiLuaFilename, tiConvCodeFilename, tiCodeDebugger, tiWindow
+      treeItemNone = 1,
+      treeItemLevel,
+      treeItemLuaFile,
+      treeItemConvCodeFile,
+      treeItemCodeDebugger,
+      treeItemWindow
    };
 
    enum T_enWindowType
@@ -60,55 +67,77 @@ class ProjectInfoWindow : public DockingWindowBase
    struct ProjectTreeItemInfo
    {
       /// default ctor
-      ProjectTreeItemInfo() : m_enType(tiNone), m_codeDebuggerId(0), m_nInfo(0) {}
+      ProjectTreeItemInfo()
+      {
+      }
 
-      /// item info ctor for tiLevel, tiCodeDebugger, tiWindow
-      ProjectTreeItemInfo(ProjectTreeItemType enType, unsigned int nInfo, unsigned int codeDebuggerId = 0)
-         : m_enType(enType), m_codeDebuggerId(codeDebuggerId), m_nInfo(nInfo) {}
+      /// item info ctor for treeItemLevel, treeItemCodeDebugger, treeItemWindow
+      ProjectTreeItemInfo(ProjectTreeItemType treeItemType,
+         unsigned int infoNumber,
+         unsigned int codeDebuggerId = 0)
+         : m_treeItemType(treeItemType),
+         m_codeDebuggerId(codeDebuggerId),
+         m_infoNumber(infoNumber)
+      {
+      }
 
-      /// item info ctor for tiLuaFilename, tiConvCodeFilename
-      ProjectTreeItemInfo(LPCTSTR pszInfo, unsigned int nInfo = wtNone, ProjectTreeItemType enType = tiNone, unsigned int codeDebuggerId = 0)
-         : m_enType(enType), m_codeDebuggerId(codeDebuggerId), m_nInfo(nInfo), m_cszInfo(pszInfo) {}
+      /// item info ctor for treeItemLuaFile, treeItemConvCodeFile
+      ProjectTreeItemInfo(LPCTSTR infoText,
+         unsigned int nInfo = wtNone,
+         ProjectTreeItemType treeItemType = treeItemNone,
+         unsigned int codeDebuggerId = 0)
+         : m_treeItemType(treeItemType),
+         m_codeDebuggerId(codeDebuggerId),
+         m_infoNumber(nInfo),
+         m_infoText(infoText)
+      {
+      }
 
       /// type of tree item
-      ProjectTreeItemType m_enType;
+      ProjectTreeItemType m_treeItemType = treeItemNone;
 
       /// code debugger id, if any
-      unsigned int m_codeDebuggerId;
+      unsigned int m_codeDebuggerId = 0;
 
       /// string info; for filename items
-      CString m_cszInfo;
+      CString m_infoText;
 
       /// integer info; for window items
-      unsigned int m_nInfo;
+      unsigned int m_infoNumber = 0;
    };
 
 public:
    /// ctor
-   ProjectInfoWindow() :baseClass(idProjectInfoWindow), m_bIgnoreSelections(false) {}
+   ProjectInfoWindow()
+      :BaseClass(idProjectInfoWindow)
+   {
+   }
+
+   /// dtor
    virtual ~ProjectInfoWindow() {}
 
-   DECLARE_DOCKING_WINDOW(_T("Project"), CSize(250, 100)/*docked*/, CSize(250, 400)/*floating*/, dockwins::CDockingSide::sLeft)
+   DECLARE_DOCKING_WINDOW(_T("Project"), CSize(250, 100)/*docked*/, CSize(250, 400)/*floating*/, dockwins::CDockingSide::sLeft);
 
    DECLARE_WND_CLASS(_T("ProjectInfoWindow"))
+
    BEGIN_MSG_MAP(thisClass)
       ATLASSERT_ADDED_REFLECT_NOTIFICATIONS()
       MESSAGE_HANDLER(WM_CREATE, OnCreate)
       MESSAGE_HANDLER(WM_SIZE, OnSize)
       MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
-      NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged);
-   NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDblClick);
-   NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnDeleteItem);
-   CHAIN_MSG_MAP(baseClass)
+      NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
+      NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDblClick)
+      NOTIFY_CODE_HANDLER(TVN_DELETEITEM, OnDeleteItem)
+      CHAIN_MSG_MAP(BaseClass)
    END_MSG_MAP()
 
 private:
-   LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-   LRESULT OnSelChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-   LRESULT OnDblClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
-   LRESULT OnDeleteItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+   LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+   LRESULT OnSelChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+   LRESULT OnDblClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+   LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
    // virtual methods from DockingWindowBase
    virtual void ReceiveNotification(DebugWindowNotification& notify) override;
@@ -135,34 +164,34 @@ private:
    void RefreshCodeDebuggerList();
 
    /// inserts source file; display name is relative to given path
-   void InsertSourceFile(HTREEITEM hParentItem, CodeDebuggerType enType,
-      LPCTSTR filename, LPCTSTR pszPathRelativeTo, unsigned int codeDebuggerId);
+   void InsertSourceFile(HTREEITEM parentTreeItem, CodeDebuggerType codeDebuggerType,
+      LPCTSTR filename, LPCTSTR pathRelativeTo, unsigned int codeDebuggerId);
 
    /// returns tree item info for a given item
-   ProjectTreeItemInfo GetTreeItemInfo(HTREEITEM hItem);
+   ProjectTreeItemInfo GetTreeItemInfo(HTREEITEM treeItem);
 
    /// sets item info for a tree item
-   void SetTreeItemInfo(HTREEITEM hItem, const ProjectTreeItemInfo& itemInfo);
+   void SetTreeItemInfo(HTREEITEM treeItem, const ProjectTreeItemInfo& itemInfo);
 
    /// removes all subitems from a parent item
-   void RemoveSubitems(HTREEITEM hParentItem);
+   void RemoveSubitems(HTREEITEM parentTreeItem);
 
 private:
    /// project info tree
    CTreeViewCtrl m_treeCtrl;
 
    /// tree image list
-   CImageList m_ilIcons;
+   CImageList m_treeIconList;
 
    /// indicates if TVN_SELCHANGED messages should be ignored
-   bool m_bIgnoreSelections;
+   bool m_ignoreSelections = false;
 
    /// tree item with all level entries
-   HTREEITEM m_treeItemLevels;
+   HTREEITEM m_treeItemLevels = nullptr;
 
    /// tree item with all code debuggers
-   HTREEITEM m_treeItemCodeDebugger;
+   HTREEITEM m_treeItemCodeDebugger = nullptr;
 
    /// map with all code debugger infos
-   CAtlMap<unsigned int, CodeDebuggerInfo> m_aCodeDebuggerInfos;
+   CAtlMap<unsigned int, CodeDebuggerInfo> m_codeDebuggerInfoMap;
 };
