@@ -30,6 +30,7 @@
 #include "TileMapViewChildFrame.hpp"
 #include "TileMap3DEditorView.hpp"
 #include "TileInfoWindow.hpp"
+#include "OutputDockingWindow.hpp"
 #include "resource.h"
 
 #define WM_UNDOCK_WINDOW (WM_APP + 10)
@@ -115,6 +116,7 @@ private:
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP, OnViewTilemap)
       COMMAND_ID_HANDLER(ID_VIEW_TILEMAP_EDITOR, OnViewTilemapEditor)
       COMMAND_ID_HANDLER(ID_VIEW_GAMESTRINGS, OnViewGameStrings)
+      COMMAND_ID_HANDLER(ID_VIEW_OUTPUT, OnViewOutputWindow)
       COMMAND_ID_HANDLER(ID_DEBUG_PAUSE, OnDebugPause)
       COMMAND_ID_HANDLER(ID_DEBUG_RUN, OnDebugRun)
       COMMAND_ID_HANDLER(ID_DEBUG_STEP_INTO, OnDebugStepInto)
@@ -177,6 +179,7 @@ private:
    LRESULT OnViewTilemap(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewTilemapEditor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnViewGameStrings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   LRESULT OnViewOutputWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnDebugBreak(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnDebugPause(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    LRESULT OnDebugRun(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -258,6 +261,7 @@ private:
    HotspotListWindow m_hotspotListWindow;
    TileInfoWindow m_tileInfoWindow;
    ProjectInfoWindow m_projectInfoWindow;
+   OutputDockingWindow m_outputWindow;
 
    // statically allocated child windows
 

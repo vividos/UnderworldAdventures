@@ -606,6 +606,14 @@ LRESULT MainFrame::OnViewGameStrings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
    return 0;
 }
 
+LRESULT MainFrame::OnViewOutputWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+   bool isVisible = ShowHideDockingWindow(m_outputWindow);
+   UISetCheck(ID_VIEW_OUTPUT, isVisible);
+
+   return 0;
+}
+
 LRESULT MainFrame::OnDebugPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
    m_debugClient.Lock(true);

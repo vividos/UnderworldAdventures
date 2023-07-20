@@ -31,6 +31,7 @@ enum DockingWindowId
    idBreakpointWindow,
    idWatchesWindow,
    idProjectInfoWindow,
+   idOutputWindow,
 };
 
 /// notification code for debug app notifications

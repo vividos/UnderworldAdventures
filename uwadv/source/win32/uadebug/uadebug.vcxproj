@@ -86,6 +86,7 @@
     <ClCompile Include="LuaSourceWindow.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="ObjectListWindow.cpp" />
+    <ClCompile Include="OutputDockingWindow.cpp" />
     <ClCompile Include="PlayerInfoWindow.cpp" />
     <ClCompile Include="ProjectInfoWindow.cpp" />
     <ClCompile Include="ProjectManager.cpp" />
@@ -115,6 +116,8 @@
     <ClInclude Include="LuaSourceWindow.hpp" />
     <ClInclude Include="MainFrame.hpp" />
     <ClInclude Include="ObjectListWindow.hpp" />
+    <ClInclude Include="OutputDockingWindow.hpp" />
+    <ClInclude Include="OutputWindow.hpp" />
     <ClInclude Include="PlayerInfoWindow.hpp" />
     <ClInclude Include="ProjectInfoWindow.hpp" />
     <ClInclude Include="ProjectManager.hpp" />
