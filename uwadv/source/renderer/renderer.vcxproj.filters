@@ -9,6 +9,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Fixed Pipeline Files">
+      <UniqueIdentifier>{d81350da-78ab-4029-831f-6da71844d91c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Critter.cpp">
@@ -64,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="OpenGL.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fixed\GluPolygonTessellatorImpl.cpp">
+      <Filter>Fixed Pipeline Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +132,9 @@
     </ClInclude>
     <ClInclude Include="OpenGL.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fixed\GluPolygonTessellatorImpl.hpp">
+      <Filter>Fixed Pipeline Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

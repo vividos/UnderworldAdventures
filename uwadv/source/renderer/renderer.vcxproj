@@ -48,6 +48,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Critter.cpp" />
+    <ClCompile Include="fixed\GluPolygonTessellatorImpl.cpp" />
     <ClCompile Include="LevelTilemapRenderer.cpp" />
     <ClCompile Include="MainGameLoop.cpp" />
     <ClCompile Include="Model3DBuiltIn.cpp" />
@@ -71,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Critter.hpp" />
+    <ClInclude Include="fixed\GluPolygonTessellatorImpl.hpp" />
     <ClInclude Include="LevelTilemapRenderer.hpp" />
     <ClInclude Include="MainGameLoop.hpp" />
     <ClInclude Include="Model3D.hpp" />

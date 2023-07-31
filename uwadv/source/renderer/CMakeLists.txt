@@ -41,6 +41,15 @@ add_library(${PROJECT_NAME} STATIC
 	"VertexBufferObject.cpp" "VertexBufferObject.hpp"
 	"Viewport.cpp" "Viewport.hpp")
 
+if(ANDROID)
+add_library(${PROJECT_NAME} STATIC
+)
+else()
+add_library(${PROJECT_NAME} STATIC
+	"fixed/GluPolygonTessellatorImpl.cpp" "fixed/GluPolygonTessellatorImpl.hpp"
+)
+endif()
+
 target_include_directories(${PROJECT_NAME}
 	PUBLIC "${PROJECT_SOURCE_DIR}"
 	PRIVATE
