@@ -271,6 +271,44 @@ void ModelStoreVertex(const Vector3d& vertex, Uint16 vertno,
    vertex_list[vertno] = vertex;
 }
 
+std::vector< Triangle3dTextured> Tessellate(const std::vector<Vertex3d>& vertices,
+   Uint16 textureNumber, Uint8 colorIndex, bool flatShaded)
+{
+   std::vector< Triangle3dTextured> resultTriangles;
+
+   if (vertices.size() == 3)
+   {
+      Triangle3dTextured triangle{
+         vertices[0], vertices[1], vertices[2],
+         textureNumber, colorIndex, flatShaded };
+      resultTriangles.push_back(triangle);
+   }
+   else if (vertices.size() == 4)
+   {
+      Triangle3dTextured triangle1{
+         vertices[0], vertices[1], vertices[2],
+         textureNumber, colorIndex, flatShaded };
+      resultTriangles.push_back(triangle1);
+
+      Triangle3dTextured triangle2{
+         vertices[0], vertices[2], vertices[3],
+         textureNumber, colorIndex, flatShaded };
+      resultTriangles.push_back(triangle2);
+   }
+   else
+   {
+      UaTrace("tessellate polygon with %zu points...\n", vertices.size());
+      PolygonTessellator tess;
+
+      for (const auto& vertex : vertices)
+         tess.AddPolygonVertex(vertex);
+
+      return tess.Tessellate(textureNumber, colorIndex, flatShaded);
+   }
+
+   return resultTriangles;
+}
+
 void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vector3d& origin,
    std::vector<Vector3d>& vertex_list,
    std::vector<Triangle3dTextured>& triangles,
@@ -555,23 +593,24 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
       case M3_UW_FACE_VERTICES: // 007e define face vertices
       {
          Uint16 nvert = file.Read16();
-         PolygonTessellator tess;
 
          UaModelTrace("[face] nvert=%u vertlist=", nvert);
 
+         std::vector<Vertex3d> vertices;
          for (Uint16 i = 0; i < nvert; i++)
          {
             Uint16 vertno = ModelReadVertexNumber(file);
 
             Vertex3d vert;
             vert.pos = vertex_list[vertno];
-            tess.AddPolygonVertex(vert);
+            vertices.push_back(vert);
 
             UaModelTrace("%u", vertno);
             if (i < nvert - 1) UaModelTrace(" ");
          }
 
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(textureNumber, palIndex, flatShaded);
+         std::vector<Triangle3dTextured> tri =
+            Tessellate(vertices, textureNumber, palIndex, flatShaded);
          triangles.insert(triangles.begin(), tri.begin(), tri.end());
       }
       break;
@@ -592,10 +631,10 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
             unk1 = 0;
 
          Uint16 nvert = file.Read16();
-         PolygonTessellator tess;
 
          UaModelTrace("nvert=%u vertlist=", nvert);
 
+         std::vector<Vertex3d> vertices;
          for (Uint16 i = 0; i < nvert; i++)
          {
             Uint16 vertno = ModelReadVertexNumber(file);
@@ -607,13 +646,14 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
             vert.pos = vertex_list[vertno];
             vert.u = u0;
             vert.v = v0;
-            tess.AddPolygonVertex(vert);
+            vertices.push_back(vert);
 
             UaModelTrace("%u (%f/%f)", vertno, u0, v0);
             if (i < nvert - 1) UaModelTrace(" ");
          }
 
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(textureNumber, palIndex, flatShaded);
+         std::vector<Triangle3dTextured> tri =
+            Tessellate(vertices, textureNumber, palIndex, flatShaded);
          triangles.insert(triangles.begin(), tri.begin(), tri.end());
       }
       break;
@@ -629,10 +669,9 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
             UaModelTrace("texnum=%04x ", unk1);
          }
 
-         PolygonTessellator tess;
-
          UaModelTrace("vertlist=");
 
+         std::vector<Vertex3d> vertices;
          for (Uint16 i = 0; i < 4; i++)
          {
             Uint8 vertno = file.Read8();
@@ -641,13 +680,14 @@ void ModelParseNode(unsigned int modelNumber, bool isUw2, Base::File& file, Vect
             vert.pos = vertex_list[vertno];
             vert.u = shorthand_texcoords[i * 2];
             vert.v = shorthand_texcoords[i * 2 + 1];
-            tess.AddPolygonVertex(vert);
+            vertices.push_back(vert);
 
             UaModelTrace("%u", vertno);
             if (i < 3) UaModelTrace(" ");
          }
 
-         const std::vector<Triangle3dTextured>& tri = tess.Tessellate(textureNumber, palIndex, flatShaded);
+         std::vector<Triangle3dTextured> tri =
+            Tessellate(vertices, textureNumber, palIndex, flatShaded);
          triangles.insert(triangles.begin(), tri.begin(), tri.end());
       }
       break;
