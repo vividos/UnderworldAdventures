@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2019,2021,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2019,2021,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,22 +17,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 /// \file PolygonTessellator.hpp
-/// \brief tessellator class
+/// \brief polygon tessellator class
 //
 #pragma once
 
 #include "Triangle3d.hpp"
-#include <SDL2/SDL_opengl.h>
-
-typedef unsigned int GLenum;
-class GLUtesselator;
-
-// under win32, the callback function must have standard calling convention
-#ifdef WIN32
-#define GL_CALLBACK __stdcall
-#else
-#define GL_CALLBACK
-#endif
 
 /// polygon tessellator class
 class PolygonTessellator
@@ -59,52 +48,12 @@ private:
    /// deleted assignment operator
    PolygonTessellator& operator=(const PolygonTessellator&) = delete;
 
-   // static callback functions
-
-   /// called when triangle data begins
-   static void GL_CALLBACK OnBeginData(GLenum type,
-      PolygonTessellator* This);
-
-   /// called when triangle data ends
-   static void GL_CALLBACK OnEndData(PolygonTessellator* This);
-
-   /// called when vertex data is created
-   static void GL_CALLBACK OnVertexData(
-      Vertex3d* vert, PolygonTessellator* This);
-
-   /// called when new vertices are created, e.g. when subdividing triangles
-   static void GL_CALLBACK OnCombinedData(GLdouble coords[3],
-      Vertex3d* vertexData[4], GLfloat weight[4], Vertex3d** outputData,
-      PolygonTessellator* This);
-
 private:
-   /// GLU tessellator object
-   GLUtesselator* m_tessellator;
+   class Impl;
 
-   /// texture number to use for triangles
-   Uint16 m_textureNumber;
+   /// tessellator implementation
+   std::unique_ptr<Impl> m_impl;
 
-   /// color index to use for triangles
-   Uint8 m_colorIndex;
-
-   /// flat shaded flag, to use for triangles
-   bool m_flatShaded;
-
-   /// current glBegin() parameter type
-   GLenum m_currentType;
-
-   /// indicates a fresh triangle start
-   bool m_isTriangleStart;
-
-   /// list of polygon vertices; only point 0 of triangle is valid
+   /// list of polygon vertices
    std::vector<Vertex3d> m_polygonVertexList;
-
-   /// temporary vertex cache to combine 3 vertices to a triangle
-   std::vector<Vertex3d> m_vertexCache;
-
-   /// list with new triangles
-   std::vector<Triangle3dTextured> m_triangles;
-
-   /// list of pointer to vertices created using combining
-   std::vector<Vertex3d*> m_combinedVertices;
 };

@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2021,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2021,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,28 +21,97 @@
 //
 #include "pch.hpp"
 #include "PolygonTessellator.hpp"
+#include <SDL2/SDL_opengl.h>
 #include <gl/GLU.h>
 
-PolygonTessellator::PolygonTessellator()
-   :m_textureNumber(0),
-   m_colorIndex(0),
-   m_flatShaded(false),
-   m_currentType(0),
-   m_isTriangleStart(false)
+// under win32, the callback function must have standard calling convention
+#ifdef WIN32
+#define GL_CALLBACK __stdcall
+#else
+#define GL_CALLBACK
+#endif
+
+/// polygon tesselator implementation that uses the GLU library
+class PolygonTessellator::Impl
 {
-   m_tessellator = gluNewTess();
+public:
+   Impl()
+   {
+      m_tessellator = gluNewTess();
+   }
+
+   ~Impl()
+   {
+      gluDeleteTess(m_tessellator);
+
+      // free vertices created through combining
+      size_t max = m_combinedVertices.size();
+      for (size_t index = 0; index < max; index++)
+         delete m_combinedVertices[index];
+
+      m_combinedVertices.clear();
+   }
+
+   /// tesselates given polygon vertex list and returns triangles
+   const std::vector<Triangle3dTextured>& Tessellate(
+      const std::vector<Vertex3d>& polygonVertexList,
+      Uint16 textureNumber, Uint8 colorIndex, bool flatShaded);
+
+private:
+   // static callback functions
+
+   /// called when triangle data begins
+   static void GL_CALLBACK OnBeginData(GLenum type,
+      PolygonTessellator::Impl* This);
+
+   /// called when triangle data ends
+   static void GL_CALLBACK OnEndData(PolygonTessellator::Impl* This);
+
+   /// called when vertex data is created
+   static void GL_CALLBACK OnVertexData(
+      Vertex3d* vert, PolygonTessellator::Impl* This);
+
+   /// called when new vertices are created, e.g. when subdividing triangles
+   static void GL_CALLBACK OnCombinedData(GLdouble coords[3],
+      Vertex3d* vertexData[4], GLfloat weight[4], Vertex3d** outputData,
+      PolygonTessellator::Impl* This);
+
+private:
+   /// GLU tessellator object
+   GLUtesselator* m_tessellator;
+
+   /// texture number to use for triangles
+   Uint16 m_textureNumber = 0;
+
+   /// color index to use for triangles
+   Uint8 m_colorIndex = 0;
+
+   /// flat shaded flag, to use for triangles
+   bool m_flatShaded = false;
+
+   /// current glBegin() parameter type
+   GLenum m_currentType = 0;
+
+   /// indicates a fresh triangle start
+   bool m_isTriangleStart = false;
+
+   /// temporary vertex cache to combine 3 vertices to a triangle
+   std::vector<Vertex3d> m_vertexCache;
+
+   /// list with new triangles
+   std::vector<Triangle3dTextured> m_triangles;
+
+   /// list of pointer to vertices created using combining
+   std::vector<Vertex3d*> m_combinedVertices;
+};
+
+PolygonTessellator::PolygonTessellator()
+:m_impl(std::make_unique<Impl>())
+{
 }
 
 PolygonTessellator::~PolygonTessellator()
 {
-   gluDeleteTess(m_tessellator);
-
-   // free vertices created through combining
-   size_t max = m_combinedVertices.size();
-   for (size_t index = 0; index < max; index++)
-      delete m_combinedVertices[index];
-
-   m_combinedVertices.clear();
 }
 
 /// Tessellates the polygon into triangles with the polygon vertices passed
@@ -53,10 +122,22 @@ PolygonTessellator::~PolygonTessellator()
 const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(
    Uint16 textureNumber, Uint8 colorIndex, bool flatShaded)
 {
-   if (m_polygonVertexList.size() == 3)
+   return m_impl->Tessellate(m_polygonVertexList, textureNumber, colorIndex, flatShaded);
+}
+
+/// Tessellates the polygon into triangles with the polygon vertices passed
+/// with AddPolygonVertex().
+/// \param textureNumber texture number to use when storing triangles
+/// \param colorIndex color index to use when storing triangles
+/// \param flatShaded
+const std::vector<Triangle3dTextured>& PolygonTessellator::Impl::Tessellate(
+   const std::vector<Vertex3d>& polygonVertexList,
+   Uint16 textureNumber, Uint8 colorIndex, bool flatShaded)
+{
+   if (polygonVertexList.size() == 3)
    {
       Triangle3dTextured tri{
-         m_polygonVertexList[0], m_polygonVertexList[1], m_polygonVertexList[2],
+         polygonVertexList[0], polygonVertexList[1], polygonVertexList[2],
          textureNumber, colorIndex, flatShaded };
 
       m_triangles.push_back(tri);
@@ -95,13 +176,14 @@ const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(
    gluTessBeginContour(m_tessellator);
 
    // put all polygon vertices into tesselator
-   size_t max = m_polygonVertexList.size();
+   size_t max = polygonVertexList.size();
    for (size_t index = 0; index < max; index++)
    {
-      const Vertex3d& vertex = m_polygonVertexList[index];
+      const Vertex3d& vertex = polygonVertexList[index];
       GLdouble coords[3] = { vertex.pos.x, vertex.pos.y, vertex.pos.z };
 
-      gluTessVertex(m_tessellator, coords, &m_polygonVertexList[index]);
+      gluTessVertex(m_tessellator, coords,
+         const_cast<Vertex3d*>(&polygonVertexList[index]));
    }
 
    gluTessEndContour(m_tessellator);
@@ -110,19 +192,19 @@ const std::vector<Triangle3dTextured>& PolygonTessellator::Tessellate(
    return m_triangles;
 }
 
-void GL_CALLBACK PolygonTessellator::OnBeginData(GLenum type, PolygonTessellator* This)
+void GL_CALLBACK PolygonTessellator::Impl::OnBeginData(GLenum type, PolygonTessellator::Impl* This)
 {
    This->m_currentType = type;
    This->m_isTriangleStart = true;
 }
 
-void GL_CALLBACK PolygonTessellator::OnEndData(PolygonTessellator* This)
+void GL_CALLBACK PolygonTessellator::Impl::OnEndData(PolygonTessellator::Impl* This)
 {
    This->m_currentType = 0;
    This->m_vertexCache.clear();
 }
 
-void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessellator* This)
+void GL_CALLBACK PolygonTessellator::Impl::OnVertexData(Vertex3d* vert, PolygonTessellator::Impl* This)
 {
    if (This->m_vertexCache.size() < 2)
    {
@@ -163,8 +245,9 @@ void GL_CALLBACK PolygonTessellator::OnVertexData(Vertex3d* vert, PolygonTessell
    }
 }
 
-void GL_CALLBACK PolygonTessellator::OnCombinedData(GLdouble coords[3],
-   Vertex3d* vertexData[4], GLfloat weight[4], Vertex3d** out_data, PolygonTessellator* This)
+void GL_CALLBACK PolygonTessellator::Impl::OnCombinedData(GLdouble coords[3],
+   Vertex3d* vertexData[4], GLfloat weight[4], Vertex3d** out_data,
+   PolygonTessellator::Impl* This)
 {
    Vertex3d* vert = new Vertex3d;
 
