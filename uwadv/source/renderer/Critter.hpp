@@ -1,6 +1,6 @@
 //
 // Underworld Adventures - an Ultima Underworld remake project
-// Copyright (c) 2002,2003,2004,2019,2022 Underworld Adventures Team
+// Copyright (c) 2002,2003,2004,2019,2022,2023 Underworld Adventures Team
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,16 +24,9 @@
 #include "IndexedImage.hpp"
 #include "Texture.hpp"
 
-namespace Base
-{
-   class Settings;
-   class ResourceManager;
-}
-
 namespace Underworld
 {
    class Object;
-   class ObjectList;
 }
 namespace Import
 {
@@ -80,7 +73,7 @@ public:
    /// sets palette
    void SetPalette(Palette256Ptr& palette) { m_palette = palette; }
 
-protected:
+private:
    friend Import::CrittersLoader;
 
    /// slot list with segment indices
@@ -112,47 +105,4 @@ protected:
 
    /// palette to use
    Palette256Ptr m_palette;
-};
-
-
-/// critter frames manager class
-class CritterFramesManager
-{
-public:
-   /// ctor
-   CritterFramesManager()
-      :m_mapObjects(nullptr)
-   {
-   }
-
-   /// initialize frames manager
-   void Init(Base::Settings& settings, Base::ResourceManager& resourceManager, ImageManager& imageManager);
-
-   /// resets controlled object frames and prepares new critter objects
-   void Prepare(Underworld::ObjectList* mapObjects);
-
-   /// does tick processing
-   void Tick(double tickRate);
-
-   /// returns critter object
-   Critter& GetCritter(unsigned int index)
-   {
-      return m_allCritters[index];
-   }
-
-private:
-   /// frames per second for critter animations
-   static const double s_critterFramesPerSecond;
-
-   /// vector with critter animations
-   std::vector<Critter> m_allCritters;
-
-   /// manages objects indices into object list which objects to control
-   std::vector<Uint16> m_objectIndices;
-
-   /// frame count for objects
-   std::vector<double> m_objectFrameCount;
-
-   /// currently managed map objects
-   Underworld::ObjectList* m_mapObjects;
 };

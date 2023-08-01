@@ -22,6 +22,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC
 	"pch.cpp" "pch.hpp"
 	"Critter.cpp" "Critter.hpp"
+	"CritterFramesManager.cpp" "CritterFramesManager.hpp"
 	"LevelTilemapRenderer.cpp" "LevelTilemapRenderer.hpp"
 	"MainGameLoop.cpp" "MainGameLoop.hpp"
 	"Model3D.hpp"

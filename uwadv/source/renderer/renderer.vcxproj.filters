@@ -71,6 +71,9 @@
     <ClCompile Include="fixed\GluPolygonTessellatorImpl.cpp">
       <Filter>Fixed Pipeline Files</Filter>
     </ClCompile>
+    <ClCompile Include="CritterFramesManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Critter.hpp">
@@ -135,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="fixed\GluPolygonTessellatorImpl.hpp">
       <Filter>Fixed Pipeline Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CritterFramesManager.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

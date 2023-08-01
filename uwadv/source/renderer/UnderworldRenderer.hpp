@@ -22,7 +22,7 @@
 #pragma once
 
 #include "TextureManager.hpp"
-#include "Critter.hpp"
+#include "CritterFramesManager.hpp"
 #include "Model3DManager.hpp"
 
 namespace Underworld
