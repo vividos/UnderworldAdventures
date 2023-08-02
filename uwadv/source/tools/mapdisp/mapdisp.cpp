@@ -112,9 +112,6 @@ private:
    /// creates a screenshot of the current scene
    void CreateScreenshot(bool largeResolution);
 
-   /// writes a .tga files from given RGBA data
-   static void WriteTgaFile(const char* filename, unsigned int xres, unsigned int yres, Uint32* data);
-
 private:
    /// game instance to display the underworld
    GameInstance m_gameInstance;
@@ -549,8 +546,7 @@ void MapDisplay::CreateScreenshot(bool big)
 
       m_renderWindow.SetWindowTitle("Underworld Adventures: Map Display; saving captured image ...");
 
-      // saving tga file
-      WriteTgaFile("mapdisp-shot.tga", xres * tilex, yres * tiley, image.data());
+      ImageManager::Save("mapdisp-shot.tga", xres * tilex, yres * tiley, image);
 
       // restore projection matrix
       glMatrixMode(GL_PROJECTION);
@@ -579,34 +575,8 @@ void MapDisplay::CreateScreenshot(bool big)
 
       m_renderWindow.SetWindowTitle("Underworld Adventures: Map Display; saving captured image ...");
 
-      // saving tga file
-      WriteTgaFile("mapdisp-shot.tga", xres, yres, image.data());
+      ImageManager::Save("mapdisp-shot.png", xres, yres, image);
    }
-}
-
-void MapDisplay::WriteTgaFile(const char* filename, unsigned int xres, unsigned int yres, Uint32* data)
-{
-   // write tga header
-   Base::File file{ filename, Base::modeWrite };
-
-   // write header
-   file.Write8(0); // id length
-   file.Write8(0); // color map flag
-   file.Write8(2); // tga type (2=truecolor)
-   file.Write16(0); // color map origin
-   file.Write16(0); // color map length
-   file.Write8(0); // color map depth
-   file.Write16(0); // x origin
-   file.Write16(0); // y origin
-   file.Write16(xres); // width
-   file.Write16(yres); // height
-   file.Write8(32); // bits per pixel
-   file.Write8(0x20); // image descriptor; 0x00 = bottomup
-
-   for (int line = yres - 1; line >= 0; line--)
-      file.WriteBuffer(reinterpret_cast<Uint8*>(&data[line * xres]), xres * 4);
-
-   file.Close();
 }
 
 #if 0
