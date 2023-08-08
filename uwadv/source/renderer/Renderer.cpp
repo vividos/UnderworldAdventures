@@ -274,6 +274,14 @@ void Renderer::GetModel3DBoundingTriangles(unsigned int x,
    }
 }
 
+void Renderer::GetScreenshot(unsigned int xres, unsigned int yres,
+   std::vector<Uint32>& screenshotRgbaData)
+{
+   screenshotRgbaData.resize(xres * yres, 0);
+
+   ReadPixelsFromBackBuffer(xres, yres, screenshotRgbaData);
+}
+
 void Renderer::TakeSavegameScreenshot(unsigned int xres, unsigned int yres,
    std::vector<Uint32>& screenshotRgbaData,
    const Underworld::Underworld& underworld)
@@ -296,9 +304,16 @@ void Renderer::TakeSavegameScreenshot(unsigned int xres, unsigned int yres,
 
    RenderUnderworld(underworld);
 
+   ReadPixelsFromBackBuffer(xres, yres, screenshotRgbaData);
+
+   SetViewport(originalViewport);
+}
+
+void Renderer::ReadPixelsFromBackBuffer(unsigned int xres, unsigned int yres,
+   std::vector<Uint32>& screenshotRgbaData)
+{
    screenshotRgbaData.resize(xres * yres, 0);
 
-   // read in scanlines
    glReadBuffer(GL_BACK);
 
    for (unsigned int lineIndex = 0; lineIndex < yres; lineIndex++)
@@ -310,6 +325,4 @@ void Renderer::TakeSavegameScreenshot(unsigned int xres, unsigned int yres,
          GL_UNSIGNED_BYTE,
          &screenshotRgbaData[lineIndex * xres]);
    }
-
-   SetViewport(originalViewport);
 }

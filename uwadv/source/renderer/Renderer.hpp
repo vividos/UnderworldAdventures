@@ -95,10 +95,18 @@ public:
       const Underworld::Object& object,
       std::vector<Triangle3dTextured>& allTriangles);
 
+   /// creates a screenshot of the current render back buffer
+   void GetScreenshot(unsigned int xres, unsigned int yres,
+      std::vector<Uint32>& screenshotRgbaData);
+
    /// creates a savegame screenshot using the given resolution
    void TakeSavegameScreenshot(unsigned int xres, unsigned int yres,
       std::vector<Uint32>& screenshotRgbaData,
       const Underworld::Underworld& underworld);
+
+   /// reads RGBA pixels from back buffer into vector
+   static void ReadPixelsFromBackBuffer(unsigned int xres, unsigned int yres,
+      std::vector<Uint32>& screenshotRgbaData);
 
 private:
    /// current render options

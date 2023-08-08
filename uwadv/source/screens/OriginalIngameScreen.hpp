@@ -148,6 +148,9 @@ private:
    /// shows map
    virtual void ShowMap() override;
 
+   /// takes a screenshot and saves it to the game's screenshot folder
+   void SaveScreenshot();
+
    /// takes a screenshot for savegame preview
    void DoSavegameScreenshot(unsigned int xres, unsigned int yres);
 
@@ -190,6 +193,9 @@ private:
 
    /// optional parameter for fadeout action
    unsigned int m_fadeoutParameter;
+
+   /// when set to true, a screenshot is saved after the next draw pass
+   bool m_takeScreenshot = false;
 
 
    // controls

@@ -35,6 +35,7 @@
 #include "physics/PhysicsModel.hpp"
 #include "physics/GeometryProvider.hpp"
 #include "ImageManager.hpp"
+#include "FileSystem.hpp"
 
 /// time to fade in/out
 const double OriginalIngameScreen::s_fadeTime = 0.5;
@@ -297,6 +298,12 @@ void OriginalIngameScreen::Draw()
       ImageScreen::Draw();
 
       glDisable(GL_BLEND);
+   }
+
+   if (m_takeScreenshot)
+   {
+      m_takeScreenshot = false;
+      SaveScreenshot();
    }
 }
 
@@ -685,11 +692,7 @@ void OriginalIngameScreen::KeyEvent(bool keyDown, Base::KeyType key)
       // "screenshot" key
    case Base::keyUaScreenshot:
       if (keyDown)
-      {
-         // TODO take a screenshot
-//         do_screenshot(false);
-//         save_screenshot();
-      }
+         m_takeScreenshot = true;
       break;
 
    default:
@@ -939,6 +942,37 @@ void OriginalIngameScreen::ShowCutscene(unsigned int cutsceneNumber)
 void OriginalIngameScreen::ShowMap()
 {
    ScheduleAction(ingameActionShowMap, true);
+}
+
+void OriginalIngameScreen::SaveScreenshot()
+{
+   unsigned int xres = GetWidth();
+   unsigned int yres = GetHeight();
+   UnmapWindowPosition(xres, yres);
+
+   std::vector<Uint32> screenshotRgbaData;
+   m_game.GetRenderer().GetScreenshot(
+      xres, yres,
+      screenshotRgbaData);
+
+   std::string screenshotsPath = m_gameInstance.GetResourceManager().GetHomePath() + "screenshots";
+   if (!Base::FileSystem::FolderExists(screenshotsPath))
+      Base::FileSystem::MakeFolder(screenshotsPath);
+
+   unsigned int fileIndex = 0;
+   std::string filename;
+   do
+   {
+      filename = Base::String::Format(
+         "%s/uw_%03u.png",
+         screenshotsPath.c_str(),
+         fileIndex++);
+
+   } while (Base::FileSystem::FileExists(filename));
+
+   ImageManager::Save(filename, xres, yres, screenshotRgbaData);
+
+   PrintScroll(("Saved screenshot " + filename).c_str());
 }
 
 void OriginalIngameScreen::DoSavegameScreenshot(
