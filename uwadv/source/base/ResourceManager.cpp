@@ -35,7 +35,8 @@ using Base::Settings;
 
 /// The settingUadataPath setting must be set in the settings object.
 ResourceManager::ResourceManager(const Settings& settings)
-   :m_uadataPath(settings.GetString(Base::settingUadataPath)),
+   :m_homePath(Base::FileSystem::GetHomePath()),
+   m_uadataPath(settings.GetString(Base::settingUadataPath)),
    m_uwPath(settings.GetString(Base::settingUnderworldPath)),
    m_uw1Path(settings.GetString(Base::settingUw1Path)),
    m_uw2Path(settings.GetString(Base::settingUw2Path))

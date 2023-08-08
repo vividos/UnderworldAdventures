@@ -78,6 +78,9 @@ namespace Base
       /// returns if the path to uw game currently selected is an uw2 path
       bool IsUnderworldPathUw2() const;
 
+      /// returns home path, where the user's settings may be stored; a writable directory
+      std::string GetHomePath() const { return m_homePath; }
+
    private:
       /// re-scans all underworld data filenames in the given path
       void RescanUnderworldFilenames(std::string uwPath);
@@ -96,7 +99,7 @@ namespace Base
       void MapUnderworldFilename(std::string& filenameToMap) const;
 
    private:
-      /// home path
+      /// home path, where the user's settings may be stored; a writable directory
       std::string m_homePath;
 
       /// path to uadata resources
