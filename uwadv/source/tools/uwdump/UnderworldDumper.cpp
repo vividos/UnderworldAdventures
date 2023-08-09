@@ -45,6 +45,7 @@ extern void DumpBytArkFile(const std::string& filename, const GameStrings& gameS
 extern void DumpGrImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpTextureImage(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 extern void DumpCutscene(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
+extern void DumpTerrainData(const std::string& filename, const GameStrings& gameStrings, bool isUw2);
 
 typedef std::function<void(const std::string & filename, const GameStrings & gameStrings, bool isUw2)> T_fileHandler;
 
@@ -64,6 +65,7 @@ std::map<std::string, T_fileHandler> g_dumpFileHandlerMap =
    { "scd.ark", DumpArkArchive },
    { "pals.dat", DumpPalettes },
    { "allpals.dat", DumpAuxPalettes },
+   { "terrain.dat", DumpTerrainData },
    { ".byt", DumpBytImage },
    { ".gr", DumpGrImage },
    { ".tr", DumpTextureImage },
