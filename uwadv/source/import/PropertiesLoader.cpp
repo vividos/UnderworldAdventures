@@ -247,4 +247,21 @@ void Import::ImportProperties(Base::ResourceManager& resourceManager,
          }
       }
    }
+
+   // import terrain properties
+   {
+      Base::SDL_RWopsPtr rwops = resourceManager.GetUnderworldFile(Base::resourceGameUw, "data/terrain.dat");
+      Base::File file(rwops);
+
+      std::vector<Uint16>& terrainPropertiesList = properties.GetTerrainPropertiesList();
+      terrainPropertiesList.clear();
+      terrainPropertiesList.resize(256);
+
+      // skip uw1 wall terrain words
+      if (!resourceManager.IsUnderworldPathUw2())
+         file.Seek(256 * 2, Base::seekBegin);
+
+      for (unsigned int index = 0; index < 0x100; index++)
+         terrainPropertiesList[index] = file.Read16();
+   }
 }

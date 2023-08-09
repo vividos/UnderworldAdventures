@@ -286,6 +286,12 @@ namespace Underworld
       /// returns vector with animated object properties
       std::vector<AnimatedObjectProperty>& GetAnimatedObjectProperties() { return m_animatedObjectPropertiesList; }
 
+      /// returns vector with terrain properties words
+      std::vector<Uint16>& GetTerrainPropertiesList() { return m_terrainPropertiesList; }
+
+      /// returns vector with terrain properties words; const version
+      const std::vector<Uint16>& GetTerrainPropertiesList() const { return m_terrainPropertiesList; }
+
    private:
       /// common object properties
       std::vector<CommonObjectProperty> m_commonObjectPropertyList;
@@ -310,6 +316,9 @@ namespace Underworld
 
       /// animated object properties
       std::vector<AnimatedObjectProperty> m_animatedObjectPropertiesList;
+
+      /// words for every terrain floor texture
+      std::vector<Uint16> m_terrainPropertiesList;
    };
 
 } // namespace Underworld
