@@ -21,9 +21,13 @@
 //
 #include "pch.hpp"
 #include "Level.hpp"
+#include "Properties.hpp"
+
+using Underworld::ObjectProperties;
 
 Underworld::AutomapFlag Underworld::Level::GetAutomapFlagFromTile(
-   unsigned int xpos, unsigned int ypos) const
+   unsigned int xpos, unsigned int ypos,
+   const ObjectProperties& objectProperties) const
 {
    const TileInfo& tileInfo = GetTilemap().GetTileInfo(xpos, ypos);
    if (tileInfo.m_isDoorPresent)
@@ -61,19 +65,29 @@ Underworld::AutomapFlag Underworld::Level::GetAutomapFlagFromTile(
       pos = objInfo.m_link;
    }
 
-   // check floor textures
+   // check floor textures against terrain properties
    Uint16 floorTexture = tileInfo.m_textureFloor - Base::c_stockTexturesFloor;
-   if (floorTexture == 8 || floorTexture == 16 || floorTexture == 17 ||
-      floorTexture == 32 || floorTexture == 33 || floorTexture == 34)
+
+   Uint16 terrainWord = floorTexture < 256
+      ? objectProperties.GetTerrainPropertiesList()[floorTexture]
+      : 0;
+
+   Uint16 terrainUw2Bits = terrainWord & 0x00C0;
+
+   if (terrainWord == 0x0010 || terrainUw2Bits == 0x0040)
       return automapWater;
 
-   if (floorTexture == 23 || floorTexture == 24 || floorTexture == 25)
+   if (terrainWord == 0x0010 || terrainUw2Bits == 0x0080)
       return automapLava;
+
+   if (terrainUw2Bits == 0x00C0)
+      return automapIce;
 
    return automapDefault;
 }
 
-void Underworld::Level::RevealCompleteAutomap()
+void Underworld::Level::RevealCompleteAutomap(
+   const ObjectProperties& objectProperties)
 {
    if (!GetTilemap().IsUsed())
       return;
@@ -82,6 +96,6 @@ void Underworld::Level::RevealCompleteAutomap()
       for (unsigned int posY = 0; posY < c_underworldTilemapSize; posY++)
       {
          TileInfo& tileInfo = GetTilemap().GetTileInfo(posX, posY);
-         tileInfo.m_automapFlag = GetAutomapFlagFromTile(posX, posY);
+         tileInfo.m_automapFlag = GetAutomapFlagFromTile(posX, posY, objectProperties);
       }
 }

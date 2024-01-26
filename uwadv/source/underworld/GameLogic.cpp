@@ -203,7 +203,10 @@ void GameLogic::RevealAutomapAtTile(unsigned int tileX, unsigned tileY)
          // for tiles with offset 2 away, reveal solid tiles
          if ((tileInfo.m_type == tileSolid && isBorderTile) ||
             !isBorderTile)
-            tileInfo.m_automapFlag = level.GetAutomapFlagFromTile(posX, posY);
+            tileInfo.m_automapFlag =
+               level.GetAutomapFlagFromTile(
+                  posX, posY,
+                  GetObjectProperties());
       }
 }
 

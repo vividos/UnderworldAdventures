@@ -60,6 +60,7 @@ namespace Underworld
       automapWater = 0x4,     ///< walter tile
       automapBridge = 0x6,    ///< bridge tile
       automapLava = 0xc,      ///< lava tile
+      automapIce = 0xd,       ///< ice tile; in uw2 the value originally is 12
       automapUndiscovered = 0x0f,   ///< undiscovered tile
    };
 

@@ -32,6 +32,8 @@ namespace Base
 
 namespace Underworld
 {
+   class ObjectProperties;
+
    /// \brief Level of the underworld
    /// \details A level of the underworld consists of a tilemap, an object list and automap
    /// notes. A level can have a unique name.
@@ -66,10 +68,11 @@ namespace Underworld
 
       /// determines automap flag based on the tile and its objects
       AutomapFlag GetAutomapFlagFromTile(
-         unsigned int xpos, unsigned int ypos) const;
+         unsigned int xpos, unsigned int ypos,
+         const ObjectProperties& objectProperties) const;
 
       /// reveals the comlete automap
-      void RevealCompleteAutomap();
+      void RevealCompleteAutomap(const ObjectProperties& objectProperties);
 
       // loading / saving
 

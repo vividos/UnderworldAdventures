@@ -40,26 +40,29 @@ const unsigned int c_mapOffsetX = 4;
 /// pixel Y offset for map
 const unsigned int c_mapOffsetY = 2;
 
-/// palette 0 indices for wall pixels
+/// palette 1 indices for wall pixels
 const std::vector<Uint8> c_wallPaletteIndices = { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48 };
 
-/// palette 0 indices for floor pixels
+/// palette 1 indices for floor pixels
 const std::vector<Uint8> c_floorPaletteIndices = { 0x3c, 0x3e, 0x3f, 0x40 };
 
-/// palette 0 indices for door pixels
+/// palette 1 indices for door pixels
 const std::vector<Uint8> c_doorPaletteIndices = { 0x44, 0x45, 0x43, 0x46, 0x47, 0x48 };
 
-/// palette 0 indices for teleport pixels
+/// palette 1 indices for teleport pixels
 const std::vector<Uint8> c_teleportPaletteIndices = { 0x43, 0x44, 0x45, 0x46, 0x47 };
 
-/// palette 0 indices for water pixels
+/// palette 1 indices for water pixels
 const std::vector<Uint8> c_waterPaletteIndices = { 0xb1, 0xb2 };
 
-/// palette 0 indices for bridge pixels
+/// palette 1 indices for bridge pixels
 const std::vector<Uint8> c_bridgePaletteIndices = { 0xe9, 0xea, 0xeb };
 
-/// palette 0 indices for lava pixels
+/// palette 1 indices for lava pixels
 const std::vector<Uint8> c_lavaPaletteIndices = { 0xb5, 0xb6 };
+
+/// palette 1 indices for ice pixels
+const std::vector<Uint8> c_icePaletteIndices = { 0xb9, 0xba, 0xbb };
 
 /// x and y positions of gem part images for uw2
 static const std::array<
@@ -299,6 +302,9 @@ std::reference_wrapper<const std::vector<Uint8>> GetPaletteIndicesByAutomapFlag(
 
    case Underworld::automapLava:
       return c_lavaPaletteIndices;
+
+   case Underworld::automapIce:
+      return c_icePaletteIndices;
 
    default:
       return c_floorPaletteIndices;
