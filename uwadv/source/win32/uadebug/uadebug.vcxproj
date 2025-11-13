@@ -52,6 +52,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -66,6 +67,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)source\win32\uadebug\thirdparty;$(SolutionDir)source\win32\uadebug\thirdparty\scintilla;$(SolutionDir)source\win32\uadebug\thirdparty\tabbingframework\include;$(SolutionDir)source\win32\uadebug\thirdparty\wtldockingwindows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

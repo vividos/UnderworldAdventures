@@ -264,7 +264,7 @@ bool ConfigDlg::CheckConfig()
       if (buffer.Right(1) != _T("\\"))
          buffer += _T("\\");
 
-      std::string uw1path = CT2CA(buffer);
+      std::string uw1path{ CT2CA(buffer) };
 
       Base::Settings settings;
       settings.SetValue(Base::SettingsType::settingUnderworldPath, uw1path.c_str());
@@ -283,7 +283,7 @@ bool ConfigDlg::CheckConfig()
    // check screen resolution
    {
       GetDlgItemText(IDC_COMBO_SCREEN_RESOLUTION, buffer);
-      std::string screen_res = CT2CA(buffer);
+      std::string screen_res{ CT2CA(buffer) };
 
       // parse resolution string, format is <xres> x <yres>
       std::string::size_type pos = screen_res.find('x');
@@ -341,7 +341,7 @@ void ConfigDlg::SaveConfig()
    if (buffer.Right(1) != _T("\\"))
       buffer += _T("\\");
 
-   std::string value = CT2CA(buffer);
+   std::string value{ CT2CA(buffer) };
    m_settings.SetValue(Base::settingUw1Path, value);
 
    //GetDlgItemText(IDC_EDIT_UW2_PATH, buffer);
