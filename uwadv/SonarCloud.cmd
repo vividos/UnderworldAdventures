@@ -1,7 +1,7 @@
 @echo off
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019-2022 Underworld Adventures Team
+REM Copyright (c) 2019-2026 Underworld Adventures Team
 REM
 REM Runs SonarCloud analysis build
 REM
@@ -51,7 +51,7 @@ REM Rebuild Release|Win32
 REM
 build-wrapper-win-x86-64.exe ^
    --out-dir .bw-output ^
-   msbuild uwadv.sln /m /property:Configuration=SonarCloud,Platform=Win32 /target:Restore;Rebuild
+   msbuild uwadv.slnx /m /property:Configuration=SonarCloud,Platform=Win32 /target:Restore;Rebuild
 
 REM
 REM Run unit tests

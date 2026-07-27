@@ -1,7 +1,7 @@
 @echo off
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019-2022 Underworld Adventures Team
+REM Copyright (c) 2019-2026 Underworld Adventures Team
 REM
 REM Runs Unit Tests and collects coverage information
 REM
@@ -22,7 +22,7 @@ set PATH=%PATH%;%OPENCPPCOVERAGE%
 REM
 REM Build Debug|Win32
 REM
-msbuild uwadv.sln /m /property:Configuration=Debug /property:Platform=Win32 /target:Build
+msbuild uwadv.slnx /m /property:Configuration=Debug /property:Platform=Win32 /target:Build
 
 REM
 REM Run unit tests

@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>8e919990-0d76-4f96-801d-507d42210879</ProjectGuid>
+    <ProjectGuid>{8e919990-0d76-4f96-801d-507d42210879}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>uwadv-setup</OutputName>
     <OutputType>Package</OutputType>
