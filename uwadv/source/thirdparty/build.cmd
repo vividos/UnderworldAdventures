@@ -1,6 +1,6 @@
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019,2021,2022 Michael Fink
+REM Copyright (c) 2019-2026 Michael Fink
 REM
 REM Build script for thirdparty libraries
 REM
@@ -17,5 +17,5 @@ copy ..\win32\uadebug\thirdparty\scintilla\lib\Lexilla.dll %OUTDIR%
 copy ..\win32\uadebug\thirdparty\scintilla\lib\lua.properties %OUTDIR%
 copy ..\..\docs\README.Manual.md %OUTDIR%\README.Manual.txt
 copy ..\..\docs\README.Tools.md %OUTDIR%\tools\README.Tools.txt
-copy ..\..\vcpkg_installed\x86-windows\x86-windows\tools\lua\luac.exe %OUTDIR%\tools\luac.exe
+copy ..\..\output\intermediate\vcpkg_installed\x86-windows\tools\lua\luac.exe %OUTDIR%\tools\luac.exe
 copy ..\..\docs\uw1-walkthrough.txt %OUTDIR%\uw1-walkthrough.txt
