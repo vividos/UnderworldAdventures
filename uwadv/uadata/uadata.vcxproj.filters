@@ -221,6 +221,8 @@
     <CustomBuild Include="uw1\scripts\objectlist.lua">
       <Filter>uw1\scripts</Filter>
     </CustomBuild>
-    <CustomBuild Include="uw2\scripts\game.lua" />
+    <CustomBuild Include="uw2\scripts\game.lua">
+      <Filter>uw2\scripts</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
