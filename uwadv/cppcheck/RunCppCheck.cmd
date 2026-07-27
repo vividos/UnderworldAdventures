@@ -1,6 +1,6 @@
 REM
 REM Underworld Adventures - an Ultima Underworld hacking project
-REM Copyright (c) 2019 Underworld Adventures Team
+REM Copyright (c) 2019-2026 Underworld Adventures Team
 REM
 REM Runs CppCheck to check sourcecode
 REM
@@ -26,7 +26,7 @@ REM --platform=win32W   Platform specific types
 REM --language=c++      Language (file extensions)
 REM --std=c++11         Language (syntax)%
 REM --enable=all        Enable warnings
-REM --template vs       Output format for warnings
+REM --template=vs       Output format for warnings
 REM --check-config
 cppcheck.exe ^
 	..\source\ ^
@@ -34,9 +34,10 @@ cppcheck.exe ^
 	-i ..\source\thirdparty\ ^
 	-i ..\source\unittest\ ^
 	-DWIN32 -D_WINDOWS -DNDEBUG -D_UNICODE -D__cplusplus ^
-	-D_MSC_VER=1900 -D__ATLAPP_H__ -D_WTL_VER=0x0710 ^
+	-D_MSC_VER=1951 -D__ATLAPP_H__ -D_WTL_VER=0x0710 ^
 	--suppressions-list=cppcheck-suppress.txt ^
-	-j 4 --platform=win32A --language=c++ --std=c++11 %FORMAT% --enable=all --template vs 2> %OUTFILE%
-
-REM	 ^
-REM	-DNTDDI_WIN7=0x06010000 -DNTDDI_VERSION=0x06010000 ^
+	-j 4 ^
+	--platform=win32A --language=c++ --std=c++20 ^
+	%FORMAT% ^
+	--enable=all ^
+	--template=vs 2> %OUTFILE%
