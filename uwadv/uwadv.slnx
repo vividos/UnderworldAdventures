@@ -1,5 +1,9 @@
 <Solution>
   <Configurations>
+    <BuildType Name="AppVeyor" />
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="SonarCloud" />
     <Platform Name="Win32" />
   </Configurations>
   <Folder Name="/docs/">
@@ -10,14 +14,27 @@
     <File Path="docs/uw-formats.txt" />
   </Folder>
   <Folder Name="/hacking/">
-    <Project Path="hacking/hacking.vcxproj" />
+    <Project Path="hacking/hacking.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+      <Build Solution="AppVeyor|*" Project="false" />
+      <Build Solution="SonarCloud|*" Project="false" />
+    </Project>
   </Folder>
   <Folder Name="/helper/">
     <Project Path="cppcheck/cppcheck.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+      <Build Solution="AppVeyor|*" Project="false" />
       <Build Solution="Release|*" Project="false" />
+      <Build Solution="SonarCloud|*" Project="false" />
     </Project>
     <Project Path="doxygen/doxygen.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+      <Build Solution="AppVeyor|*" Project="false" />
       <Build Solution="Release|*" Project="false" />
+      <Build Solution="SonarCloud|*" Project="false" />
     </Project>
     <Project Path="win32/setup/setup.wixproj">
       <BuildDependency Project="source/thirdparty/thirdparty.vcxproj" />
@@ -31,49 +48,132 @@
       <BuildDependency Project="source/win32/uadebug/uadebug.vcxproj" />
       <BuildDependency Project="source/win32/uastudio/uastudio.vcxproj" />
       <BuildDependency Project="uadata/uadata.vcxproj" />
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
       <Platform Project="x86" />
-      <Build />
+      <Build Solution="Debug|*" />
+      <Build Solution="Release|*" />
     </Project>
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="vcpkg.json" />
   </Folder>
   <Folder Name="/source/">
-    <Project Path="source/audio/audio.vcxproj" />
-    <Project Path="source/base/base.vcxproj" />
-    <Project Path="source/conv/conv.vcxproj" />
-    <Project Path="source/game/game.vcxproj" />
-    <Project Path="source/import/import.vcxproj" />
-    <Project Path="source/physics/physics.vcxproj" />
-    <Project Path="source/renderer/renderer.vcxproj" />
-    <Project Path="source/screens/screens.vcxproj" />
-    <Project Path="source/script/script.vcxproj" />
-    <Project Path="source/ui/ui.vcxproj" />
-    <Project Path="source/underworld/underworld.vcxproj" />
-    <Project Path="source/unittest/unittest.vcxproj" />
+    <Project Path="source/audio/audio.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/base/base.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/conv/conv.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/game/game.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/import/import.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/physics/physics.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/renderer/renderer.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/screens/screens.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/script/script.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/ui/ui.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/underworld/underworld.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/unittest/unittest.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
     <Project Path="source/uwadv/uwadv.vcxproj">
       <BuildDependency Project="source/thirdparty/thirdparty.vcxproj" />
       <BuildDependency Project="source/win32/uadebug/uadebug.vcxproj" />
       <BuildDependency Project="uadata/uadata.vcxproj" />
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
     </Project>
-    <Project Path="source/win32/uadebug/uadebug.vcxproj" />
-    <Project Path="source/win32/uastudio/uastudio.vcxproj" />
+    <Project Path="source/win32/uadebug/uadebug.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/win32/uastudio/uastudio.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
   </Folder>
   <Folder Name="/source/thirdparty/">
-    <Project Path="source/thirdparty/hqx/hqx.vcxproj" />
-    <Project Path="source/thirdparty/SDL_pnglite/SDL_pnglite.vcxproj" />
-    <Project Path="source/thirdparty/thirdparty.vcxproj" />
+    <Project Path="source/thirdparty/hqx/hqx.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/thirdparty/SDL_pnglite/SDL_pnglite.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/thirdparty/thirdparty.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+      <Build Solution="SonarCloud|*" Project="false" />
+    </Project>
   </Folder>
   <Folder Name="/source/tools/">
-    <Project Path="source/tools/convdbg/convdbg.vcxproj" />
-    <Project Path="source/tools/convdec/convdec.vcxproj" />
-    <Project Path="source/tools/mapdisp/mapdisp.vcxproj" />
-    <Project Path="source/tools/strpak/strpak.vcxproj" />
-    <Project Path="source/tools/uwdump/uwdump.vcxproj" />
-    <Project Path="source/tools/xmi2mid/xmi2mid.vcxproj" />
-    <Project Path="source/win32/uaconfig/uaconfig.vcxproj" />
+    <Project Path="source/tools/convdbg/convdbg.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/tools/convdec/convdec.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/tools/mapdisp/mapdisp.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/tools/strpak/strpak.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/tools/uwdump/uwdump.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/tools/xmi2mid/xmi2mid.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+    </Project>
+    <Project Path="source/win32/uaconfig/uaconfig.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+      <Build Solution="SonarCloud|*" Project="false" />
+    </Project>
   </Folder>
   <Folder Name="/uadata/">
-    <Project Path="uadata/uadata.vcxproj" />
+    <Project Path="uadata/uadata.vcxproj">
+      <BuildType Solution="AppVeyor|*" Project="Release" />
+      <BuildType Solution="SonarCloud|*" Project="Release" />
+      <Build Solution="SonarCloud|*" Project="false" />
+    </Project>
   </Folder>
 </Solution>
