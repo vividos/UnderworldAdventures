@@ -161,6 +161,11 @@
     <Image Include="uw1\acknowledgements-blank.tga" />
     <Image Include="uwadv-loading.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\source\base\base.vcxproj">
+      <Project>{e1210703-9adb-4ed7-ae0c-b7e39a15e01f}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
